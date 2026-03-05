@@ -1,3 +1,14 @@
+# Hướng dẫn mới về việc áp dụng quy trình bảo mật tự động local
+    - Ae lưu ý ngay khi clone dự án về chạy tool: setup-env.bat hoặc setup-env-wlove.bat
+    - Đây là tool cài môi trường cho 3 tool:
+        - GitLeaks: Rà quét lỗ hổng tự động
+        - PMD:      Rà quét lỗi lập trình dựa trên file .java
+        - SpotBugs + Plugin FindSecBugs: Rà quét lỗ hổng bảo mật trên file bytecode
+
+    - Bộ tool này là pha 1 trong quy trình phát triển phần mềm an toàn bảo mật
+        tích hợp công cụ SCA/DAST/SAST do Hưng và các ae nhóm btl môn ATBM HTTT phát triển
+
+
 # Hướng dẫn làm việc với git repo này cho ae
 # Repo này có 2 nhánh chính
   - main: nhánh cao nhất, chứa code sản phẩm hoàn thiện theo từng bước
