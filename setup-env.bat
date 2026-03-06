@@ -122,7 +122,7 @@ echo [*] Kiem tra maven
 IF EXIST "mvnw.cmd" (
     echo [INFO] Da phat hien Maven Wrapper 'mvnw.cmd' [OK]
 ) ELSE (
-    echo [WARNING] Khong tim thay mvnw.cmd. Hay dam bao ban co Maven de chay SAST.
+    echo [WARNING] Khong tim thay mvnw.cmd
 )
 echo.
 
