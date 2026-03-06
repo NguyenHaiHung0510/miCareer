@@ -17,4 +17,8 @@ buildNumber.properties
 .classpath
 
 gitleaks.exe
-audit-reports/
+audit-reports/gitleaks-audit.json
+audit-reports/gitleaks-commit.json
+audit-reports/maven-audit.log
+audit-reports/pmd.xml
+audit-reports/spotbugs.xml
