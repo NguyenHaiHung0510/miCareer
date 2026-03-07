@@ -1,7 +1,7 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <header class="header">
     <div class="container nav">
-        <div class="logo">Mi<span>Career</span></div>
+        <a class="card-link" href = "${pageContext.request.contextPath}/home"><div class="logo">Mi<span>Career</span></div></a>
 
         <nav class="menu">
             <a href="${pageContext.request.contextPath}/home">Trang chủ</a>

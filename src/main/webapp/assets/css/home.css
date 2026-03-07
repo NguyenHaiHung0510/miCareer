@@ -26,7 +26,7 @@
 .home-section__header {
   display: flex;
   justify-content: space-between;
-  align-items: left;
+  align-items: flex-start;
   gap: 16px;
   margin-bottom: 28px;
 }
@@ -134,7 +134,7 @@
 }
 
 .hero-search__field:focus-within {
-  border-color: var(--home-primary);
+  border-color: rgb(17, 61, 184);
   box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
 }
 

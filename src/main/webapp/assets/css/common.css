@@ -23,11 +23,20 @@ body {
 
 /* Header Styles */
 
+
+
 .header {
     background: #ffffff;
     border-bottom: 1px solid #e5e7eb;
     padding: 14px 0;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.card-link {
+    text-decoration: none;
 }
 
 .nav {
