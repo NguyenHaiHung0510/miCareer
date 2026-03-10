@@ -1,4 +1,4 @@
-# Bổ sung cấu hình GitLeaks cho dự án microShop
+# Bổ sung cấu hình GitLeaks cho dự án
 # File này kế thừa toàn bộ các rules mặc định của GitLeaks
 
 [allowlist]

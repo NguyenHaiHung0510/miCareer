@@ -1,0 +1,34 @@
+TÀI LIỆU 02: QUY CHUẨN CẤU TRÚC THƯ MỤC SOURCE CODE
+
++ Toàn bộ code cần phải được đặt đúng package quy định
++ Cấu trúc chuẩn của dự án Maven Web App như sau:
+
+Dự án/
+├── .mvn/                   -> (no care) Cấu hình Maven Wrapper
+├── audit-reports/          -> Chứa các file báo cáo quét bảo mật của pha 1 devsecops (p1d)
+├── exclude/                -> Chứa danh sách các ngoại lệ của pha p1d
+├── src/main/java/vn/com/   -> root package
+│   ├── controller/         -> Chứa các class Servlet
+│   ├── dao/                -> Data Access Object: class giao tiếp trực tiếp với DB
+│   ├── model/              -> Chứa các class thực thể/JavaBeans 
+│   ├── filter/             -> Chứa các Servlet Filter (Dùng để chặn quyền, check login, set UTF-8 v.v).
+│   └── util/               -> Chứa các tiện ích dùng chung (Ví dụ: DBConnectionPool, SecurityUtil hash mật khẩu).
+│
+├── src/main/webapp/        -> root giao diện
+│   ├── assets/             -> Chứa tài nguyên tĩnh
+│   │   ├── css/
+│   │   ├── js/
+│   │   └── images/
+│   ├── views/              -> Chứa các thành phần UI dùng chung (header.jsp, footer.jsp, sidebar.jsp)
+                                 để các trang khác include vào.
+│   ├── WEB-INF/            -> Thư mục Browser không thể truy cập trực tiếp
+│   │   └── web.xml         -> File cấu hình luồng chạy của Web App (Servlet 6.0).
+│   └── *.jsp               -> Các trang giao diện chính (index.jsp, login.jsp) 
+                                nằm trực tiếp ở webapp hoặc chia theo thư mục chức năng.
+│
+├── pom.xml                 -> File quản lý thư viện (Cài thêm thư viện phải thông báo nhóm trước khi add dependency).
+├── setup-env.bat           -> Tool cài đặt DevSecOps nội bộ (Ae clone về chạy 1 lần duy nhất).
+└── mvnw, mvnw.cmd          -> File thực thi Maven cho dự án.
+
+Lưu ý làm UI: 
+- Toàn bộ file tĩnh (CSS/JS) phải gom gọn vào 'assets'. 

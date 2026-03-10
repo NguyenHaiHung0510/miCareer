@@ -1,0 +1,22 @@
+TÀI LIỆU 01: TECH STACK & TƯ TƯỞNG KIẾN TRÚC DỰ ÁN
+
+1. Tech stack core
+- Môi trường: JDK 21
+- Core Web: Jakarta EE 10 (Servlet 6.0). Không sử dụng các thư viện javax.* cũ.
+- Web Server: Apache Tomcat 10.1.x trở lên.
+- Giao diện: JSP, JSTL (sử dụng uri chuẩn: jakarta.tags.core).
+- Database: MySQL 8.x.
+- Connection Pool: HikariCP
+- Build Tool: Maven
+
+2. Tư tưởng kiến trúc
+- Mô hình: MVC (Model - View - Controller)
+  + Servlet (Controller) chỉ làm nhiệm vụ tiếp nhận Request, gọi DAO xử lý logic, 
+        và điều hướng (forward/redirect) tới View. Không viết code in mã HTML (out.println) trong Servlet.
+  + JSP (View) chỉ dùng để hiển thị dữ liệu (thông qua JSTL/EL). 
+        Không viết code Java (Scriptlet <%...%>) thao tác Database trực tiếp trên JSP.
+
+
+3. An toàn bảo mật
+- Dự án có áp dụng pha 1 của quy trình DevSecOps do Hưng và các thành viên nhóm BTL ATBM HTTT phát triển
+- Chi tiết pha 1 xem tại 'pha-1-devsecops.pdf'
