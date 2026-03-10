@@ -1,34 +1,65 @@
-# Hướng dẫn mới về việc áp dụng quy trình bảo mật tự động local
-    - Ae lưu ý ngay khi clone dự án về chạy tool: setup-env.bat hoặc setup-env-wlove.bat
-    - Đây là tool cài môi trường cho 3 tool:
-        - GitLeaks: Rà quét lỗ hổng tự động
-        - PMD:      Rà quét lỗi lập trình dựa trên file .java
-        - SpotBugs + Plugin FindSecBugs: Rà quét lỗ hổng bảo mật trên file bytecode
+# HƯỚNG DẪN LÀM VIỆC VÀ CÀI ĐẶT MÔI TRƯỜNG DỰ ÁN
 
-    - Bộ tool này là pha 1 trong quy trình phát triển phần mềm an toàn bảo mật
-        tích hợp công cụ SCA/DAST/SAST do Hưng và các ae nhóm btl môn ATBM HTTT phát triển
+## 1. Cài đặt quy trình bảo mật (Pha 1 DevSecOps)
+Ae lưu ý: Ngay khi clone dự án về bắt buộc chạy file `setup-env.py` (windows/mac/linux) windows thì có thể chạy `setup-env.bat` hoặc `setup-env.bat`, 3 phiên bản logic tương đương
+Đây là tool tự động cài đặt bộ 3 công cụ rà quét tại local do Hưng và các ae team BTL ATBM HTTT phát triển:
+- **GitLeaks:** Rà quét lộ lọt dữ liệu nhạy cảm (token, mật khẩu v.v).
+- **PMD:** Rà quét lỗi cấu trúc lập trình trên file `.java`.
+- **SpotBugs + FindSecBugs:** Rà quét lỗ hổng bảo mật trên file bytecode.
+
+## 2. Quy chuẩn Git Repo
+Repo này có 2 nhánh chính:
+- `main`: Nhánh sản phẩm, chứa code đã hoàn thiện và ổn định.
+- `develop`: Nhánh phát triển của ae, chứa code mới nhất đang tích hợp.
+
+Có một nguyên tắc là ae tuyệt đối không push trực tiếp lên `main` và `develop`.
+Mọi tính năng mới phải làm trên nhánh riêng, sau đó tạo Pull Request (PR) ghép vào `develop`. Khoa và Hưng sẽ (tạm thời) review và duyệt PR.
+
+## 3. Luồng làm việc chuẩn cho Ae
+
+**Bước 1: Lấy code mới nhất**
+- Lần đầu tiên: `git clone https://github.com/NguyenHaiHung0510/miCareer.git`
+- Các lần sau:
+  + `git checkout develop` (chuyển về nhánh develop).
+  + `git pull origin develop` (kéo code mới nhất về máy).
+
+**Bước 2: Tạo nhánh làm việc riêng**
+- `git checkout -b <tên_nhánh>`
+*(Lưu ý đặt tên nhánh ngắn gọn, có ý nghĩa: ví dụ `feat_login_Kien`, `fix_bug_Hoang` hoặc `dev_<tên>` cũng được)*
+
+**Bước 3: Code và đẩy code lên Github**
+Sau khi code xong chức năng:
+- `git status`: Kiểm tra lại các file đã thay đổi
+- `git add .`:  Thêm tất cả các file đã sửa vào staged
+- `git commit -m "mô tả ngắn gọn việc vừa làm, ví dụ: thêm hàm login"`
+- `git push origin <tên_nhánh_của_ae>`
+
+**Bước 4:** Lên GitHub, bấm tạo Pull Request từ nhánh của ae vào nhánh `develop` và thông báo lên nhóm để duyệt.
 
 
-# Hướng dẫn làm việc với git repo này cho ae
-# Repo này có 2 nhánh chính
-  - main: nhánh cao nhất, chứa code sản phẩm hoàn thiện theo từng bước
-  - develop: nhánh phát triển, chứa code mới nhất trong giai đoạn phát triển của ae
+## 4. (Bonus - làm được thì ngon) Quy chuẩn đặt tên nhánh, commit và viết Pull Request (PR)
+Để lịch sử dự án chuyên nghiệp, anh em dễ đọc code của nhau và tiện cho việc review, ae tham khảo các quy tắc sau:
 
-# Nguyên tắc là ae không bao giờ push trực tiếp lên develop và main
-# Phải thực hiện theo các bước bên dưới để tạo nhánh mới và xong thì tạo pull request vào develop, Khoa và Hưng sẽ (tạm) đảm nhận review và duyệt
+**A. Cách đặt tên nhánh**
+Cú pháp: `<loại>/<tên_tính_năng>` hoặc `<loại>/<tên_ae>`
+- `feat/...` : Phát triển tính năng mới (VD: `feat/login-page`, `feat/cv-upload`).
+- `fix/...` : Sửa lỗi code (VD: `fix/db-connection`, `fix/sql-injection-user`).
+- `docs/...` : Cập nhật tài liệu dự án.
+- Tên cá nhân: `dev_Kien`, `dev_Duong` (Dùng tạm nếu ae làm các task tổng hợp, gộp nhiều chức năng nhỏ).
 
- + Trước khi ae code, hãy đảm bảo lấy code mới nhất từ develop
-     - git clone https://github.com/NguyenHaiHung0510/miCareer.git đối với lần đầu
-     - git checkout develop: chuyển sang nhánh develop ở local ( dùng "git checkout -b develop origin/develop" nếu không có )
-     - git pull origin develop: kéo code mới nhất về
+**B. Cách viết commit chuẩn**
+Cú pháp: `<loại>: <Mô tả ngắn gọn bằng tiếng Việt hoặc Anh>`
+- `feat:` Thêm chức năng (VD: `feat: hoàn thiện giao diện trang chủ cho ứng viên`).
+- `fix:` Vá lỗi (VD: `fix: sửa lỗi null pointer ở DAO lúc lấy danh sách Job`).
+- `chore:` Các task cài đặt lặt vặt (VD: `chore: cập nhật lại version trong pom.xml`).
+- `refactor:` Viết gọn lại code cho sạch đẹp nhưng không đổi logic.
 
-  + Tiếp theo là tạo nhánh mới local, ae sẽ code mới trong nhánh này
-      - git checkout -b testFlow ( ae thay testFlow bằng tên branch của ae, tốt nhất nên cho có ý nghĩa ngắn gọn như newCodeModel_ten_ae, newCodeDA_tem_ae hoặc đơn giản là dev_<tên của ae> là đc )
+**C. Tiêu chuẩn tạo Pull Request (PR)**
+Khi ae ấn tạo PR ghép code từ nhánh của mình vào nhánh `develop`, không nên trống phần mô tả. 
+Ae nên ghi chú nhanh theo format sau để reviewer nắm bắt nhanh tiến độ trước khi duyệt:
 
-  + Khi xong việc, ae có thể sử dụng
-      - git status: check trạng thái các thay đổi
-      - git add: add từng file hoặc add tất = "git add ."
-      - git commit -m "viết hàm abc, thêm tính năng xyz"
-      - git push origin testFlow ( nhớ thay tên testFlow bằng tên branch ae đặt )
-   
-
+1. **Tóm tắt nội dung:** PR này làm chức năng gì hoặc sửa lỗi gì?
+2. **Phạm vi ảnh hưởng:** Có sửa vào file dùng chung nào của người khác không (như `pom.xml`, `web.xml`, base classes)?
+3. **Checklist:**
+   - [ ] Đã chạy `setup-env` và pass full pre-commit local.
+   - [ ] Code đã chạy test thành công trên máy cá nhân.
