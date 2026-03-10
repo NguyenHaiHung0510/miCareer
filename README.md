@@ -1,8 +1,7 @@
 # HƯỚNG DẪN LÀM VIỆC VÀ CÀI ĐẶT MÔI TRƯỜNG DỰ ÁN
 
 ## 1. Cài đặt quy trình bảo mật (Pha 1 DevSecOps)
-Ae lưu ý: Ngay khi clone dự án về bắt buộc chạy file `setup-env.py` (windows/mac/linux) windows thì có thể chạy `setup-env.bat` hoặc `setup-env.bat`, 3 phiên bản logic tương đương
-Đây là tool tự động cài đặt bộ 3 công cụ rà quét tại local do Hưng và các ae team BTL ATBM HTTT phát triển:
+Ae lưu ý: Ngay khi clone dự án về bắt buộc chạy file `setup-env.py` (windows/mac/linux), windows thì có thể chạy `setup-env.bat` hoặc `setup-env.bat`, 3 phiên bản logic tương đương. Đây là tool tự động cài đặt bộ 3 công cụ rà quét tại local do Hưng và các ae team BTL ATBM HTTT phát triển:
 - **GitLeaks:** Rà quét lộ lọt dữ liệu nhạy cảm (token, mật khẩu v.v).
 - **PMD:** Rà quét lỗi cấu trúc lập trình trên file `.java`.
 - **SpotBugs + FindSecBugs:** Rà quét lỗ hổng bảo mật trên file bytecode.
