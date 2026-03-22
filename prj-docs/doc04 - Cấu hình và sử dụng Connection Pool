@@ -1,0 +1,25 @@
+TÀI LIỆU 04: CẤU HÌNH VÀ SỬ DỤNG CONNECTION POOL (HIKARICP)
+
+1. File cấu hình môi trường Database
+- Để đảm bảo bảo mật, toàn bộ thông tin kết nối DB (URL DB, username, password v.v) không được hardcode vào source.
+- Tại thư mục `src/main/resources/`, đã cấu hình sẵn một file mẫu là `database.properties.example`.
+- Ae vào src/main/resources để xem file mẫu properties này và làm theo hướng dẫn
+ 
+
+2. Quản lý và cấp phát Connection (DBContext)
+- Vị trí: `src/main/java/vn/com/micareer/context/DBContext.java`
+- Chức năng: 
+    + Khởi tạo và duy trì một Connection Pool (HikariCP) duy nhất cho toàn bộ hệ thống Web
+    + Các thông số cấp phát và tối ưu hiệu năng đã được cấu hình tĩnh.
+- Cách sử dụng để lấy kết nối:
+    + Khi viết code thao tác DB, sử dụng `try-with-resources` và gọi hàm `DBContext.getConnection()` 
+    + Để JVM tự động trả connection về Pool sau khi query xong (hoặc khi có lỗi).
+  
+3. Cơ chế thu hồi Pool tích hợp trong AppLifecycleListener
+- Vị trí: src/main/java/vn/com/micareer/context/AppLifecycleListener.java
+- Chức năng: Lắng nghe vòng đời của web server (Tomcat).
+- Cơ chế: 
+    + Khi server tắt, undeploy hoặc khi ae reload lại code
+    + class này sẽ tự động gọi hàm DBContext.closePool() để ngắt toàn bộ socket TCP đang kết nối tới MySQL
+    + Để ngăn tràn bộ nhớ và chạm giới hạn kết nối trên DB.
+- Cơ chế này chạy ngầm và được trigger tự động bởi Tomcat. Anh em cần gọi hay thao tác gì với class này.
