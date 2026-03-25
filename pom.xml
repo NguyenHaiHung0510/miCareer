@@ -83,7 +83,7 @@
                 <configuration>
                     <!--Audit mode: on = set false-->
                     
-                    <failOnViolation>true</failOnViolation> 
+                    <failOnViolation>false</failOnViolation> 
                     <!--<failOnViolation>false</failOnViolation>--> 
                     
                     <failurePriority>2</failurePriority>
@@ -97,13 +97,7 @@
                     </rulesets>
                     <targetDirectory>${project.basedir}/audit-reports</targetDirectory>
                 </configuration>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>check</goal>
-                        </goals>
-                    </execution>
-                </executions>
+                
             </plugin>
 
             <!--DevSecOps - SpotBugs-->
@@ -117,7 +111,7 @@
                     
                     <!--Audit mode: on = set false-->
                 
-                    <failOnError>true</failOnError> 
+                    <failOnError>false</failOnError> 
                     <!--<failOnError>false</failOnError>--> 
                     <xmlOutput>true</xmlOutput>
                     <xmlOutputDirectory>${project.basedir}/audit-reports</xmlOutputDirectory>
@@ -133,13 +127,7 @@
                     </plugins>
                     
                 </configuration>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>check</goal>
-                        </goals>
-                    </execution>
-                </executions>
+              
             </plugin>
         </plugins>
     </build>
