@@ -1,173 +1,249 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package vn.com.micareer.dao;
 
 import vn.com.micareer.context.DBContext;
 import vn.com.micareer.model.Candidate;
 
 import java.sql.*;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CandidateDAO implements CrudDAO<Candidate, Long> {
+public class CandidateDAO implements CrudDAO<Candidate, String> {
 
-    /* =========================
-       MAP RESULT SET
-       ========================= */
-    private Candidate mapResultSetToCandidate(ResultSet rs) throws SQLException {
-
-        Candidate c = new Candidate();
-
-        c.setUserId(rs.getObject("user_id", Long.class));
-        c.setBio(rs.getString("bio"));
-        c.setCvUrl(rs.getString("cv_url"));
-
-        Date dob = rs.getDate("dob");
-        c.setDob(dob != null ? dob.toLocalDate() : null);
-
-        c.setExpYears(rs.getObject("exp_years", Integer.class));
-
-        return c;
-    }
-
-    private Connection getConnection() throws SQLException {
-        return DBContext.getConnection();
-    }
-
-    /* =========================
-       INSERT
-       ========================= */
     @Override
-    public Long insert(Candidate c) throws SQLException {
+    public String insert(Candidate c) throws SQLException {
+        String sqlUser = "INSERT INTO User(userId, userName, pwd, fName, lName, email, phone, stat, role, provId, ward, street) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)";
+        String sqlCandidate = "INSERT INTO Candidate(candidateId, bio, cvUrl, dob, expYears) VALUES (?,?,?,?,?)";
 
-        String sql = """
-                INSERT INTO CANDIDATE
-                (user_id, bio, cv_url, dob, exp_years)
-                VALUES (?, ?, ?, ?, ?)
-                """;
+        Connection con = null;
 
-        try (Connection conn = getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+        try {
+            con = DBContext.getConnection();
+            con.setAutoCommit(false);
 
-            ps.setLong(1, c.getUserId());
-            ps.setString(2, c.getBio());
-            ps.setString(3, c.getCvUrl());
-
-            if (c.getDob() != null) {
-                ps.setDate(4, Date.valueOf(c.getDob()));
-            } else {
-                ps.setNull(4, Types.DATE);
+            // 1. Insert User
+            try (PreparedStatement psUser = con.prepareStatement(sqlUser)) {
+                psUser.setString(1, c.getUserId());
+                psUser.setString(2, c.getUserName());
+                psUser.setString(3, c.getPwd());
+                psUser.setString(4, c.getfName());
+                psUser.setString(5, c.getlName());
+                psUser.setString(6, c.getEmail());
+                psUser.setString(7, c.getPhone());
+                psUser.setString(8, c.getStat());
+                psUser.setString(9, c.getRole());
+                psUser.setString(10, c.getProvId());
+                psUser.setString(11, c.getWard());
+                psUser.setString(12, c.getStreet());
+                psUser.executeUpdate();
             }
 
-            if (c.getExpYears() != null) {
-                ps.setInt(5, c.getExpYears());
-            } else {
-                ps.setNull(5, Types.INTEGER);
+            // 2. Insert Candidate
+            try (PreparedStatement psCan = con.prepareStatement(sqlCandidate)) {
+                psCan.setString(1, c.getCandidateId()); // = userId
+                psCan.setString(2, c.getBio());
+                psCan.setString(3, c.getCvUrl());
+
+                if (c.getDob() != null) {
+                    psCan.setDate(4, Date.valueOf(c.getDob()));
+                } else {
+                    psCan.setNull(4, Types.DATE);
+                }
+
+                if (c.getExpYears() != null) {
+                    psCan.setDouble(5, c.getExpYears());
+                } else {
+                    psCan.setNull(5, Types.DOUBLE);
+                }
+
+                System.out.println(psCan.executeUpdate());
             }
 
-            int affectedRows = ps.executeUpdate();
-            return affectedRows > 0 ? c.getUserId() : null;
+            con.commit();
+            return c.getCandidateId();
+
+        } catch (SQLException e) {
+            if (con != null) con.rollback();
+            throw e;
+        } finally {
+            if (con != null) con.setAutoCommit(true);
         }
     }
 
-    /* =========================
-       GET BY ID (userId)
-       ========================= */
     @Override
-    public Candidate getById(Long userId) throws SQLException {
+    public boolean update(Candidate c) throws SQLException {
+        String sqlUser = "UPDATE User SET userName=?, pwd=?, fName=?, lName=?, email=?, phone=?, stat=?, role=?, provId=?, ward=?, street=? WHERE userId=?";
+        String sqlCandidate = "UPDATE Candidate SET bio=?, cvUrl=?, dob=?, expYears=? WHERE candidateId=?";
 
-        String sql = "SELECT * FROM CANDIDATE WHERE user_id = ?";
+        Connection con = null;
 
-        try (Connection conn = getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+        try {
+            con = DBContext.getConnection();
+            con.setAutoCommit(false);
 
-            ps.setLong(1, userId);
-
-            ResultSet rs = ps.executeQuery();
-            if (rs.next()) {
-                return mapResultSetToCandidate(rs);
+            // 1. Update User
+            try (PreparedStatement psUser = con.prepareStatement(sqlUser)) {
+                psUser.setString(1, c.getUserName());
+                psUser.setString(2, c.getPwd());
+                psUser.setString(3, c.getfName());
+                psUser.setString(4, c.getlName());
+                psUser.setString(5, c.getEmail());
+                psUser.setString(6, c.getPhone());
+                psUser.setString(7, c.getStat());
+                psUser.setString(8, c.getRole());
+                psUser.setString(9, c.getProvId());
+                psUser.setString(10, c.getWard());
+                psUser.setString(11, c.getStreet());
+                psUser.setString(12, c.getUserId());
+                psUser.executeUpdate();
             }
-        }
 
-        return null;
+            // 2. Update Candidate
+            try (PreparedStatement psCan = con.prepareStatement(sqlCandidate)) {
+                psCan.setString(1, c.getBio());
+                psCan.setString(2, c.getCvUrl());
+
+                if (c.getDob() != null) {
+                    psCan.setDate(3, Date.valueOf(c.getDob()));
+                } else {
+                    psCan.setNull(3, Types.DATE);
+                }
+
+                if (c.getExpYears() != null) {
+                    psCan.setDouble(4, c.getExpYears());
+                } else {
+                    psCan.setNull(4, Types.DOUBLE);
+                }
+
+                psCan.setString(5, c.getCandidateId());
+
+                psCan.executeUpdate();
+            }
+
+            con.commit();
+            return true;
+
+        } catch (SQLException e) {
+            if (con != null) con.rollback();
+            throw e;
+        } finally {
+            if (con != null) con.setAutoCommit(true);
+        }
     }
 
-    /* =========================
-       GET ALL
-       ========================= */
+    @Override
+    public boolean delete(String id) throws SQLException {
+        String sqlCandidate = "DELETE FROM Candidate WHERE candidateId=?";
+        String sqlUser = "DELETE FROM User WHERE userId=?";
+
+        Connection con = null;
+
+        try {
+            con = DBContext.getConnection();
+            con.setAutoCommit(false);
+
+            // 1. Xóa Candidate trước
+            try (PreparedStatement ps = con.prepareStatement(sqlCandidate)) {
+                ps.setString(1, id);
+                ps.executeUpdate();
+            }
+
+            // 2. Xóa User
+            try (PreparedStatement ps = con.prepareStatement(sqlUser)) {
+                ps.setString(1, id);
+                ps.executeUpdate();
+            }
+
+            con.commit();
+            return true;
+
+        } catch (SQLException e) {
+            if (con != null) con.rollback();
+            throw e;
+        } finally {
+            if (con != null) con.setAutoCommit(true);
+        }
+    }
+
     @Override
     public List<Candidate> getAll() throws SQLException {
-
-        String sql = "SELECT * FROM CANDIDATE";
         List<Candidate> list = new ArrayList<>();
 
-        try (Connection conn = getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
+        String sql = "SELECT * FROM Candidate c JOIN User u ON c.candidateId = u.userId";
+
+        try (Connection con = DBContext.getConnection();
+             Statement st = con.createStatement();
+             ResultSet rs = st.executeQuery(sql)) {
 
             while (rs.next()) {
-                list.add(mapResultSetToCandidate(rs));
+                list.add(map(rs));
             }
         }
-
         return list;
     }
 
-    /* =========================
-       UPDATE
-       ========================= */
     @Override
-    public boolean update(Candidate c) throws SQLException {
+    public Candidate getById(String id) throws SQLException {
+        String sql = "SELECT * FROM Candidate c JOIN User u ON c.candidateId = u.userId WHERE c.candidateId=?";
 
-        String sql = """
-                UPDATE CANDIDATE
-                SET bio = ?,
-                    cv_url = ?,
-                    dob = ?,
-                    exp_years = ?
-                WHERE user_id = ?
-                """;
+        try (Connection con = DBContext.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
 
-        try (Connection conn = getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, id);
+            ResultSet rs = ps.executeQuery();
 
-            ps.setString(1, c.getBio());
-            ps.setString(2, c.getCvUrl());
-
-            if (c.getDob() != null) {
-                ps.setDate(3, Date.valueOf(c.getDob()));
-            } else {
-                ps.setNull(3, Types.DATE);
+            if (rs.next()) {
+                return map(rs);
             }
-
-            if (c.getExpYears() != null) {
-                ps.setInt(4, c.getExpYears());
-            } else {
-                ps.setNull(4, Types.INTEGER);
-            }
-
-            ps.setLong(5, c.getUserId());
-
-            return ps.executeUpdate() > 0;
         }
+        return null;
     }
+    public boolean isUsernameExist(String userName) {
+        String sql = "SELECT 1 FROM User WHERE userName = ?";
 
-    /* =========================
-       DELETE
-       ========================= */
-    @Override
-    public boolean delete(Long userId) throws SQLException {
+        try (Connection con = DBContext.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
 
-        String sql = "DELETE FROM CANDIDATE WHERE user_id = ?";
+            ps.setString(1, userName);
+            ResultSet rs = ps.executeQuery();
 
-        try (Connection conn = getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+            return rs.next(); // có dữ liệu → tồn tại
 
-            ps.setLong(1, userId);
-            return ps.executeUpdate() > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+
+        return false;
+    }
+    
+    private Candidate map(ResultSet rs) throws SQLException{
+        Candidate c = new Candidate();
+
+        // ?Candidate fields
+        c.setCandidateId(rs.getString("candidateId"));
+        c.setBio(rs.getString("bio"));
+        c.setCvUrl(rs.getString("cvUrl"));
+
+        Date dob = rs.getDate("dob");
+        if (dob != null) {
+            c.setDob(dob.toLocalDate());
+        }
+
+        c.setExpYears(rs.getDouble("expYears"));
+
+        // User fields
+        c.setUserId(rs.getString("userId"));
+        c.setUserName(rs.getString("userName"));
+        c.setPwd(rs.getString("pwd"));
+        c.setfName(rs.getString("fName"));
+        c.setlName(rs.getString("lName"));
+        c.setEmail(rs.getString("email"));
+        c.setPhone(rs.getString("phone"));
+        c.setStat(rs.getString("stat"));
+        c.setRole(rs.getString("role"));
+        c.setProvId(rs.getString("provId"));
+        c.setWard(rs.getString("ward"));
+        c.setStreet(rs.getString("street"));
+        
+        return c;
     }
 }
