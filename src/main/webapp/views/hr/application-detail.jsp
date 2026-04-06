@@ -18,30 +18,59 @@
     </c:if>
 
     <fieldset>
-        <legend>Thông tin ứng viên (Đang chờ Data)</legend>
-        <p><i>Chỗ này bước sau chúng ta bổ sung hàm DAO sẽ load tên tuổi, link CV, Cover Letter của ứng viên ra đây...</i></p>
+        <legend>Thông tin ứng viên</legend>
+        <c:choose>
+            <c:when test="${not empty appDetail}">
+                <p><b>Vị trí ứng tuyển:</b> ${appDetail.jobTitle}</p>
+                <p><b>Họ và tên:</b> ${appDetail.candidateName}</p>
+                <p><b>Email:</b> ${appDetail.email}</p>
+                <p><b>Số điện thoại:</b> ${appDetail.phone != null ? appDetail.phone : 'Chưa cập nhật'}</p>
+                <p><b>Ngày nộp:</b> ${appDetail.appliedAt}</p>
+                
+                <p><b>Cover Letter:</b></p>
+                <div style="border: 1px solid #ccc; padding: 10px; background-color: #f9f9f9;">
+                    ${appDetail.coverLetter != null && !appDetail.coverLetter.trim().isEmpty() ? appDetail.coverLetter : '<i>(Không có Cover Letter)</i>'}
+                </div>
+                
+                <p><b>CV đính kèm:</b> 
+                    <c:choose>
+                        <c:when test="${not empty appDetail.cvSnapUrl}">
+                            <a href="${pageContext.request.contextPath}/${appDetail.cvSnapUrl}" target="_blank">Xem / Tải xuống CV</a>
+                        </c:when>
+                        <c:otherwise>
+                            <i>(Không có file CV)</i>
+                        </c:otherwise>
+                    </c:choose>
+                </p>
+            </c:when>
+            <c:otherwise>
+                <p style="color: red;">Không tìm thấy dữ liệu ứng viên hoặc có lỗi xảy ra!</p>
+            </c:otherwise>
+        </c:choose>
     </fieldset>
 
     <br>
 
-    <fieldset>
-        <legend>Cập nhật trạng thái</legend>
-        <form action="${pageContext.request.contextPath}/hr/application-detail" method="POST">
-            <input type="hidden" name="jobAppId" value="${jobAppId}">
-            <input type="hidden" name="oldStatus" value="${appDetail.stat != null ? appDetail.stat : 'PENDING'}">
+    <c:if test="${not empty appDetail}">
+        <fieldset>
+            <legend>Cập nhật trạng thái</legend>
+            <form action="${pageContext.request.contextPath}/hr/application-detail" method="POST">
+                <input type="hidden" name="jobAppId" value="${jobAppId}">
+                <input type="hidden" name="oldStatus" value="${appDetail.stat}">
 
-            <label for="newStatus">Trạng thái mới:</label>
-            <select name="newStatus" id="newStatus">
-                <option value="PENDING">PENDING (Đang chờ)</option>
-                <option value="REVIEWING">REVIEWING (Đang xem xét)</option>
-                <option value="INTERVIEWING">INTERVIEWING (Đang phỏng vấn)</option>
-                <option value="ACCEPTED">ACCEPTED (Chấp nhận)</option>
-                <option value="REJECTED">REJECTED (Từ chối)</option>
-            </select>
-            
-            <button type="submit">Lưu trạng thái</button>
-        </form>
-    </fieldset>
+                <label for="newStatus">Trạng thái hiện tại: <b>${appDetail.stat}</b> -> Chuyển thành:</label>
+                <select name="newStatus" id="newStatus">
+                    <option value="PENDING" ${appDetail.stat == 'PENDING' ? 'selected' : ''}>PENDING (Đang chờ)</option>
+                    <option value="REVIEWING" ${appDetail.stat == 'REVIEWING' ? 'selected' : ''}>REVIEWING (Đang xem xét)</option>
+                    <option value="INTERVIEWING" ${appDetail.stat == 'INTERVIEWING' ? 'selected' : ''}>INTERVIEWING (Đang phỏng vấn)</option>
+                    <option value="ACCEPTED" ${appDetail.stat == 'ACCEPTED' ? 'selected' : ''}>ACCEPTED (Chấp nhận)</option>
+                    <option value="REJECTED" ${appDetail.stat == 'REJECTED' ? 'selected' : ''}>REJECTED (Từ chối)</option>
+                </select>
+                
+                <button type="submit">Lưu trạng thái</button>
+            </form>
+        </fieldset>
+    </c:if>
 
 </body>
 </html>
