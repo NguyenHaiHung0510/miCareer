@@ -32,21 +32,20 @@
 
         <div class="job-grid">
             <c:forEach items="${jobs}" var="job">
-                <article class="job-card">
-                    <h3>
-                        <a href="${pageContext.request.contextPath}/job-detail?id=${job.jobPostId}">${job.title}</a>
-                    </h3>
+                <article class="job-item">
+                    <h3><a href="${pageContext.request.contextPath}/job-detail?id=${job.jobPostId}">${job.title}</a></h3>
                     <p class="company">${job.compName}</p>
-                    <div class="meta-row">
-                        <span>${job.categoryName}</span>
-                        <span>${job.levelName}</span>
-                    </div>
-                    <div class="meta-row">
-                        <span>${job.workLoc}</span>
-                        <span>${job.workMode}</span>
+                    <div class="chips">
+                        <span class="category">${job.categoryName}</span>
+                        <span class="level">${job.levelName}</span>
+                        <span class="work-loc">${job.workLoc}</span>
+                        <span class="work-mode">${job.workMode}</span>
                     </div>
                     <p class="salary">${job.minSalary} - ${job.maxSalary} VND</p>
-                    <a class="apply-btn" href="${pageContext.request.contextPath}/apply-job?jobPostId=${job.jobPostId}">Ứng tuyển ngay</a>
+                    <div class="job-actions">
+                        <a href="${pageContext.request.contextPath}/job-detail?id=${job.jobPostId}">Xem chi tiết</a>
+                        <a class="primary" href="${pageContext.request.contextPath}/apply-job?jobPostId=${job.jobPostId}">Ứng tuyển</a>
+                    </div>
                 </article>
             </c:forEach>
         </div>
