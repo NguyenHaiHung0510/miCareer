@@ -110,12 +110,37 @@
     margin-bottom: 10px;
 }
 
+/* Base */
 .chips span {
-    background: #e2e8f0;
-    color: #334155;
     border-radius: 999px;
-    padding: 4px 8px;
+    padding: 4px 10px;
     font-size: 12px;
+    font-weight: 500;
+    transition: background 0.2s ease, color 0.2s ease;
+}
+
+/* Category */
+.chips .category {
+    background: #dbeafe;
+    color: #1d4ed8;
+}
+
+/* Level */
+.chips .level {
+    background: #ede9fe;
+    color: #6d28d9;
+}
+
+/* Location */
+.chips .work-loc {
+    background: #dcfce7;
+    color: #15803d;
+}
+
+/* Work mode */
+.chips .work-mode {
+    background: #fef3c7;
+    color: #b45309;
 }
 
 .job-actions {
@@ -139,16 +164,16 @@
     color: #fff;
 }
 
-.job-actions a:hover {
-    background: #1d4ed8;
-    color: #fff;
-}
-
 .job-actions a.primary:hover {
     background: #1e40af;
     border-color: #1e40af;
 }
 
+.salary{
+    font-weight: 700;
+    color: #111827;
+    margin: 12px 0;
+}
 
 @media (max-width: 980px) {
     .list-page {

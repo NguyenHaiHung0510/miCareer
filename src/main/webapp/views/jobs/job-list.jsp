@@ -77,10 +77,10 @@
                     <h3><a href="${pageContext.request.contextPath}/job-detail?id=${job.jobPostId}">${job.title}</a></h3>
                     <p class="company">${job.compName}</p>
                     <div class="chips">
-                        <span>${job.categoryName}</span>
-                        <span>${job.levelName}</span>
-                        <span>${job.workLoc}</span>
-                        <span>${job.workMode}</span>
+                        <span class="category">${job.categoryName}</span>
+                        <span class="level">${job.levelName}</span>
+                        <span class="work-loc">${job.workLoc}</span>
+                        <span class="work-mode">${job.workMode}</span>
                     </div>
                     <p class="salary">${job.minSalary} - ${job.maxSalary} VND</p>
                     <div class="job-actions">
