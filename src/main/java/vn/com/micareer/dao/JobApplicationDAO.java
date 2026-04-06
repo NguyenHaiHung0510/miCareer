@@ -44,4 +44,40 @@ public class JobApplicationDAO {
         }
         return -1;
     }
+    //Module5 Lấy danh sách hồ sơ ứng tuyển theo mã bài đăng tuyển dụng
+    public java.util.List<JobApplication> findByJobPostId(long jobPostId) throws SQLException {
+        java.util.List<JobApplication> list = new java.util.ArrayList<>();
+        String sql = "SELECT jobAppId, jobPostId, candidateId, appliedAt, stat, cvSnapUrl, coverLetter "
+                   + "FROM JobApplication WHERE jobPostId = ? ORDER BY appliedAt DESC";
+        try (Connection conn = DBContext.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setLong(1, jobPostId);
+            try (java.sql.ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    JobApplication app = new JobApplication();
+                    app.setJobAppId(rs.getLong("jobAppId"));
+                    app.setJobPostId(rs.getLong("jobPostId"));
+                    app.setCandidateId(rs.getLong("candidateId"));
+                    java.sql.Timestamp appliedAt = rs.getTimestamp("appliedAt");
+                    if (appliedAt != null) app.setAppliedAt(appliedAt.toLocalDateTime());
+                    app.setStat(rs.getString("stat"));
+                    app.setCvSnapUrl(rs.getString("cvSnapUrl"));
+                    app.setCoverLetter(rs.getString("coverLetter"));
+                    list.add(app);
+                }
+            }
+        }
+        return list;
+    }
+
+    //Module5 Cập nhật trạng thái của đơn ứng tuyển
+    public boolean updateStatus(long jobAppId, String newStatus) throws SQLException {
+        String sql = "UPDATE JobApplication SET stat = ? WHERE jobAppId = ?";
+        try (Connection conn = DBContext.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, newStatus);
+            ps.setLong(2, jobAppId);
+            return ps.executeUpdate() > 0;
+        }
+    }
 }
