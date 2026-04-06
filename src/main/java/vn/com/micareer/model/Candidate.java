@@ -1,44 +1,22 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package vn.com.micareer.model;
 
-
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 public class Candidate {
 
-    private Long userId;     // PK + FK -> User
-    private String bio;      // Mô tả ngắn
-    private String cvUrl;    // Đường dẫn CV
-    private LocalDate dob;   // Date of Birth
-    private Integer expYears; // Số năm kinh nghiệm (nullable)
+    private long candidateId;
+    private String bio;
+    private String cvUrl;
+    private LocalDate dob;
+    private BigDecimal expYears;
 
-    // Constructor không tham số
-    public Candidate() {
+    public long getCandidateId() {
+        return candidateId;
     }
 
-    // Constructor đầy đủ tham số
-    public Candidate(Long userId,
-                     String bio,
-                     String cvUrl,
-                     LocalDate dob,
-                     Integer expYears) {
-
-        this.userId = userId;
-        this.bio = bio;
-        this.cvUrl = cvUrl;
-        this.dob = dob;
-        this.expYears = expYears;
-    }
-
-    public Long getUserId() {
-        return userId;
-    }
-
-    public void setUserId(Long userId) {
-        this.userId = userId;
+    public void setCandidateId(long candidateId) {
+        this.candidateId = candidateId;
     }
 
     public String getBio() {
@@ -65,22 +43,11 @@ public class Candidate {
         this.dob = dob;
     }
 
-    public Integer getExpYears() {
+    public BigDecimal getExpYears() {
         return expYears;
     }
 
-    public void setExpYears(Integer expYears) {
+    public void setExpYears(BigDecimal expYears) {
         this.expYears = expYears;
-    }
-
-    @Override
-    public String toString() {
-        return "Candidate{" +
-                "userId=" + userId +
-                ", bio='" + bio + '\'' +
-                ", cvUrl='" + cvUrl + '\'' +
-                ", dob=" + dob +
-                ", expYears=" + expYears +
-                '}';
     }
 }

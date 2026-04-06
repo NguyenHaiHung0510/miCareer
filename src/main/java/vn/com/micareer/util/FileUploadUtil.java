@@ -4,14 +4,14 @@
  */
 package vn.com.micareer.util;
 
-import jakarta.servlet.http.Part;
-
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.UUID;
+
+import jakarta.servlet.http.Part;
 
 public class FileUploadUtil {
 
@@ -60,6 +60,7 @@ public class FileUploadUtil {
         String contentType = filePart.getContentType();
         return contentType.equals("application/pdf")
                 || contentType.equals("application/vnd.openxmlformats-officedocument.wordprocessingml.document")
-                || contentType.equals("application/msword");
+                || contentType.equals("application/msword")
+                || contentType.startsWith("image/");
     }
 }
