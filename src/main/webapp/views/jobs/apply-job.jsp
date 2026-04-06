@@ -15,14 +15,39 @@
 
 <main class="container apply-page">
     <section class="apply-info">
-        <h1>Form ứng tuyển</h1>
+        <h1>Thông tin công việc</h1>
         <c:if test="${not empty job}">
             <p class="job-title">${job.title}</p>
-            <p>${job.compName} • ${job.workLoc} • ${job.workMode}</p>
+            <p class="company">${job.compName}</p>
+            <div class="detail-meta">
+                <span>${job.catName}</span>
+                <span>${job.levelName}</span>
+                <span>${job.workLoc}</span>
+                <span>${job.workMode}</span>
+            </div>
+            <p class="salary">Mức lương: ${job.minSalary} - ${job.maxSalary} VND</p>
+
+            <h3>Mô tả công việc</h3>
+            <p class="apply-description">${job.desc}</p>
+
+            <h3>Kỹ năng yêu cầu</h3>
+            <div class="skill-list">
+                <c:forEach items="${job.skills}" var="skill">
+                    <span>${skill}</span>
+                </c:forEach>
+            </div>
+
+            <h3>Thông tin công ty</h3>
+            <p>Tên công ty: ${job.compName}</p>
+            <p>Website: ${job.webUrl}</p>
+        </c:if>
+        <c:if test="${empty job}">
+            <p class="apply-description">Không tìm thấy thông tin jobPosting.</p>
         </c:if>
     </section>
 
     <section class="apply-form-wrap">
+        <h2>Form ứng tuyển</h2>
         <c:if test="${not empty error}">
             <p class="form-msg error">${error}</p>
         </c:if>

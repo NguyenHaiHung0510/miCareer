@@ -40,15 +40,43 @@
 }
 
 .action-row button {
+    padding: 10px 16px;
+    border-radius: 10px;
+    border: none;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+
     background: #1d4ed8;
     color: #fff;
-    cursor: pointer;
+
+    transition: background 0.25s ease, color 0.25s ease;
+}
+
+/* Hover nút Lọc */
+.action-row button:hover {
+    background: #1e40af;
+    color: #fff;
 }
 
 .action-row a {
+    padding: 10px 16px;
+    border-radius: 10px;
+    font-size: 14px;
     text-decoration: none;
-    color: #0f766e;
-    font-weight: 600;
+
+
+    border: 1px solid #64748b;
+    color: #475569;
+    background: #f1f5f9;
+
+    transition: background 0.25s ease, color 0.25s ease;
+}
+
+/* Hover */
+.action-row a:hover {
+    background: #475569;
+    color: #ffffff;
 }
 
 .job-list-grid {
@@ -110,6 +138,17 @@
     background: #1d4ed8;
     color: #fff;
 }
+
+.job-actions a:hover {
+    background: #1d4ed8;
+    color: #fff;
+}
+
+.job-actions a.primary:hover {
+    background: #1e40af;
+    border-color: #1e40af;
+}
+
 
 @media (max-width: 980px) {
     .list-page {
