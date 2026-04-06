@@ -67,41 +67,29 @@ public class JobPostingDAO {
     public String insert(JobPosting job) {
         String sql = """
         INSERT INTO JobPosting
-        (compId, hrId, title, `desc`, minSalary, maxSalary,
+        (jobPostId, compId, hrId, title, `desc`, minSalary, maxSalary,
          workLoc, workMode, stat, expAt, catId, levelId)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     """;
 
-        // Chuẩn bị lấy ID sinh tự động
-        try (Connection conn = DBContext.getConnection(); PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+        try (Connection conn = DBContext.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
 
-            ps.setString(1, job.getCompId());
-            ps.setString(2, job.getHrId());
-            ps.setString(3, job.getTitle());
-            ps.setString(4, job.getDesc());
-            ps.setBigDecimal(5, job.getMinSalary());
-            ps.setBigDecimal(6, job.getMaxSalary());
-            ps.setString(7, job.getWorkLoc());
-            ps.setString(8, job.getWorkMode());
-            ps.setString(9, job.getStat());
-            ps.setTimestamp(10, job.getExpAt());
-            ps.setString(11, job.getCatId());
-            ps.setString(12, job.getLevelId());
+            ps.setString(1, job.getJobPostId()); // UUID đã sinh
+            ps.setString(2, job.getCompId());
+            ps.setString(3, job.getHrId());
+            ps.setString(4, job.getTitle());
+            ps.setString(5, job.getDesc());
+            ps.setBigDecimal(6, job.getMinSalary());
+            ps.setBigDecimal(7, job.getMaxSalary());
+            ps.setString(8, job.getWorkLoc());
+            ps.setString(9, job.getWorkMode());
+            ps.setString(10, job.getStat());
+            ps.setTimestamp(11, job.getExpAt());
+            ps.setString(12, job.getCatId());
+            ps.setString(13, job.getLevelId());
 
-            int affectedRows = ps.executeUpdate();
-            if (affectedRows == 0) {
-                throw new SQLException("Creating job failed, no rows affected.");
-            }
-
-            try (ResultSet generatedKeys = ps.getGeneratedKeys()) {
-                if (generatedKeys.next()) {
-                    String jobPostId = generatedKeys.getString(1);
-                    job.setJobPostId(jobPostId); // gán lại cho object
-                    return jobPostId;
-                } else {
-                    throw new SQLException("Creating job failed, no ID obtained.");
-                }
-            }
+            ps.executeUpdate();
+            return job.getJobPostId();
 
         } catch (Exception e) {
             System.out.println("insert error: " + e.getMessage());

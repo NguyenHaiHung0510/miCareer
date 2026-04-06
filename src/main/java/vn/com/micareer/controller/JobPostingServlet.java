@@ -40,7 +40,7 @@ public class JobPostingServlet extends HttpServlet {
         // HR giả lập module 3
         String hrId = (String) session.getAttribute("hrId");
         if (hrId == null) {
-            hrId = "23b6d5af-30e3-11f1-a16f-d03957af07dc";
+            hrId = "868ef8c2-316e-11f1-a16f-d03957af07dc";
             session.setAttribute("hrId", hrId);
         }
 
@@ -74,7 +74,7 @@ public class JobPostingServlet extends HttpServlet {
         // HR giả lập module 3
         String hrId = (String) session.getAttribute("hrId");
         if (hrId == null) {
-            hrId = "23b6d5af-30e3-11f1-a16f-d03957af07dc";
+            hrId = "868ef8c2-316e-11f1-a16f-d03957af07dc";
             session.setAttribute("hrId", hrId);
         }
 
@@ -155,6 +155,8 @@ public class JobPostingServlet extends HttpServlet {
         try {
             JobPosting job = new JobPosting();
 
+            String jobId = java.util.UUID.randomUUID().toString();
+            job.setJobPostId(jobId);
             job.setCompId(request.getParameter("compId"));
             job.setHrId(hrId);
             job.setTitle(request.getParameter("title"));
@@ -163,7 +165,7 @@ public class JobPostingServlet extends HttpServlet {
             job.setMaxSalary(new BigDecimal(request.getParameter("maxSalary")));
             job.setWorkLoc(request.getParameter("workLoc"));
             job.setWorkMode(request.getParameter("workMode"));
-            job.setStat("Open");
+            job.setStat("OPEN");
             job.setExpAt(Timestamp.valueOf(request.getParameter("expAt")));
             job.setCatId(request.getParameter("catId"));
             job.setLevelId(request.getParameter("levelId"));

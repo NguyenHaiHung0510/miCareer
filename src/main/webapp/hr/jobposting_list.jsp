@@ -61,9 +61,9 @@
                             <input type="hidden" name="jobPostId" value="${job.jobPostId}">
 
                             <select name="stat" onchange="this.form.submit()">
-                                <option value="Open" ${job.stat=='Open' ? 'selected' : ''}>Open</option>
-                                <option value="Closed" ${job.stat=='Closed' ? 'selected' : ''}>Closed</option>
-                                <option value="Draft" ${job.stat=='Draft' ? 'selected' : ''}>Draft</option>
+                                <option value="OPEN" ${job.stat=='OPEN' ? 'selected' : ''}>OPEN</option>
+                                <option value="CLOSED" ${job.stat=='Closed' ? 'selected' : ''}>CLOSED</option>
+                                <option value="DRAFT" ${job.stat=='Draft' ? 'selected' : ''}>DRAFT</option>
                             </select>
                         </form>
                     </td>
