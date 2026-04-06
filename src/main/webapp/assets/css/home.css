@@ -131,6 +131,11 @@
     font-size: 13px;
 }
 
+.job-actions a:hover {
+    background: #1d4ed8;
+    color: #fff;
+}
+
 .job-actions a.primary {
     background: #1d4ed8;
     color: #fff;
