@@ -1,42 +1,48 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package vn.com.micareer.dao;
+
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import vn.com.micareer.context.DBContext;
 import vn.com.micareer.model.User;
 
-public class UserDAO implements CrudDAO<User, String> {
+public class UserDAO implements CrudDAO<User, Integer> {
 
-    @Override
-    public String insert(User u) throws SQLException {
-        String sql = "INSERT INTO User(userId,userName,pwd,fName,lName,email,phone,stat,role,provId,ward,street) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)";
+   @Override
+    public Integer insert(User u) throws SQLException {
+        String sql = "INSERT INTO User(userName,pwd,fName,lName,email,phone,stat,role,provId,ward,street) VALUES (?,?,?,?,?,?,?,?,?,?,?)";
+
         try (Connection con = DBContext.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
+             PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
-            ps.setString(1, u.getUserId());
-            ps.setString(2, u.getUserName());
-            ps.setString(3, u.getPwd());
-            ps.setString(4, u.getfName());
-            ps.setString(5, u.getlName());
-            ps.setString(6, u.getEmail());
-            ps.setString(7, u.getPhone());
-            ps.setString(8, u.getStat());
-            ps.setString(9, u.getRole());
-            ps.setString(10, u.getProvId());
-            ps.setString(11, u.getWard());
-            ps.setString(12, u.getStreet());
+            ps.setString(1, u.getUserName());
+            ps.setString(2, u.getPwd());
+            ps.setString(3, u.getfName());
+            ps.setString(4, u.getlName());
+            ps.setString(5, u.getEmail());
+            ps.setString(6, u.getPhone());
+            ps.setString(7, u.getStat());
+            ps.setString(8, u.getRole());
+            ps.setString(9, u.getProvId());
+            ps.setString(10, u.getWard());
+            ps.setString(11, u.getStreet());
 
-            return ps.executeUpdate() > 0 ? u.getUserId() : null;
+            int affected = ps.executeUpdate();
+
+            if (affected > 0) {
+                ResultSet rs = ps.getGeneratedKeys();
+                if (rs.next()) {
+                    return rs.getInt(1); // ✅ ID DB sinh ra
+                }
+            }
         }
+        return null;
     }
 
     @Override
     public boolean update(User u) throws SQLException {
         String sql = "UPDATE User SET userName=?,pwd=?,fName=?,lName=?,email=?,phone=?,stat=?,role=? WHERE userId=?";
+
         try (Connection con = DBContext.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
 
@@ -48,19 +54,20 @@ public class UserDAO implements CrudDAO<User, String> {
             ps.setString(6, u.getPhone());
             ps.setString(7, u.getStat());
             ps.setString(8, u.getRole());
-            ps.setString(9, u.getUserId());
+            ps.setInt(9, u.getUserId()); // ✅ sửa
 
             return ps.executeUpdate() > 0;
         }
     }
 
     @Override
-    public boolean delete(String id) throws SQLException {
+    public boolean delete(Integer id) throws SQLException {
         String sql = "DELETE FROM User WHERE userId=?";
+
         try (Connection con = DBContext.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
 
-            ps.setString(1, id);
+            ps.setInt(1, id); // ✅ sửa
             return ps.executeUpdate() > 0;
         }
     }
@@ -75,26 +82,27 @@ public class UserDAO implements CrudDAO<User, String> {
              ResultSet rs = st.executeQuery(sql)) {
 
             while (rs.next()) {
-                User u = map(rs);
-                list.add(u);
+                list.add(map(rs));
             }
         }
         return list;
     }
 
     @Override
-    public User getById(String id) throws SQLException {
+    public User getById(Integer id) throws SQLException {
         String sql = "SELECT * FROM User WHERE userId=?";
+
         try (Connection con = DBContext.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
 
-            ps.setString(1, id);
+            ps.setInt(1, id); // ✅ sửa
             ResultSet rs = ps.executeQuery();
 
             if (rs.next()) return map(rs);
         }
         return null;
     }
+
     public User login(String userName, String pwd) {
         String sql = "SELECT * FROM User WHERE userName = ? AND pwd = ?";
 
@@ -106,8 +114,7 @@ public class UserDAO implements CrudDAO<User, String> {
 
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
-                User u = map(rs);
-                return u;
+                return map(rs);
             }
 
         } catch (Exception e) {
@@ -116,9 +123,11 @@ public class UserDAO implements CrudDAO<User, String> {
 
         return null;
     }
+
     private User map(ResultSet rs) throws SQLException {
         User u = new User();
-        u.setUserId(rs.getString("userId"));
+
+        u.setUserId(rs.getInt("userId")); // ✅ sửa
         u.setUserName(rs.getString("userName"));
         u.setPwd(rs.getString("pwd"));
         u.setfName(rs.getString("fName"));
@@ -127,6 +136,25 @@ public class UserDAO implements CrudDAO<User, String> {
         u.setPhone(rs.getString("phone"));
         u.setStat(rs.getString("stat"));
         u.setRole(rs.getString("role"));
+
         return u;
+    }
+    
+    public boolean isUsernameExist(String userName) {
+        String sql = "SELECT 1 FROM User WHERE userName = ?";
+
+        try (Connection con = DBContext.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setString(1, userName);
+            ResultSet rs = ps.executeQuery();
+
+            return rs.next(); // có record → username đã tồn tại
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return false;
     }
 }

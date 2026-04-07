@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package vn.com.micareer.dao;
 
 import java.sql.*;
@@ -10,42 +6,48 @@ import java.util.List;
 import vn.com.micareer.context.DBContext;
 import vn.com.micareer.model.AdminRole;
 
-public class AdminRoleDAO implements CrudDAO<AdminRole, String> {
+public class AdminRoleDAO implements CrudDAO<AdminRole, Integer> { // Đổi Generic sang Integer
 
     @Override
-    public String insert(AdminRole r) throws SQLException {
-        String sql = "INSERT INTO AdminRole(roleId, roleName, desc) VALUES (?,?,?)";
+    public Integer insert(AdminRole r) throws SQLException {
+        String sql = "INSERT INTO AdminRole(roleName, `desc`) VALUES (?,?)";
         try (Connection con = DBContext.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
+             PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
-            ps.setString(1, r.getRoleId());
-            ps.setString(2, r.getRoleName());
-            ps.setString(3, r.getDesc());
+            ps.setString(1, r.getRoleName());
+            ps.setString(2, r.getDesc());
 
-            return ps.executeUpdate() > 0 ? r.getRoleId() : null;
+            int affected = ps.executeUpdate();
+            if(affected > 0){
+                ResultSet rs = ps.getGeneratedKeys();
+                if (rs.next()) {
+                    return rs.getInt(1);
+                }
+            }
         }
+        return null;
     }
 
     @Override
     public boolean update(AdminRole r) throws SQLException {
-        String sql = "UPDATE AdminRole SET roleName=?, desc=? WHERE roleId=?";
+        String sql = "UPDATE AdminRole SET roleName=?, `desc`=? WHERE roleId=?";
         try (Connection con = DBContext.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
 
             ps.setString(1, r.getRoleName());
             ps.setString(2, r.getDesc());
-            ps.setString(3, r.getRoleId());
+            ps.setInt(3, r.getRoleId()); // setInt
 
             return ps.executeUpdate() > 0;
         }
     }
 
     @Override
-    public boolean delete(String id) throws SQLException {
+    public boolean delete(Integer id) throws SQLException { // Tham số là Integer
         try (Connection con = DBContext.getConnection();
              PreparedStatement ps = con.prepareStatement("DELETE FROM AdminRole WHERE roleId=?")) {
 
-            ps.setString(1, id);
+            ps.setInt(1, id); // setInt
             return ps.executeUpdate() > 0;
         }
     }
@@ -61,7 +63,7 @@ public class AdminRoleDAO implements CrudDAO<AdminRole, String> {
 
             while (rs.next()) {
                 AdminRole r = new AdminRole();
-                r.setRoleId(rs.getString("roleId"));
+                r.setRoleId(rs.getInt("roleId")); // getInt
                 r.setRoleName(rs.getString("roleName"));
                 r.setDesc(rs.getString("desc"));
                 list.add(r);
@@ -71,20 +73,20 @@ public class AdminRoleDAO implements CrudDAO<AdminRole, String> {
     }
 
     @Override
-    public AdminRole getById(String id) throws SQLException {
+    public AdminRole getById(Integer id) throws SQLException { // Tham số là Integer
         String sql = "SELECT * FROM AdminRole WHERE roleId=?";
         try (Connection con = DBContext.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
 
-            ps.setString(1, id);
-            ResultSet rs = ps.executeQuery();
-
-            if (rs.next()) {
-                AdminRole r = new AdminRole();
-                r.setRoleId(rs.getString("roleId"));
-                r.setRoleName(rs.getString("roleName"));
-                r.setDesc(rs.getString("desc"));
-                return r;
+            ps.setInt(1, id); // setInt
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    AdminRole r = new AdminRole();
+                    r.setRoleId(rs.getInt("roleId")); // getInt
+                    r.setRoleName(rs.getString("roleName"));
+                    r.setDesc(rs.getString("desc"));
+                    return r;
+                }
             }
         }
         return null;

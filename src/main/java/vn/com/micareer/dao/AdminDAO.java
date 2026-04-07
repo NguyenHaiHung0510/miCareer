@@ -10,48 +10,56 @@ import java.util.List;
 import vn.com.micareer.context.DBContext;
 import vn.com.micareer.model.Admin;
 
-public class AdminDAO implements CrudDAO<Admin, String> {
+public class AdminDAO implements CrudDAO<Admin, Integer> {
     @Override
-    public String insert(Admin a) throws SQLException {
-        String sqlUser = "INSERT INTO User(userId, userName, pwd, fName, lName, email, phone, stat, role, provId, ward, street) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)";
+    public Integer insert(Admin a) throws SQLException {
+
+        String sqlUser = "INSERT INTO User(userName, pwd, fName, lName, email, phone, stat, role, provId, ward, street) VALUES (?,?,?,?,?,?,?,?,?,?,?)";
         String sqlAdmin = "INSERT INTO Admin(adminId, roleId) VALUES (?,?)";
 
         Connection con = null;
 
         try {
             con = DBContext.getConnection();
-            con.setAutoCommit(false); // bắt đầu transaction
+            con.setAutoCommit(false);
 
-            // 1. Insert User
-            try (PreparedStatement psUser = con.prepareStatement(sqlUser)) {
-                psUser.setString(1, a.getUserId());
-                psUser.setString(2, a.getUserName());
-                psUser.setString(3, a.getPwd());
-                psUser.setString(4, a.getfName());
-                psUser.setString(5, a.getlName());
-                psUser.setString(6, a.getEmail());
-                psUser.setString(7, a.getPhone());
-                psUser.setString(8, a.getStat());
-                psUser.setString(9, a.getRole());
-                psUser.setString(10, a.getProvId());
-                psUser.setString(11, a.getWard());
-                psUser.setString(12, a.getStreet());
+            Integer userId = null;
+
+            // 🔥 1. Insert User + lấy ID
+            try (PreparedStatement psUser = con.prepareStatement(sqlUser, Statement.RETURN_GENERATED_KEYS)) {
+
+                psUser.setString(1, a.getUserName());
+                psUser.setString(2, a.getPwd());
+                psUser.setString(3, a.getfName());
+                psUser.setString(4, a.getlName());
+                psUser.setString(5, a.getEmail());
+                psUser.setString(6, a.getPhone());
+                psUser.setString(7, a.getStat());
+                psUser.setString(8, a.getRole());
+                psUser.setString(9, a.getProvId());
+                psUser.setString(10, a.getWard());
+                psUser.setString(11, a.getStreet());
+
                 psUser.executeUpdate();
+
+                ResultSet rs = psUser.getGeneratedKeys();
+                if (rs.next()) {
+                    userId = rs.getInt(1);
+                }
             }
 
-            // 2. Insert Admin
+            // 🔥 2. Insert Admin
             try (PreparedStatement psAdmin = con.prepareStatement(sqlAdmin)) {
-                psAdmin.setString(1, a.getAdminId()); // = userId
+                psAdmin.setInt(1, userId); // ✅ dùng ID DB sinh
                 psAdmin.setString(2, a.getRoleId());
-
                 psAdmin.executeUpdate();
             }
 
-            con.commit(); // OK hết thì commit
-            return a.getAdminId();
+            con.commit();
+            return userId;
 
         } catch (SQLException e) {
-            if (con != null) con.rollback(); // lỗi → rollback
+            if (con != null) con.rollback();
             throw e;
         } finally {
             if (con != null) con.setAutoCommit(true);
@@ -82,14 +90,14 @@ public class AdminDAO implements CrudDAO<Admin, String> {
                 psUser.setString(9, a.getProvId());
                 psUser.setString(10, a.getWard());
                 psUser.setString(11, a.getStreet());
-                psUser.setString(12, a.getUserId());
+                psUser.setInt(12, a.getUserId());
                 psUser.executeUpdate();
             }
 
             // 2. Update Admin
             try (PreparedStatement psAdmin = con.prepareStatement(sqlAdmin)) {
                 psAdmin.setString(1, a.getRoleId());
-                psAdmin.setString(2, a.getAdminId());
+                psAdmin.setInt(2, a.getAdminId());
 
                 psAdmin.executeUpdate();
             }
@@ -106,7 +114,7 @@ public class AdminDAO implements CrudDAO<Admin, String> {
     }
 
     @Override
-    public boolean delete(String id) throws SQLException {
+    public boolean delete(Integer id) throws SQLException {
         String sqlAdmin = "DELETE FROM Admin WHERE adminId=?";
         String sqlUser = "DELETE FROM User WHERE userId=?";
 
@@ -118,13 +126,13 @@ public class AdminDAO implements CrudDAO<Admin, String> {
 
             // 1. Xóa Admin trước
             try (PreparedStatement psAdmin = con.prepareStatement(sqlAdmin)) {
-                psAdmin.setString(1, id);
+                psAdmin.setInt(1, id);
                 psAdmin.executeUpdate();
             }
 
             // 2. Xóa User sau
             try (PreparedStatement psUser = con.prepareStatement(sqlUser)) {
-                psUser.setString(1, id);
+                psUser.setInt(1, id);
                 psUser.executeUpdate();
             }
 
@@ -157,14 +165,14 @@ public class AdminDAO implements CrudDAO<Admin, String> {
     }
 
     @Override
-    public Admin getById(String id) throws SQLException {
+    public Admin getById(Integer id) throws SQLException {
 
         String sql = "SELECT * FROM Admin a JOIN User u ON a.adminId = u.userId WHERE a.adminId = ?";
 
         try (Connection con = DBContext.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
 
-            ps.setString(1, id);
+            ps.setInt(1, id);
             ResultSet rs = ps.executeQuery();
 
             if (rs.next()) {
@@ -178,11 +186,11 @@ public class AdminDAO implements CrudDAO<Admin, String> {
         Admin a = new Admin();
 
         // Admin fields
-        a.setAdminId(rs.getString("adminId"));
+        a.setAdminId(rs.getInt("adminId"));
         a.setRoleId(rs.getString("roleId"));
 
         // User fields
-        a.setUserId(rs.getString("userId"));
+        a.setUserId(rs.getInt("userId"));
         a.setUserName(rs.getString("userName"));
         a.setPwd(rs.getString("pwd"));
         a.setfName(rs.getString("fName"));
