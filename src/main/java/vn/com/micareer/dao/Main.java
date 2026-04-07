@@ -7,11 +7,7 @@ package vn.com.micareer.dao;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import vn.com.micareer.model.Admin;
-import vn.com.micareer.model.AdminRole;
-import vn.com.micareer.model.Candidate;
-import vn.com.micareer.model.Permission;
-import vn.com.micareer.model.User;
+import vn.com.micareer.model.*;
 
 
 public class Main {
@@ -24,6 +20,8 @@ public class Main {
             testCandidateDAO();
             testAdminDAO();
             testAdminRoleDAO();
+            testProvinceDAO();
+            testRegionDAO();
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -206,5 +204,73 @@ public class Main {
         // ===== DELETE =====
         dao.delete(id);
         System.out.println("Deleted roleId=" + id);
+    }
+    
+    public static void testRegionDAO() throws Exception {
+        System.out.println("\n===== TEST REGION DAO =====");
+
+        RegionDAO dao = new RegionDAO();
+
+        // ===== INSERT =====
+        Region r = new Region();
+        r.setRegId("TEST");
+        r.setRegName("Test Region");
+
+        String id = dao.insert(r);
+        System.out.println("Inserted Region ID: " + id);
+
+        // ===== GET BY ID =====
+        Region found = dao.getById(id);
+        System.out.println("GetById: " + found);
+
+        // ===== UPDATE =====
+        found.setRegName("Updated Region");
+        dao.update(found);
+        System.out.println("After Update: " + dao.getById(id));
+
+        // ===== GET ALL =====
+        System.out.println("All Regions:");
+        dao.getAll().forEach(System.out::println);
+
+        // ===== DELETE =====
+        dao.delete(id);
+        System.out.println("Deleted regId=" + id);
+    }
+    
+    public static void testProvinceDAO() throws Exception {
+        System.out.println("\n===== TEST PROVINCE DAO =====");
+
+        ProvinceDAO dao = new ProvinceDAO();
+
+        // ===== INSERT =====
+        Province p = new Province();
+        p.setProvId("TEST"); // ⚠️ không được trùng
+        p.setProvName("Test Province");
+        p.setRegId("NORTH"); // ⚠️ phải tồn tại trong Region
+
+        String id = dao.insert(p);
+        System.out.println("Inserted Province ID: " + id);
+
+        // ===== GET BY ID =====
+        Province found = dao.getById(id);
+        System.out.println("GetById: " + found);
+
+        // ===== UPDATE =====
+        found.setProvName("Updated Province");
+        found.setRegId("CENTRAL");
+        dao.update(found);
+        System.out.println("After Update: " + dao.getById(id));
+
+        // ===== GET ALL =====
+        System.out.println("All Provinces:");
+        dao.getAll().forEach(System.out::println);
+
+        // ===== GET BY REGION (🔥 useful)
+        System.out.println("\nProvinces in NORTH:");
+        dao.getByRegion("NORTH").forEach(System.out::println);
+
+        // ===== DELETE =====
+        dao.delete(id);
+        System.out.println("Deleted provId=" + id);
     }
 }
