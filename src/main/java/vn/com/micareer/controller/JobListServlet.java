@@ -23,7 +23,7 @@ public class JobListServlet extends HttpServlet {
         request.setAttribute("criteria", criteria);
         int page = request.getParameter("page") != null ? Integer.parseInt(request.getParameter("page").trim()) : 0;
 
-        int pageSize = 2;
+        int pageSize = 9;
 
         int totalJobs;
         
