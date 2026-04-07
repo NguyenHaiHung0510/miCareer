@@ -21,9 +21,25 @@ public class JobListServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         JobSearchCriteria criteria = buildCriteria(request);
         request.setAttribute("criteria", criteria);
+        int page = request.getParameter("page") != null ? Integer.parseInt(request.getParameter("page").trim()) : 0;
+
+        int pageSize = 2;
+
+        int totalJobs;
+        
+        try {
+            totalJobs = jobPostingDAO.countPublishedJobs(criteria);
+        } catch (Exception e) {
+            e.printStackTrace();
+            totalJobs = 0;
+        }
+
+        int totalPages = (int) Math.ceil((double) totalJobs / pageSize);
+        request.setAttribute("currentPage", page);
+        request.setAttribute("totalPages", totalPages);
 
         try {
-            request.setAttribute("jobs", jobPostingDAO.findPublishedJobs(criteria, 0));
+            request.setAttribute("jobs", jobPostingDAO.findPublishedJobs(criteria, page, pageSize));
             request.setAttribute("categories", jobPostingDAO.findAllCategories());
             request.setAttribute("levels", jobPostingDAO.findAllLevels());
             request.setAttribute("skills", jobPostingDAO.findAllSkills());
