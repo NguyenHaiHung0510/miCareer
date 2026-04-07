@@ -26,35 +26,51 @@ public class LoginServlet extends HttpServlet {
         try {
             UserDAO dao = new UserDAO();
 
-            // 🔹 check login
+            // check login
             User user = dao.login(userName, pwd);
-            
+
             if (user == null) {
                 request.setAttribute("error", "Sai username hoặc password!");
                 request.getRequestDispatcher("login.jsp").forward(request, response);
                 return;
             }
-            System.out.println(user);
-            // 🔹 lưu session
-            HttpSession session = request.getSession();
 
-            // 🔥 phân quyền
+            System.out.println(user);
+
+            // ?session
+            HttpSession session = request.getSession();
+            session.setAttribute("account", user); // lưu user chung
+
+            Integer userId = user.getUserId(); // dùng Integer
+
+            // phân quyền
             switch (user.getRole()) {
-                case "candidate":
-                    CandidateDAO Cdao = new CandidateDAO();
-                    Candidate c = Cdao.getById(user.getUserId());
+
+                case "CANDIDATE": {
+                    CandidateDAO cdao = new CandidateDAO();
+                    Candidate c = cdao.getById(userId); 
+
                     session.setAttribute("user", c);
                     response.sendRedirect("candidate/home.jsp");
                     break;
-                case "hr":
+                }
+
+                case "HR": {
+                    // TODO: nếu có HRDAO thì nên load thêm
+                    session.setAttribute("user", user);
                     response.sendRedirect("hr/dashboard.jsp");
                     break;
-                case "ADMIN":
-                    AdminDAO Adao = new AdminDAO();
-                    Admin a = Adao.getById(user.getUserId());
+                }
+
+                case "ADMIN": {
+                    AdminDAO adao = new AdminDAO();
+                    Admin a = adao.getById(userId);
+
                     session.setAttribute("user", a);
                     response.sendRedirect("admin/dashboard.jsp");
                     break;
+                }
+
                 default:
                     response.sendRedirect("login.jsp");
             }

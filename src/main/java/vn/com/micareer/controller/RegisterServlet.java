@@ -13,14 +13,44 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import vn.com.micareer.dao.CandidateDAO;
+import vn.com.micareer.dao.ProvinceDAO;
 import vn.com.micareer.dao.UserDAO;
 import vn.com.micareer.model.Candidate;
+import vn.com.micareer.model.Province;
 import vn.com.micareer.model.User;
 
 @WebServlet(name = "RegisterServlet", urlPatterns = {"/register"})
 public class RegisterServlet extends HttpServlet {
 
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+
+        try {
+            ProvinceDAO dao = new ProvinceDAO();
+
+            List<Province> all = dao.getAll();
+
+            // 🔥 group theo region
+            Map<String, List<Province>> grouped =
+                    all.stream().collect(Collectors.groupingBy(Province::getRegId));
+
+            request.setAttribute("north", grouped.get("NORTH"));
+            request.setAttribute("central", grouped.get("CENTRAL"));
+            request.setAttribute("south", grouped.get("SOUTH"));
+            
+            request.getRequestDispatcher("register.jsp").forward(request, response);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            response.getWriter().println("Error loading provinces");
+        }
+    }
+        
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -37,12 +67,14 @@ public class RegisterServlet extends HttpServlet {
         String street = request.getParameter("street");
         String role = request.getParameter("role");
 
+        // ❗ chỉ cho candidate
         if (!"candidate".equals(role)) {
             request.setAttribute("error", "Chỉ hỗ trợ đăng ký Candidate!");
             request.getRequestDispatcher("register.jsp").forward(request, response);
             return;
         }
 
+        // ❗ check password
         if (!pwd.equals(confirmPwd)) {
             request.setAttribute("error", "Mật khẩu không khớp!");
             request.getRequestDispatcher("register.jsp").forward(request, response);
@@ -50,21 +82,21 @@ public class RegisterServlet extends HttpServlet {
         }
 
         try {
-            CandidateDAO dao = new CandidateDAO();
+            UserDAO dao = new UserDAO();
 
+            // ❗ check username
             if (dao.isUsernameExist(userName)) {
                 request.setAttribute("error", "Username đã tồn tại!");
                 request.getRequestDispatcher("register.jsp").forward(request, response);
                 return;
             }
 
-            // 🔹 Lấy thêm field candidate
+            // 🔹 Candidate fields
             String bio = request.getParameter("bio");
             String cvUrl = request.getParameter("cvUrl");
             String dobStr = request.getParameter("dob");
             String expStr = request.getParameter("expYears");
 
-            // 🔹 Convert dữ liệu
             LocalDate dob = null;
             if (dobStr != null && !dobStr.isEmpty()) {
                 dob = LocalDate.parse(dobStr);
@@ -77,11 +109,6 @@ public class RegisterServlet extends HttpServlet {
 
             Candidate c = new Candidate();
 
-            String id = java.util.UUID.randomUUID().toString();
-
-            c.setUserId(id);
-            c.setCandidateId(id); // rất quan trọng
-
             c.setUserName(userName);
             c.setPwd(pwd);
             c.setfName(fName);
@@ -92,20 +119,20 @@ public class RegisterServlet extends HttpServlet {
             c.setWard(ward);
             c.setStreet(street);
 
-            c.setRole("candidate");
-            c.setStat("active");
+            c.setRole("CANDIDATE");
+            c.setStat("ACTIVE");
             c.setCreatedAt(LocalDateTime.now());
 
-            // 🔹 Candidate fields
+            // Candidate fields
             c.setBio(bio);
             c.setCvUrl(cvUrl);
             c.setDob(dob);
             c.setExpYears(expYears);
 
-            // 🔹 Insert DB
-            dao.insert(c);
+            // 🔥 Insert
+            CandidateDAO Cdao = new CandidateDAO();
+            Cdao.insert(c);
 
-            // 🔥 Redirect sang login
             response.sendRedirect("login.jsp");
 
         } catch (Exception e) {
