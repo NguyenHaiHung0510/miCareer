@@ -90,6 +90,38 @@
                 </article>
             </c:forEach>
         </div>
+        <c:if test="${totalPages > 1}">
+            <div class="pagination">
+
+                <!-- Prev -->
+                <c:if test="${currentPage > 0}">
+                    <a href="?page=${currentPage - 1}&keyword=${criteria.keyword}&location=${criteria.location}&catId=${criteria.catId}&levelId=${criteria.levelId}&skillId=${criteria.skillId}&workMode=${criteria.workMode}">
+                        «
+                    </a>
+                </c:if>
+
+                <!-- Page numbers -->
+                <c:forEach 
+                    begin="${currentPage - 2 >= 0 ? currentPage - 2 : 0}"
+                    end="${currentPage + 2 < totalPages ? currentPage + 2 : totalPages - 1}"
+                    var="i">
+
+                    <a href="?page=${i}&keyword=${criteria.keyword}&location=${criteria.location}&catId=${criteria.catId}&levelId=${criteria.levelId}&skillId=${criteria.skillId}&workMode=${criteria.workMode}"
+                    class="${i == currentPage ? 'active' : ''}">
+                        ${i + 1}
+                    </a>
+
+                </c:forEach>
+
+                <!-- Next -->
+                <c:if test="${currentPage < totalPages - 1}">
+                    <a href="?page=${currentPage + 1}&keyword=${criteria.keyword}&location=${criteria.location}&catId=${criteria.catId}&levelId=${criteria.levelId}&skillId=${criteria.skillId}&workMode=${criteria.workMode}">
+                        »
+                    </a>
+                </c:if>
+
+            </div>
+        </c:if>
     </section>
 </main>
 

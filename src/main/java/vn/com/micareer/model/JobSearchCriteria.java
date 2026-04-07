@@ -8,6 +8,7 @@ public class JobSearchCriteria {
     private Long levelId;
     private Long skillId;
     private String workMode;
+    private int page = 0;
 
     public String getKeyword() {
         return keyword;
