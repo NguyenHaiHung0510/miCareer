@@ -5,18 +5,18 @@
 package vn.com.micareer.model;
 
 public class Admin extends User {
-    private String adminId;
+    private Integer adminId;
     private String roleId;
 
     public Admin() {}
 
-    public Admin(String adminId, String roleId) {
+    public Admin(Integer adminId, String roleId) {
         this.adminId = adminId;
         this.roleId = roleId;
     }
 
-    public String getAdminId() { return adminId; }
-    public void setAdminId(String adminId) { this.adminId = adminId; }
+    public Integer getAdminId() { return adminId; }
+    public void setAdminId(Integer adminId) { this.adminId = adminId; }
 
     public String getRoleId() { return roleId; }
     public void setRoleId(String roleId) { this.roleId = roleId; }

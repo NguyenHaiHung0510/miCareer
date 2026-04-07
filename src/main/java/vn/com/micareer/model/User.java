@@ -7,7 +7,7 @@ package vn.com.micareer.model;
 import java.time.LocalDateTime;
 
 public class User {
-    private String userId;
+    private Integer userId;
     private String userName;
     private String pwd;
     private String fName;
@@ -22,10 +22,10 @@ public class User {
     private LocalDateTime createdAt;
 
     public User() {}
-
+    
     // Getter & Setter
-    public String getUserId() { return userId; }
-    public void setUserId(String userId) { this.userId = userId; }
+    public Integer getUserId() { return userId; }
+    public void setUserId(Integer userId) { this.userId = userId; }
 
     public String getUserName() { return userName; }
     public void setUserName(String userName) { this.userName = userName; }

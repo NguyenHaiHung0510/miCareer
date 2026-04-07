@@ -1,27 +1,23 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package vn.com.micareer.model;
 
 import java.util.List;
 
 public class AdminRole {
-    private String roleId;
+    private int roleId; // Đổi từ String sang int
     private String roleName;
     private String desc;
     private List<Permission> permissions;
 
     public AdminRole() {}
 
-    public AdminRole(String roleId, String roleName, String desc) {
+    public AdminRole(int roleId, String roleName, String desc) {
         this.roleId = roleId;
         this.roleName = roleName;
         this.desc = desc;
     }
 
-    public String getRoleId() { return roleId; }
-    public void setRoleId(String roleId) { this.roleId = roleId; }
+    public int getRoleId() { return roleId; }
+    public void setRoleId(int roleId) { this.roleId = roleId; }
 
     public String getRoleName() { return roleName; }
     public void setRoleName(String roleName) { this.roleName = roleName; }
@@ -35,7 +31,8 @@ public class AdminRole {
     @Override
     public String toString() {
         return "AdminRole{" +
-                "roleName='" + roleName + '\'' +
+                "roleId=" + roleId + // Bổ sung ID vào toString để dễ debug
+                ", roleName='" + roleName + '\'' +
                 '}';
     }
 }

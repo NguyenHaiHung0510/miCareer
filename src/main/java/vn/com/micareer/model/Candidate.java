@@ -8,7 +8,7 @@ package vn.com.micareer.model;
 import java.time.LocalDate;
 
 public class Candidate extends User{
-    private String candidateId;
+    private Integer candidateId;
     private String bio;
     private String cvUrl;
     private LocalDate dob;
@@ -16,8 +16,8 @@ public class Candidate extends User{
 
     public Candidate() {}
 
-    public String getCandidateId() { return candidateId; }
-    public void setCandidateId(String candidateId) { this.candidateId = candidateId; }
+    public Integer getCandidateId() { return candidateId; }
+    public void setCandidateId(Integer candidateId) { this.candidateId = candidateId; }
 
     public String getBio() { return bio; }
     public void setBio(String bio) { this.bio = bio; }
