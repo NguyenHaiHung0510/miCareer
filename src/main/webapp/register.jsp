@@ -1,4 +1,5 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <html>
 <head>
     <title>Register</title>
@@ -29,49 +30,30 @@
     Phone: 
     <input type="text" name="phone"><br><br>
 
-    Province:
+
     <select name="provId" required>
+
         <option value="">-- Chọn tỉnh/thành --</option>
 
-        <option value="HN">Thành phố Hà Nội</option>
-        <option value="HU">Thành phố Huế</option>
-        <option value="LC">Tỉnh Lai Châu</option>
-        <option value="DB">Tỉnh Điện Biên</option>
-        <option value="SL">Tỉnh Sơn La</option>
-        <option value="LS">Tỉnh Lạng Sơn</option>
-        <option value="QN">Tỉnh Quảng Ninh</option>
-        <option value="TH">Tỉnh Thanh Hóa</option>
-        <option value="NA">Tỉnh Nghệ An</option>
-        <option value="HT">Tỉnh Hà Tĩnh</option>
-        <option value="CB">Tỉnh Cao Bằng</option>
+        <optgroup label="Miền Bắc">
+            <c:forEach var="p" items="${north}">
+                <option value="${p.provId}">${p.provName}</option>
+            </c:forEach>
+        </optgroup>
 
-        <option value="TQ">Tỉnh Tuyên Quang</option>
-        <option value="LCA">Tỉnh Lào Cai</option>
-        <option value="TN">Tỉnh Thái Nguyên</option>
-        <option value="PT">Tỉnh Phú Thọ</option>
-        <option value="BN">Tỉnh Bắc Ninh</option>
-        <option value="HY">Tỉnh Hưng Yên</option>
-        <option value="HP">Thành phố Hải Phòng</option>
-        <option value="NB">Tỉnh Ninh Bình</option>
-        <option value="QT">Tỉnh Quảng Trị</option>
-        <option value="DN">Thành phố Đà Nẵng</option>
-        <option value="QNG">Tỉnh Quảng Ngãi</option>
-        <option value="GL">Tỉnh Gia Lai</option>
-        <option value="KH">Tỉnh Khánh Hòa</option>
-        <option value="LD">Tỉnh Lâm Đồng</option>
-        <option value="DL">Tỉnh Đắk Lắk</option>
-        <option value="HCM">TP. Hồ Chí Minh</option>
-        <option value="DNI">Tỉnh Đồng Nai</option>
-        <option value="TNIN">Tỉnh Tây Ninh</option>
-        <option value="CT">Thành phố Cần Thơ</option>
-        <option value="VL">Tỉnh Vĩnh Long</option>
-        <option value="DT">Tỉnh Đồng Tháp</option>
-        <option value="CM">Tỉnh Cà Mau</option>
-        <option value="AG">Tỉnh An Giang</option>
+        <optgroup label="Miền Trung">
+            <c:forEach var="p" items="${central}">
+                <option value="${p.provId}">${p.provName}</option>
+            </c:forEach>
+        </optgroup>
 
-    </select>
-    <br><br>
+        <optgroup label="Miền Nam">
+            <c:forEach var="p" items="${south}">
+                <option value="${p.provId}">${p.provName}</option>
+            </c:forEach>
+        </optgroup> 
 
+    </select><br><br> 
     Ward: 
     <input type="text" name="ward"><br><br>
 
@@ -93,8 +75,8 @@
 
         HR Position:
         <select name="hrPosition">
-            <option value="manager">Quản lí HR</option>
-            <option value="staff">Nhân viên HR</option>
+            <option value="HR_MANAGER">Quản lí HR</option>
+            <option value="HR_STAFF">Nhân viên HR</option>
         </select>
         <br><br>
 

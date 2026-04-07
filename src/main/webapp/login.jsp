@@ -15,6 +15,6 @@
 
 <p style="color:red">${error}</p>
 
-<a href="register.jsp">Register</a>
+<a href="register">Register</a>
 </body>
 </html>
