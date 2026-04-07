@@ -1,12 +1,35 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-
 <html>
     <head>
         <title>${job != null ? 'Edit Job' : 'Create Job'}</title>
+        <style>
+            body {
+                font-family: Arial;
+                max-width: 700px;
+                margin: auto;
+            }
+            input, textarea, select {
+                width: 100%;
+                padding: 6px;
+                margin-top: 5px;
+            }
+            textarea {
+                height: 100px;
+            }
+            .box {
+                margin-bottom: 15px;
+            }
+            .skills-select {
+                width: 100%;
+                height: 150px;
+            }
+            button {
+                padding: 8px 16px;
+            }
+        </style>
     </head>
     <body>
-
         <h2>${job != null ? 'Edit Job' : 'Create Job'}</h2>
 
         <form action="jobposting" method="post">
@@ -17,89 +40,87 @@
                 <input type="hidden" name="jobPostId" value="${job.jobPostId}">
             </c:if>
 
-            <p>
+            <div class="box">
                 Comp ID:
-                <input type="text" name="compId" value="${job != null ? job.compId : ''}" required>
-            </p>
+                <input type="number" name="compId" value="${job != null ? job.compId : ''}" required>
+            </div>
 
-            <!-- HR ID đã bỏ, servlet sẽ lấy từ session -->
-
-            <p>
+            <div class="box">
                 Title:
                 <input type="text" name="title" value="${job != null ? job.title : ''}" required>
-            </p>
+            </div>
 
-            <p>
+            <div class="box">
                 Description:
                 <textarea name="desc" required>${job != null ? job.desc : ''}</textarea>
-            </p>
+            </div>
 
-            <p>
+            <div class="box">
                 Min Salary:
-                <input type="text" name="minSalary" value="${job != null ? job.minSalary : ''}" required>
-            </p>
+                <input type="number" step="0.01" name="minSalary" value="${job != null ? job.minSalary : ''}" required>
+            </div>
 
-            <p>
+            <div class="box">
                 Max Salary:
-                <input type="text" name="maxSalary" value="${job != null ? job.maxSalary : ''}" required>
-            </p>
+                <input type="number" step="0.01" name="maxSalary" value="${job != null ? job.maxSalary : ''}" required>
+            </div>
 
-            <p>
+            <div class="box">
                 Work Location:
                 <input type="text" name="workLoc" value="${job != null ? job.workLoc : ''}">
-            </p>
+            </div>
 
-            <p>
+            <div class="box">
                 Work Mode:
-                <input type="text" name="workMode" value="${job != null ? job.workMode : ''}">
-            </p>
+                <select name="workMode">
+                    <option value="ONSITE" ${job.workMode == 'ONSITE' ? 'selected' : ''}>ONSITE</option>
+                    <option value="REMOTE" ${job.workMode == 'REMOTE' ? 'selected' : ''}>REMOTE</option>
+                    <option value="HYBRID" ${job.workMode == 'HYBRID' ? 'selected' : ''}>HYBRID</option>
+                </select>
+            </div>
 
-            <p>
-                Exp At (yyyy-MM-dd HH:mm:ss):
-                <input type="text" name="expAt" value="${job != null ? job.expAt : ''}" required>
-            </p>
+            <div class="box">
+                Expire At:
+                <input type="datetime-local" name="expAt"
+                       value="${job != null && job.expAt != null ? job.expAt.toString().substring(0,16).replace(' ', 'T') : ''}" required>
+            </div>
 
-            <p>
+            <div class="box">
                 Category:
                 <select name="catId">
                     <c:forEach var="c" items="${categories}">
-                        <option value="${c.catId}"
-                                ${job != null && job.catId == c.catId ? 'selected' : ''}>
-                            ${c.catName}
-                        </option>
+                        <option value="${c.catId}" ${job != null && job.catId == c.catId ? 'selected' : ''}>${c.catName}</option>
                     </c:forEach>
                 </select>
-            </p>
+            </div>
 
-            <p>
+            <div class="box">
                 Level:
                 <select name="levelId">
                     <c:forEach var="l" items="${levels}">
-                        <option value="${l.levelId}"
-                                ${job != null && job.levelId == l.levelId ? 'selected' : ''}>
-                            ${l.levelName}
+                        <option value="${l.levelId}" ${job != null && job.levelId == l.levelId ? 'selected' : ''}>${l.levelName}</option>
+                    </c:forEach>
+                </select>
+            </div>
+
+            <!-- Multi-select skills -->
+            <div class="box">
+                <h3>Skills</h3>
+                <select name="skills" multiple size="10" style="width:100%;">
+                    <c:forEach var="skill" items="${allSkills}">
+                        <option value="${skill.skillId}"
+                                <c:if test="${skills != null && skills.contains(skill.skillId.toString())}">selected</c:if>>
+                            ${skill.skillName}
                         </option>
                     </c:forEach>
                 </select>
-            </p>
+                <small>Ctrl+click để chọn nhiều skills</small>
+            </div>      
 
-            <h3>Skills</h3>
-
-            <c:forEach var="skill" items="${allSkills}">
-                <input type="checkbox"
-                       name="skills"
-                       value="${skill.skillId}"
-                       <c:if test="${skills != null && skills.contains(skill.skillId)}">checked</c:if>>
-                ${skill.skillName}
-                <br/>
-            </c:forEach>
-
-            <button type="submit">
-                ${job != null ? 'Update Job' : 'Create Job'}
-            </button>
-
+            <button type="submit">${job != null ? 'Update Job' : 'Create Job'}</button>
         </form>
 
+        <br/>
         <a href="jobposting?action=list">Back to list</a>
 
     </body>

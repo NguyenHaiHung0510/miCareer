@@ -9,17 +9,22 @@ package vn.com.micareer.model;
  * @author Dang Tuan Minh
  */
 public class Level {
-    private String levelId;
+    private int levelId;
     private String levelName;
 
     public Level() {
     }
 
-    public String getLevelId() {
+    public Level(int levelId, String levelName) {
+        this.levelId = levelId;
+        this.levelName = levelName;
+    }
+
+    public int getLevelId() {
         return levelId;
     }
 
-    public void setLevelId(String levelId) {
+    public void setLevelId(int levelId) {
         this.levelId = levelId;
     }
 
@@ -31,8 +36,5 @@ public class Level {
         this.levelName = levelName;
     }
 
-    public Level(String levelId, String levelName) {
-        this.levelId = levelId;
-        this.levelName = levelName;
-    }
+    
 }

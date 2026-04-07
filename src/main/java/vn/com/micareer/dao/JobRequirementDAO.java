@@ -11,14 +11,15 @@ import vn.com.micareer.model.Skill;
 public class JobRequirementDAO {
 
     // ================= INSERT MULTI SKILL =================
-    public void insert(String jobPostId, List<String> skillIds) {
+    public void insert(int jobPostId, List<Integer> skillIds) {
+
         String sql = "INSERT INTO JobRequirement (jobPostId, skillId) VALUES (?, ?)";
 
         try (Connection conn = DBContext.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
 
-            for (String skillId : skillIds) {
-                ps.setString(1, jobPostId);
-                ps.setString(2, skillId);
+            for (int skillId : skillIds) {
+                ps.setInt(1, jobPostId);   
+                ps.setInt(2, skillId);   
                 ps.addBatch();
             }
 
@@ -30,17 +31,22 @@ public class JobRequirementDAO {
     }
 
     // ================= GET SKILLS BY JOB =================
-    public List<String> getSkillsByJob(String jobPostId) {
+    public List<String> getSkillsByJob(int jobPostId) {
+
         List<String> list = new ArrayList<>();
-        String sql = "SELECT s.skillName FROM JobRequirement jr "
-                + "JOIN Skill s ON jr.skillId = s.skillId "
-                + "WHERE jr.jobPostId = ?";
+
+        String sql = """
+            SELECT s.skillName
+            FROM JobRequirement jr
+            JOIN Skill s ON jr.skillId = s.skillId
+            WHERE jr.jobPostId = ?
+        """;
 
         try (Connection conn = DBContext.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
 
-            ps.setString(1, jobPostId);
-            ResultSet rs = ps.executeQuery();
+            ps.setInt(1, jobPostId);
 
+            ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 list.add(rs.getString("skillName"));
             }
@@ -53,32 +59,39 @@ public class JobRequirementDAO {
     }
 
     // ================= DELETE ALL SKILLS OF JOB =================
-    public void deleteByJob(String jobPostId) {
+    public void deleteByJob(int jobPostId) {
+
         String sql = "DELETE FROM JobRequirement WHERE jobPostId=?";
 
         try (Connection conn = DBContext.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
 
-            ps.setString(1, jobPostId);
+            ps.setInt(1, jobPostId);
             ps.executeUpdate();
 
         } catch (Exception e) {
             System.out.println("delete requirement error: " + e.getMessage());
         }
     }
-    // GET ALL SKILLS
+
+    // ================= GET ALL SKILLS =================
     public List<Skill> getAllSkills() {
+
         List<Skill> list = new ArrayList<>();
         String sql = "SELECT skillId, skillName FROM Skill";
+
         try (Connection conn = DBContext.getConnection(); PreparedStatement ps = conn.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
+
             while (rs.next()) {
                 Skill s = new Skill();
-                s.setSkillId(rs.getString("skillId"));
+                s.setSkillId(rs.getInt("skillId"));   // ✅ FIX
                 s.setSkillName(rs.getString("skillName"));
                 list.add(s);
             }
+
         } catch (Exception e) {
             System.out.println("getAllSkills error: " + e.getMessage());
         }
+
         return list;
     }
 }

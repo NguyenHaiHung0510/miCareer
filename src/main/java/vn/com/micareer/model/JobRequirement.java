@@ -1,31 +1,30 @@
-package vn.com.micareer.model;
 
 public class JobRequirement {
 
-     private String jobPostId;
-    private String skillId;
+    private int jobPostId;
+    private int skillId;
 
     public JobRequirement() {
     }
 
-    public JobRequirement(String jobPostId, String skillId) {
+    public JobRequirement(int jobPostId, int skillId) {
         this.jobPostId = jobPostId;
         this.skillId = skillId;
     }
 
-    public String getJobPostId() {
+    public int getJobPostId() {
         return jobPostId;
     }
 
-    public void setJobPostId(String jobPostId) {
+    public void setJobPostId(int jobPostId) {
         this.jobPostId = jobPostId;
     }
 
-    public String getSkillId() {
+    public int getSkillId() {
         return skillId;
     }
 
-    public void setSkillId(String skillId) {
+    public void setSkillId(int skillId) {
         this.skillId = skillId;
     }
 }

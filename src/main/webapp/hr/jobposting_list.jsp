@@ -46,24 +46,28 @@
                 <th>Salary</th>
                 <th>Work Location</th>
                 <th>Work Mode</th>
-                <th>Exp At</th>
+                <th>Expire At</th>
                 <th>Actions</th>
             </tr>
 
             <c:forEach var="job" items="${jobs}">
                 <tr>
+                    <!-- INT OK -->
                     <td>${job.jobPostId}</td>
+
                     <td>${job.title}</td>
 
+                    <!-- STATUS FIX -->
                     <td>
                         <form action="jobposting" method="post" style="display:inline;">
                             <input type="hidden" name="action" value="updateStatus">
                             <input type="hidden" name="jobPostId" value="${job.jobPostId}">
 
                             <select name="stat" onchange="this.form.submit()">
-                                <option value="OPEN" ${job.stat=='OPEN' ? 'selected' : ''}>OPEN</option>
-                                <option value="CLOSED" ${job.stat=='Closed' ? 'selected' : ''}>CLOSED</option>
-                                <option value="DRAFT" ${job.stat=='Draft' ? 'selected' : ''}>DRAFT</option>
+                                <option value="DRAFT" ${job.stat == 'DRAFT' ? 'selected' : ''}>DRAFT</option>
+                                <option value="PUBLISHED" ${job.stat == 'PUBLISHED' ? 'selected' : ''}>PUBLISHED</option>
+                                <option value="CLOSED" ${job.stat == 'CLOSED' ? 'selected' : ''}>CLOSED</option>
+                                <option value="EXPIRED" ${job.stat == 'EXPIRED' ? 'selected' : ''}>EXPIRED</option>
                             </select>
                         </form>
                     </td>

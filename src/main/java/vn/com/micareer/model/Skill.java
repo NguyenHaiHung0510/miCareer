@@ -10,14 +10,14 @@ package vn.com.micareer.model;
  */
 public class Skill {
 
-    private String skillId;
+    private int skillId;
     private String skillName;
 
-    public String getSkillId() {
+    public int getSkillId() {
         return skillId;
     }
 
-    public void setSkillId(String skillId) {
+    public void setSkillId(int skillId) {
         this.skillId = skillId;
     }
 
@@ -28,4 +28,6 @@ public class Skill {
     public void setSkillName(String skillName) {
         this.skillName = skillName;
     }
+
+    
 }

@@ -10,14 +10,22 @@ package vn.com.micareer.model;
  */
 public class Category {
 
-    private String catId;
+    private int catId;
     private String catName;
 
-    public String getCatId() {
+    public Category() {
+    }
+
+    public Category(int catId, String catName) {
+        this.catId = catId;
+        this.catName = catName;
+    }
+
+    public int getCatId() {
         return catId;
     }
 
-    public void setCatId(String catId) {
+    public void setCatId(int catId) {
         this.catId = catId;
     }
 
@@ -28,13 +36,6 @@ public class Category {
     public void setCatName(String catName) {
         this.catName = catName;
     }
-
-    public Category() {
-    }
-
-    public Category(String catId, String catName) {
-        this.catId = catId;
-        this.catName = catName;
-    }
-
+    
+    
 }

@@ -5,20 +5,26 @@ import java.sql.Timestamp;
 
 public class JobPosting {
 
-    private String jobPostId;
-    private String compId;
+    private int jobPostId;
+    private int compId;
+    private int hrId;
+    private int catId;
+    private int levelId;
+
     private String title;
     private String desc;
-    private String hrId;
+
     private BigDecimal minSalary;
     private BigDecimal maxSalary;
+
     private String workLoc;
     private String workMode;
     private String stat;
+
     private Timestamp createdAt;
     private Timestamp expAt;
-    private String catId;
-    private String levelId;
+
+    // JOIN fields
     private String compName;
     private String catName;
     private String levelName;
@@ -26,13 +32,16 @@ public class JobPosting {
     public JobPosting() {
     }
 
-    public JobPosting(String jobPostId, String compId, String title, String desc,
+    public JobPosting(int jobPostId, int compId, int hrId, int catId, int levelId,
+            String title, String desc,
             BigDecimal minSalary, BigDecimal maxSalary,
             String workLoc, String workMode, String stat,
-            Timestamp createdAt, Timestamp expAt,
-            String catId, String levelId) {
+            Timestamp createdAt, Timestamp expAt) {
         this.jobPostId = jobPostId;
         this.compId = compId;
+        this.hrId = hrId;
+        this.catId = catId;
+        this.levelId = levelId;
         this.title = title;
         this.desc = desc;
         this.minSalary = minSalary;
@@ -42,32 +51,47 @@ public class JobPosting {
         this.stat = stat;
         this.createdAt = createdAt;
         this.expAt = expAt;
-        this.catId = catId;
-        this.levelId = levelId;
     }
 
-    public String getHrId() {
-        return hrId;
-    }
-
-    public void setHrId(String hrId) {
-        this.hrId = hrId;
-    }
-
-    public String getJobPostId() {
+    // Getter & Setter
+    public int getJobPostId() {
         return jobPostId;
     }
 
-    public void setJobPostId(String jobPostId) {
+    public void setJobPostId(int jobPostId) {
         this.jobPostId = jobPostId;
     }
 
-    public String getCompId() {
+    public int getCompId() {
         return compId;
     }
 
-    public void setCompId(String compId) {
+    public void setCompId(int compId) {
         this.compId = compId;
+    }
+
+    public int getHrId() {
+        return hrId;
+    }
+
+    public void setHrId(int hrId) {
+        this.hrId = hrId;
+    }
+
+    public int getCatId() {
+        return catId;
+    }
+
+    public void setCatId(int catId) {
+        this.catId = catId;
+    }
+
+    public int getLevelId() {
+        return levelId;
+    }
+
+    public void setLevelId(int levelId) {
+        this.levelId = levelId;
     }
 
     public String getTitle() {
@@ -140,22 +164,6 @@ public class JobPosting {
 
     public void setExpAt(Timestamp expAt) {
         this.expAt = expAt;
-    }
-
-    public String getCatId() {
-        return catId;
-    }
-
-    public void setCatId(String catId) {
-        this.catId = catId;
-    }
-
-    public String getLevelId() {
-        return levelId;
-    }
-
-    public void setLevelId(String levelId) {
-        this.levelId = levelId;
     }
 
     public String getCompName() {

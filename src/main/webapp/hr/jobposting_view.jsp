@@ -4,6 +4,30 @@
 <html>
     <head>
         <title>View Job</title>
+        <style>
+            .skills {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 8px; /* khoảng cách giữa các tag */
+                margin-top: 8px;
+            }
+
+            .tag {
+                background-color: #e0e0e0;
+                padding: 4px 10px;
+                border-radius: 12px;
+                font-size: 0.9em;
+            }
+
+            a {
+                text-decoration: none;
+                color: blue;
+            }
+
+            a:hover {
+                text-decoration: underline;
+            }
+        </style>
     </head>
     <body>
 
@@ -20,13 +44,13 @@
         <p><b>Level:</b> ${job.levelName}</p>
 
         <h3>Skills:</h3>
-
-        <ul>
+        <div class="skills">
             <c:forEach var="skill" items="${skills}">
-                <li>${skill}</li>
-                </c:forEach>
-        </ul>
+                <span class="tag">${skill}</span>
+            </c:forEach>
+        </div>
 
+        <br/>
         <a href="jobposting?action=list">Back to list</a>
 
     </body>
