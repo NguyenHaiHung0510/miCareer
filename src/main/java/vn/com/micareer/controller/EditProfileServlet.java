@@ -2,8 +2,10 @@ package vn.com.micareer.controller;
 
 import vn.com.micareer.dao.CandidateDAO;
 import vn.com.micareer.model.Candidate;
+import vn.com.micareer.util.UploadCVUtil;
 
 import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
 
@@ -11,7 +13,27 @@ import java.io.IOException;
 import java.time.LocalDate;
 
 @WebServlet(name = "EditProfileServlet", urlPatterns = {"/editProfile"})
+@MultipartConfig(
+        maxFileSize = 2 * 1024 * 1024,
+        maxRequestSize = 3 * 1024 * 1024
+)
 public class EditProfileServlet extends HttpServlet {
+
+    public static String extractPublicId(String url) {
+        if (url == null || url.isEmpty()) return null;
+
+        int uploadIndex = url.indexOf("/upload/");
+        if (uploadIndex == -1) return null;
+
+        String path = url.substring(uploadIndex + 8);
+
+        if (path.startsWith("v")) {
+            int slashIndex = path.indexOf("/");
+            path = path.substring(slashIndex + 1);
+        }
+
+        return path; // giữ .pdf
+    }
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -19,7 +41,6 @@ public class EditProfileServlet extends HttpServlet {
 
         HttpSession session = request.getSession(false);
 
-        // ❌ chưa login
         if (session == null || session.getAttribute("user") == null) {
             response.sendRedirect("login.jsp");
             return;
@@ -28,17 +49,39 @@ public class EditProfileServlet extends HttpServlet {
         Candidate user = (Candidate) session.getAttribute("user");
 
         try {
-            // 🔹 Lấy dữ liệu từ form
+            request.setCharacterEncoding("UTF-8");
+
+            // 🔹 form data
             String fName = request.getParameter("fName");
             String lName = request.getParameter("lName");
             String email = request.getParameter("email");
             String phone = request.getParameter("phone");
             String bio = request.getParameter("bio");
-            String cvUrl = request.getParameter("cvUrl");
             String dobStr = request.getParameter("dob");
             String expStr = request.getParameter("expYears");
 
-            // 🔹 Convert
+            Part filePart = request.getPart("file");
+
+            // 🔥 CV handling
+            String newCvUrl = user.getCvUrl();
+
+
+            if (filePart != null && filePart.getSize() > 0) {
+                
+                String oldPublicId = extractPublicId(newCvUrl);
+                // 🗑️ xoá CV cũ
+                if (oldPublicId != null) {
+                    UploadCVUtil.deleteCV(oldPublicId);
+                }
+
+                // ⬆️ upload mới
+                UploadCVUtil.UploadResult result =
+                        UploadCVUtil.uploadCV(filePart, String.valueOf(user.getUserId()));
+
+                newCvUrl = result.getUrl();
+            }
+
+            // 🔹 convert
             LocalDate dob = null;
             if (dobStr != null && !dobStr.isEmpty()) {
                 dob = LocalDate.parse(dobStr);
@@ -49,36 +92,32 @@ public class EditProfileServlet extends HttpServlet {
                 expYears = Double.valueOf(expStr);
             }
 
-            // 🔹 Set lại object
+            // 🔹 set lại user
             user.setfName(fName);
             user.setlName(lName);
             user.setEmail(email);
             user.setPhone(phone);
-
             user.setBio(bio);
-            user.setCvUrl(cvUrl);
             user.setDob(dob);
             user.setExpYears(expYears);
 
-            // 🔹 Update DB
+            // 🔥 QUAN TRỌNG
+            user.setCvUrl(newCvUrl);
+//            System.out.println(user);
+            // 🔹 update DB
             CandidateDAO dao = new CandidateDAO();
             boolean r = dao.update(user);
-            
-            if(r){
-                System.out.println("Update thành công");
-            }
-            else{
-                System.out.println("Update thâts bại");
-            }
-            // 🔹 Update lại session
-            session.setAttribute("user", user);
 
-            // 🔥 Redirect về profile
+            if (r) {
+                session.setAttribute("message", "Cập nhật thành công!");
+            } else {
+                session.setAttribute("error", "Cập nhật thất bại!");
+            }
+
             response.sendRedirect("candidate/profile.jsp");
 
         } catch (Exception e) {
             e.printStackTrace();
-
             request.setAttribute("error", "Cập nhật thất bại!");
             request.getRequestDispatcher("candidate/edit.jsp").forward(request, response);
         }
