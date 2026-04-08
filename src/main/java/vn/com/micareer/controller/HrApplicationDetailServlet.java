@@ -49,7 +49,20 @@ public class HrApplicationDetailServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession session = request.getSession();
         Long hrId = (Long) session.getAttribute("loggedUserId");
-        if (hrId == null) hrId = 1L; // Mock data tạm thời
+        if (hrId == null) {
+            // Tự động bốc 1 hrId hợp lệ từ Database để test thay vì gán cứng số 1
+            try (java.sql.Connection conn = vn.com.micareer.context.DBContext.getConnection();
+                 java.sql.PreparedStatement ps = conn.prepareStatement("SELECT hrId FROM HR LIMIT 1");
+                 java.sql.ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    hrId = rs.getLong("hrId");
+                } else {
+                    hrId = 20L; // Fallback an toàn
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
 
         String jobAppIdStr = request.getParameter("jobAppId");
         String newStatus = request.getParameter("newStatus");
