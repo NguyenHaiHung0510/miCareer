@@ -25,7 +25,7 @@
 
 <ul>
     <li><a href="profile.jsp">Xem hồ sơ cá nhân</a></li>
-    <li><a href="#">Cập nhật CV</a></li>
+    <li><a href="createCV.jsp">Tạo CV</a></li>
     <li><a href="#">Tìm việc</a></li>
     <li><a href="#">Ứng tuyển</a></li>
 </ul>
