@@ -23,29 +23,36 @@
             <h1>${job.title}</h1>
             <p class="company">${job.compName}</p>
             <div class="detail-meta">
-                <span>${job.catName}</span>
-                <span>${job.levelName}</span>
-                <span>${job.workLoc}</span>
-                <span>${job.workMode}</span>
+                <span class="category">${job.catName}</span>
+                <span class="level">${job.levelName}</span>
+                <span class="work-loc">${job.workLoc}</span>
+                <span class="work-mode">${job.workMode}</span>
             </div>
             <p class="salary">Mức lương: ${job.minSalary} - ${job.maxSalary} VND</p>
             <a class="apply-btn" href="${pageContext.request.contextPath}/apply-job?jobPostId=${job.jobPostId}">Ứng tuyển công việc này</a>
         </section>
 
         <section class="detail-body">
-            <h2>Mô tả công việc</h2>
-            <p>${job.desc}</p>
+            <div class="detail-grid">
+                <article class="detail-card detail-job-info">
+                    <h2>Thông tin công việc</h2>
+                    <h3>Mô tả công việc</h3>
+                    <p>${job.desc}</p>
 
-            <h3>Kỹ năng yêu cầu</h3>
-            <div class="skill-list">
-                <c:forEach items="${job.skills}" var="skill">
-                    <span>${skill}</span>
-                </c:forEach>
+                    <h3>Kỹ năng yêu cầu</h3>
+                    <div class="skill-list">
+                        <c:forEach items="${job.skills}" var="skill">
+                            <span>${skill}</span>
+                        </c:forEach>
+                    </div>
+                </article>
+
+                <aside class="detail-card detail-company-info">
+                    <h2>Thông tin công ty</h2>
+                    <p><strong>Tên công ty:</strong> ${job.compName}</p>
+                    <p><strong>Website:</strong> ${job.webUrl}</p>
+                </aside>
             </div>
-
-            <h3>Thông tin công ty</h3>
-            <p>Tên công ty: ${job.compName}</p>
-            <p>Website: ${job.webUrl}</p>
         </section>
     </c:if>
 </main>

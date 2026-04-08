@@ -16,6 +16,42 @@ import vn.com.micareer.model.LookupItemView;
 
 public class JobPostingDAO {
 
+    public List<JobCardView> findPublishedJobs(JobSearchCriteria criteria, int page,int pageSize) throws SQLException {
+        List<JobCardView> jobs = new ArrayList<>();
+        List<Object> params = new ArrayList<>();
+
+        StringBuilder sql = new StringBuilder();
+        sql.append("SELECT DISTINCT jp.jobPostId, jp.title, c.compName, jc.catName, jl.levelName, ")
+                .append("jp.workLoc, jp.workMode, jp.minSalary, jp.maxSalary, jp.createdAt, jp.expAt ")
+                .append("FROM JobPosting jp ")
+                .append("INNER JOIN Company c ON c.compId = jp.compId ")
+                .append("LEFT JOIN JobCategory jc ON jc.catId = jp.catId ")
+                .append("LEFT JOIN JobLevel jl ON jl.levelId = jp.levelId ")
+                .append("LEFT JOIN JobRequirement jr ON jr.jobPostId = jp.jobPostId ")
+                .append("WHERE jp.stat IN ('PUBLISHED', 'DRAFT') ")
+                .append("AND (jp.expAt IS NULL OR jp.expAt >= CURRENT_TIMESTAMP) ");
+
+        appendFilters(sql, params, criteria);
+
+        sql.append(" ORDER BY jp.createdAt DESC ");
+
+        // Phân trang
+        sql.append("LIMIT ? OFFSET ? ");
+        params.add(pageSize);
+        params.add(page * pageSize);
+
+        try (Connection connection = DBContext.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql.toString())) {
+            setParams(statement, params);
+            try (ResultSet rs = statement.executeQuery()) {
+                while (rs.next()) {
+                    jobs.add(mapJobCard(rs));
+                }
+            }
+        }
+        return jobs;
+    }
+
     public List<JobCardView> findPublishedJobs(JobSearchCriteria criteria, int limit) throws SQLException {
         List<JobCardView> jobs = new ArrayList<>();
         List<Object> params = new ArrayList<>();
@@ -34,8 +70,10 @@ public class JobPostingDAO {
         appendFilters(sql, params, criteria);
 
         sql.append(" ORDER BY jp.createdAt DESC ");
+
+        // Phân trang
         if (limit > 0) {
-            sql.append(" LIMIT ? ");
+            sql.append("LIMIT ? ");
             params.add(limit);
         }
 
@@ -127,6 +165,30 @@ public class JobPostingDAO {
         return locations;
     }
 
+    public int countPublishedJobs(JobSearchCriteria criteria) throws SQLException {
+        List<Object> params = new ArrayList<>();
+        StringBuilder sql = new StringBuilder();
+        sql.append("SELECT COUNT(DISTINCT jp.jobPostId) AS total ")
+                .append("FROM JobPosting jp ")
+                .append("INNER JOIN Company c ON c.compId = jp.compId ")
+                .append("LEFT JOIN JobRequirement jr ON jr.jobPostId = jp.jobPostId ")
+                .append("WHERE jp.stat IN ('PUBLISHED', 'DRAFT') ")
+                .append("AND (jp.expAt IS NULL OR jp.expAt >= CURRENT_TIMESTAMP) ");
+
+        appendFilters(sql, params, criteria);
+
+        try (Connection connection = DBContext.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql.toString())) {
+            setParams(statement, params);
+            try (ResultSet rs = statement.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt("total");
+                }
+            }
+        }
+        return 0;
+    }
+
     private List<String> findSkillNamesByJobPostId(long jobPostId) throws SQLException {
         List<String> skills = new ArrayList<>();
         String sql = "SELECT s.skillName FROM JobRequirement jr "
@@ -144,6 +206,7 @@ public class JobPostingDAO {
         }
         return skills;
     }
+
 
     private void appendFilters(StringBuilder sql, List<Object> params, JobSearchCriteria criteria) {
         if (criteria == null) {
@@ -195,6 +258,7 @@ public class JobPostingDAO {
         }
         return list;
     }
+
 
     private JobCardView mapJobCard(ResultSet rs) throws SQLException {
         JobCardView item = new JobCardView();

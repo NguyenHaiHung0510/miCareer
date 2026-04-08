@@ -35,6 +35,29 @@
     font-size: 13px;
 }
 
+.detail-meta .category {
+    background: #dbeafe;
+    color: #1d4ed8;
+}
+
+/* Level */
+.detail-meta .level {
+    background: #ede9fe;
+    color: #6d28d9;
+}
+
+/* Location */
+.detail-meta .work-loc {
+    background: #dcfce7;
+    color: #15803d;
+}
+
+/* Work mode */
+.detail-meta .work-mode {
+    background: #fef3c7;
+    color: #b45309;
+}
+
 .salary {
     font-weight: 700;
     margin-bottom: 12px;
@@ -57,16 +80,41 @@
     padding: 24px;
 }
 
-.detail-body h2,
+.detail-grid {
+    display: grid;
+    grid-template-columns: 1.35fr 1fr;
+    gap: 16px;
+}
+
+.detail-card {
+    border: 1px solid #dbe4ef;
+    border-radius: 14px;
+    padding: 16px;
+    background: #f8fbff;
+}
+
+.detail-job-info {
+    border-left: 4px solid #0ea5e9;
+}
+
+.detail-company-info {
+    border-left: 4px solid #0f766e;
+    background: #f7fcfb;
+}
+
+.detail-body h2 {
+    margin: 0 0 12px;
+}
+
 .detail-body h3 {
-    margin: 12px 0;
+    margin: 12px 0 8px;
 }
 
 .skill-list {
     display: flex;
     flex-wrap: wrap;
     gap: 8px;
-    margin-bottom: 12px;
+    margin-bottom: 6px;
 }
 
 .skill-list span {
@@ -75,4 +123,10 @@
     border-radius: 999px;
     padding: 5px 10px;
     font-size: 13px;
+}
+
+@media (max-width: 900px) {
+    .detail-grid {
+        grid-template-columns: 1fr;
+    }
 }
