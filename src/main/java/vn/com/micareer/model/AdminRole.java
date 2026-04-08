@@ -1,8 +1,9 @@
 package vn.com.micareer.model;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class AdminRole {
+public class AdminRole implements Serializable{
     private int roleId; // Đổi từ String sang int
     private String roleName;
     private String desc;
