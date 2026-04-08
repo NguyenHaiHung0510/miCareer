@@ -22,3 +22,4 @@ audit-reports/gitleaks-commit.json
 audit-reports/maven-audit.log
 audit-reports/pmd.xml
 audit-reports/spotbugs.xml
+src/main/resources/database.properties
