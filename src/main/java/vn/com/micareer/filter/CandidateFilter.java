@@ -23,8 +23,6 @@ public class CandidateFilter implements Filter {
         if (session != null) {
             user = (User) session.getAttribute("user");
         }
-        System.out.println(user);
-        System.out.println(user.getRole());
         // ❌ chưa login
         if (user == null) {
             res.sendRedirect(req.getContextPath() + "/login.jsp");

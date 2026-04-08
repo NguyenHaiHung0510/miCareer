@@ -83,18 +83,18 @@
     </div>
     
     <div id="candidateFields" style="display:none;">
-
+<!--
         Bio:
         <textarea name="bio"></textarea><br><br>
 
         CV URL:
-        <input type="text" name="cvUrl"><br><br>
+        <input type="text" name="cvUrl"><br><br>-->
 
         Date of Birth:
         <input type="date" name="dob"><br><br>
-
+<!--
         Experience Years:
-        <input type="number" step="0.1" name="expYears"><br><br>
+        <input type="number" step="0.1" name="expYears"><br><br>-->
 
     </div>
     <button type="submit">Register</button>

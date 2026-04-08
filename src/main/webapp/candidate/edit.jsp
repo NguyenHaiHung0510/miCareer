@@ -1,6 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
 <%@ page import="vn.com.micareer.model.Candidate" %>
-
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%
     Candidate user = (Candidate) session.getAttribute("user");
 %>
@@ -13,7 +13,7 @@
 
 <h2>✏️ Cập nhật hồ sơ</h2>
 
-<form action="../editProfile" method="post">
+<form action="../editProfile" method="post" enctype="multipart/form-data">
 
     <h3>Thông tin cơ bản</h3>
 
@@ -36,9 +36,24 @@
     Bio:
     <textarea name="bio"><%= user.getBio() != null ? user.getBio() : "" %></textarea><br><br>
 
-    CV URL:
-    <input type="text" name="cvUrl" value="<%= user.getCvUrl() != null ? user.getCvUrl() : "" %>"><br><br>
+<c:choose>
 
+    <c:when test="${not empty user.cvUrl}">
+        <p>
+            CV hiện tại: 
+            <a href="${user.cvUrl}" target="_blank">Xem CV</a>
+        </p>
+
+        <label>Thay CV mới:</label>
+        <input type="file" name="file"><br><br>
+    </c:when>
+
+    <c:otherwise>
+        <label>Tải lên CV:</label>
+        <input type="file" name="file" required><br><br>
+    </c:otherwise>
+
+</c:choose>
     Date of Birth:
     <input type="date" name="dob"
            value="<%= user.getDob() != null ? user.getDob() : "" %>"><br><br>
