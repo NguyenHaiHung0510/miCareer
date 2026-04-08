@@ -52,4 +52,8 @@ public class HRPosition implements Serializable {
         this.desc = desc;
     }
 
+    public String getDescription() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
 }
