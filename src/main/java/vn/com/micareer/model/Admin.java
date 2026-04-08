@@ -4,7 +4,7 @@
  */
 package vn.com.micareer.model;
 
-public class Admin extends User {
+public class Admin extends User{
     private Integer adminId;
     private String roleId;
 

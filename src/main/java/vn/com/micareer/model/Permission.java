@@ -1,6 +1,8 @@
 package vn.com.micareer.model;
 
-public class Permission {
+import java.io.Serializable;
+
+public class Permission implements Serializable {
     private int permId; // Đổi từ String sang int
     private String permCode;
     private String desc;
