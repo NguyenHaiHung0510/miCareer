@@ -1,0 +1,60 @@
+.apply-page {
+    display: grid;
+    grid-template-columns: 1fr 1.2fr;
+    gap: 18px;
+    padding: 24px 0;
+}
+
+.apply-info,
+.apply-form-wrap {
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 16px;
+    padding: 20px;
+}
+
+.apply-info h1 {
+    margin-bottom: 10px;
+}
+
+.job-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: #0f172a;
+    margin-bottom: 8px;
+}
+
+.apply-form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.apply-form label {
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.apply-form input,
+.apply-form textarea,
+.apply-form button {
+    border: 1px solid #cbd5e1;
+    border-radius: 10px;
+    padding: 10px;
+    font-size: 14px;
+}
+
+.apply-form button {
+    margin-top: 8px;
+    background: #0ea5e9;
+    color: #fff;
+    border: 1px solid #0ea5e9;
+    cursor: pointer;
+    font-weight: 700;
+}
+
+@media (max-width: 900px) {
+    .apply-page {
+        grid-template-columns: 1fr;
+    }
+}
