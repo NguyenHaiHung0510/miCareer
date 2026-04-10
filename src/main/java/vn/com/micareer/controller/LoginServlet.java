@@ -22,6 +22,7 @@ public class LoginServlet extends HttpServlet {
 
         String userName = request.getParameter("username");
         String pwd = request.getParameter("password");
+        String redirect = request.getParameter("redirect");
 
         try {
             UserDAO dao = new UserDAO();
@@ -51,7 +52,11 @@ public class LoginServlet extends HttpServlet {
                     Candidate c = cdao.getById(userId); 
 
                     session.setAttribute("user", c);
-                    response.sendRedirect("candidate/home.jsp");
+                    if (redirect != null && !redirect.isBlank()) {
+                        response.sendRedirect(redirect);
+                    } else {
+                        response.sendRedirect("candidate/home.jsp");
+                    }
                     break;
                 }
 

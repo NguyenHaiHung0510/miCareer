@@ -1,11 +1,15 @@
 package vn.com.micareer.dao;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import vn.com.micareer.context.DBContext;
-import vn.com.micareer.model.Candidate;
-
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+
+import vn.com.micareer.model.Candidate;
 
 public class CandidateDAO implements CrudDAO<Candidate, Integer> {
 
@@ -228,5 +232,16 @@ public class CandidateDAO implements CrudDAO<Candidate, Integer> {
             }
         }
         return ans;
+    }
+
+    public boolean existsById(long candidateId) throws SQLException {
+        String sql = "SELECT 1 FROM Candidate WHERE candidateId = ?";
+        try (Connection connection = DBContext.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setLong(1, candidateId);
+            try (ResultSet rs = statement.executeQuery()) {
+                return rs.next();
+            }
+        }
     }
 }
