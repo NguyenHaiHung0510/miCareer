@@ -1,20 +1,9 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Other/File.java to edit this template
- */
 package vn.com.micareer.model;
 
 import java.io.Serializable;
 
-/**
- *
- * @author os
- */
 public class Company implements Serializable {
 
-    /**
-     * @param args the command line arguments
-     */
     private Integer compId;
     private String compName;
     private String taxCode;
@@ -28,7 +17,8 @@ public class Company implements Serializable {
     public Company() {
     }
 
-    public Company(Integer compId, String compName, String taxCode, String webUrl, String logoUrl, String contactEmail, String provId, String ward, String street) {
+    public Company(Integer compId, String compName, String taxCode, String webUrl, String logoUrl,
+                   String contactEmail, String provId, String ward, String street) {
         this.compId = compId;
         this.compName = compName;
         this.taxCode = taxCode;
@@ -44,77 +34,71 @@ public class Company implements Serializable {
         return compId;
     }
 
-    public String getCompName() {
-        return compName;
-    }
-
-    public String getTaxCode() {
-        return taxCode;
-    }
-
-    public String getWebUrl() {
-        return webUrl;
-    }
-
-    public String getLogoUrl() {
-        return logoUrl;
-    }
-
-    public String getContactEmail() {
-        return contactEmail;
-    }
-
-    public String getProvId() {
-        return provId;
-    }
-
-    public String getWard() {
-        return ward;
-    }
-
-    public String getStreet() {
-        return street;
-    }
-
     public void setCompId(Integer compId) {
         this.compId = compId;
+    }
+
+    public String getCompName() {
+        return compName;
     }
 
     public void setCompName(String compName) {
         this.compName = compName;
     }
 
+    public String getTaxCode() {
+        return taxCode;
+    }
+
     public void setTaxCode(String taxCode) {
         this.taxCode = taxCode;
+    }
+
+    public String getWebUrl() {
+        return webUrl;
     }
 
     public void setWebUrl(String webUrl) {
         this.webUrl = webUrl;
     }
 
+    public String getLogoUrl() {
+        return logoUrl;
+    }
+
     public void setLogoUrl(String logoUrl) {
         this.logoUrl = logoUrl;
+    }
+
+    public String getContactEmail() {
+        return contactEmail;
     }
 
     public void setContactEmail(String contactEmail) {
         this.contactEmail = contactEmail;
     }
 
+    public String getProvId() {
+        return provId;
+    }
+
     public void setProvId(String provId) {
         this.provId = provId;
+    }
+
+    public String getWard() {
+        return ward;
     }
 
     public void setWard(String ward) {
         this.ward = ward;
     }
 
+    public String getStreet() {
+        return street;
+    }
+
     public void setStreet(String street) {
         this.street = street;
     }
-
-    @Override
-    public String toString() {
-        return "Company{" + "compId=" + compId + ", compName=" + compName + ", taxCode=" + taxCode + ", webUrl=" + webUrl + ", logoUrl=" + logoUrl + ", contactEmail=" + contactEmail + ", provId=" + provId + ", ward=" + ward + ", street=" + street + '}';
-    }
-
 }
