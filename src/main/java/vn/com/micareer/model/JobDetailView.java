@@ -5,6 +5,8 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import vn.com.micareer.util.SalaryFormatUtil;
+
 public class JobDetailView {
 
     private long jobPostId;
@@ -73,6 +75,10 @@ public class JobDetailView {
 
     public void setMaxSalary(BigDecimal maxSalary) {
         this.maxSalary = maxSalary;
+    }
+
+    public String getSalaryRangeText() {
+        return SalaryFormatUtil.formatRange(minSalary, maxSalary);
     }
 
     public String getWorkLoc() {

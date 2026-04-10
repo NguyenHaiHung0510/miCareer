@@ -26,7 +26,7 @@
                     <span class="work-loc">${job.workLoc}</span>
                     <span class="work-mode">${job.workMode}</span>
                 </div>
-                <p class="salary">Mức lương: ${job.minSalary} - ${job.maxSalary} VND</p>
+                <p class="salary">Mức lương: ${job.salaryRangeText}</p>
 
                 <h3>Mô tả công việc</h3>
                 <p class="apply-description">${job.desc}</p>
