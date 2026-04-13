@@ -17,6 +17,7 @@ import vn.com.micareer.model.JobDetailView;
 import vn.com.micareer.model.JobPosting;
 import vn.com.micareer.model.Level;
 import vn.com.micareer.model.LookupItemView;
+import vn.com.micareer.model.Skill;
 
 public class JobPostingDAO implements CrudDAO<JobPosting, Integer> {
 
@@ -165,12 +166,10 @@ public class JobPostingDAO implements CrudDAO<JobPosting, Integer> {
 
     public List<LookupItemView> findAllSkills() throws SQLException {
         List<LookupItemView> items = new ArrayList<>();
-        String sql = "SELECT skillId, skillName FROM Skill ORDER BY skillName";
-        try (Connection connection = DBContext.getConnection(); PreparedStatement statement = connection.prepareStatement(sql); ResultSet rs = statement.executeQuery()) {
-            while (rs.next()) {
-                items.add(new LookupItemView(rs.getLong("skillId"), rs.getString("skillName")));
-            }
+        for (Skill skill : new SkillDAO().getAll()) {
+            items.add(new LookupItemView(skill.getSkillId(), skill.getSkillName()));
         }
+        items.sort(Comparator.comparing(LookupItemView::getName, String.CASE_INSENSITIVE_ORDER));
         return items;
     }
 
