@@ -192,7 +192,7 @@ public class JobPostingDAO implements CrudDAO<JobPosting, Integer> {
                 .append("FROM JobPosting jp ")
                 .append("INNER JOIN Company c ON c.compId = jp.compId ")
                 .append("LEFT JOIN JobRequirement jr ON jr.jobPostId = jp.jobPostId ")
-                .append("WHERE jp.stat IN ('PUBLISHED', 'DRAFT') ")
+                .append("WHERE jp.stat IN ('PUBLISHED') ")
                 .append("AND (jp.expAt IS NULL OR jp.expAt >= CURRENT_TIMESTAMP) ");
 
         if (hasText(keyword)) {
