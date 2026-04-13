@@ -38,6 +38,9 @@
                             <td>${job.workLoc}</td>
                             <td>${job.createdAt}</td>
                             <td>
+                                <a href="${pageContext.request.contextPath}/hr/job-detail?jobPostId=${job.jobPostId}">
+                                    Xem chi tiết
+                                </a>
                                 <a href="${pageContext.request.contextPath}/hr/applications?jobPostId=${job.jobPostId}">
                                     Xem ứng viên
                                 </a>
