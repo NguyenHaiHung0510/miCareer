@@ -24,6 +24,8 @@ public class JobPosting {
     private Timestamp createdAt;
     private Timestamp expAt;
 
+
+    // Phần của minh
     // JOIN fields
     private String compName;
     private String catName;
