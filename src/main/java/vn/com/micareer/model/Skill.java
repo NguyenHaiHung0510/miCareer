@@ -1,23 +1,27 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package vn.com.micareer.model;
 
-/**
- *
- * @author Dang Tuan Minh
- */
-public class Skill {
+import java.io.Serializable;
 
-    private int skillId;
+public class Skill implements Serializable {
+
+    private Integer skillId;
     private String skillName;
+    private String desc;
 
-    public int getSkillId() {
+    public Skill() {
+    }
+
+    public Skill(Integer skillId, String skillName, String desc) {
+        this.skillId = skillId;
+        this.skillName = skillName;
+        this.desc = desc;
+    }
+
+    public Integer getSkillId() {
         return skillId;
     }
 
-    public void setSkillId(int skillId) {
+    public void setSkillId(Integer skillId) {
         this.skillId = skillId;
     }
 
@@ -29,5 +33,11 @@ public class Skill {
         this.skillName = skillName;
     }
 
-    
+    public String getDesc() {
+        return desc;
+    }
+
+    public void setDesc(String desc) {
+        this.desc = desc;
+    }
 }

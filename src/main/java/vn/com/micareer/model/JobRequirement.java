@@ -1,4 +1,4 @@
-
+package vn.com.micareer.model;
 public class JobRequirement {
 
     private int jobPostId;
