@@ -11,6 +11,20 @@ import vn.com.micareer.model.JobApplication;
 
 public class JobApplicationDAO {
 
+    public int countByJobPostId(long jobPostId) throws SQLException {
+        String sql = "SELECT COUNT(*) AS total FROM JobApplication WHERE jobPostId = ?";
+        try (Connection connection = DBContext.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setLong(1, jobPostId);
+            try (ResultSet rs = statement.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt("total");
+                }
+            }
+        }
+        return 0;
+    }
+
     public boolean existsByJobAndCandidate(long jobPostId, long candidateId) throws SQLException {
         String sql = "SELECT 1 FROM JobApplication WHERE jobPostId = ? AND candidateId = ?";
         try (Connection connection = DBContext.getConnection();

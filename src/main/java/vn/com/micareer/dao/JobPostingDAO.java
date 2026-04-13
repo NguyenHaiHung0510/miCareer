@@ -1,24 +1,5 @@
 package vn.com.micareer.dao;
 
-import java.sql.*;
-import java.util.*;
-import vn.com.micareer.context.DBContext;
-import vn.com.micareer.model.JobPosting;
-
-import java.util.List;
-
-import java.util.List;
-
-import java.sql.Connection;
-
-import java.util.List;
-
-import java.util.List;
-
-import java.util.List;
-
-import java.util.List;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -26,18 +7,28 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 import vn.com.micareer.context.DBContext;
+import vn.com.micareer.model.Category;
 import vn.com.micareer.model.JobCardView;
 import vn.com.micareer.model.JobDetailView;
 import vn.com.micareer.model.JobPosting;
-import vn.com.micareer.model.JobSearchCriteria;
+import vn.com.micareer.model.Level;
 import vn.com.micareer.model.LookupItemView;
 
-public class JobPostingDAO {
+public class JobPostingDAO implements CrudDAO<JobPosting, Integer> {
 
-    public List<JobCardView> findPublishedJobs(JobSearchCriteria criteria, int page, int pageSize) throws SQLException {
+    private static final String SELECT_JOB_WITH_LOOKUPS = """
+        SELECT j.*, c.compName, cat.catName, l.levelName
+        FROM JobPosting j
+        LEFT JOIN Company c ON j.compId = c.compId
+        LEFT JOIN JobCategory cat ON j.catId = cat.catId
+        LEFT JOIN JobLevel l ON j.levelId = l.levelId
+        """;
+
+    public List<JobCardView> findPublishedJobs(String keyword, String location, String workMode, Long catId, Long levelId, Long skillId, int page, int pageSize) throws SQLException {
         List<JobCardView> jobs = new ArrayList<>();
         List<Object> params = new ArrayList<>();
 
@@ -49,10 +40,41 @@ public class JobPostingDAO {
                 .append("LEFT JOIN JobCategory jc ON jc.catId = jp.catId ")
                 .append("LEFT JOIN JobLevel jl ON jl.levelId = jp.levelId ")
                 .append("LEFT JOIN JobRequirement jr ON jr.jobPostId = jp.jobPostId ")
-                .append("WHERE jp.stat IN ('PUBLISHED', 'DRAFT') ")
+                .append("WHERE jp.stat IN ('PUBLISHED') ")
                 .append("AND (jp.expAt IS NULL OR jp.expAt >= CURRENT_TIMESTAMP) ");
 
-        appendFilters(sql, params, criteria);
+        if (hasText(keyword)) {
+            sql.append("AND (LOWER(jp.title) LIKE ? OR LOWER(jp.`desc`) LIKE ? OR LOWER(c.compName) LIKE ?) ");
+            String kw = "%" + keyword.trim().toLowerCase() + "%";
+            params.add(kw);
+            params.add(kw);
+            params.add(kw);
+        }
+
+        if (hasText(location)) {
+            sql.append("AND LOWER(jp.workLoc) LIKE ? ");
+            params.add("%" + location.trim().toLowerCase() + "%");
+        }
+
+        if (catId != null && catId > 0) {
+            sql.append("AND jp.catId = ? ");
+            params.add(catId);
+        }
+
+        if (levelId != null && levelId > 0) {
+            sql.append("AND jp.levelId = ? ");
+            params.add(levelId);
+        }
+
+        if (skillId != null && skillId > 0) {
+            sql.append("AND jr.skillId = ? ");
+            params.add(skillId);
+        }
+
+        if (hasText(workMode)) {
+            sql.append("AND LOWER(jp.workMode) = ? ");
+            params.add(workMode.trim().toLowerCase());
+        }
 
         sql.append(" ORDER BY jp.createdAt DESC ");
 
@@ -72,41 +94,6 @@ public class JobPostingDAO {
         return jobs;
     }
 
-    public List<JobCardView> findPublishedJobs(JobSearchCriteria criteria, int limit) throws SQLException {
-        List<JobCardView> jobs = new ArrayList<>();
-        List<Object> params = new ArrayList<>();
-
-        StringBuilder sql = new StringBuilder();
-        sql.append("SELECT DISTINCT jp.jobPostId, jp.title, c.compName, jc.catName, jl.levelName, ")
-                .append("jp.workLoc, jp.workMode, jp.minSalary, jp.maxSalary, jp.createdAt, jp.expAt ")
-                .append("FROM JobPosting jp ")
-                .append("INNER JOIN Company c ON c.compId = jp.compId ")
-                .append("LEFT JOIN JobCategory jc ON jc.catId = jp.catId ")
-                .append("LEFT JOIN JobLevel jl ON jl.levelId = jp.levelId ")
-                .append("LEFT JOIN JobRequirement jr ON jr.jobPostId = jp.jobPostId ")
-                .append("WHERE jp.stat IN ('PUBLISHED') ")
-                .append("AND (jp.expAt IS NULL OR jp.expAt >= CURRENT_TIMESTAMP) ");
-
-        appendFilters(sql, params, criteria);
-
-        sql.append(" ORDER BY jp.createdAt DESC ");
-
-        // Phân trang
-        if (limit > 0) {
-            sql.append("LIMIT ? ");
-            params.add(limit);
-        }
-
-        try (Connection connection = DBContext.getConnection(); PreparedStatement statement = connection.prepareStatement(sql.toString())) {
-            setParams(statement, params);
-            try (ResultSet rs = statement.executeQuery()) {
-                while (rs.next()) {
-                    jobs.add(mapJobCard(rs));
-                }
-            }
-        }
-        return jobs;
-    }
 
     public JobDetailView findJobDetailById(long jobPostId) throws SQLException {
         String sql = "SELECT jp.jobPostId, jp.compId, jp.title, jp.`desc`, jp.minSalary, jp.maxSalary, "
@@ -116,7 +103,7 @@ public class JobPostingDAO {
                 + "INNER JOIN Company c ON c.compId = jp.compId "
                 + "LEFT JOIN JobCategory jc ON jc.catId = jp.catId "
                 + "LEFT JOIN JobLevel jl ON jl.levelId = jp.levelId "
-                + "WHERE jp.jobPostId = ? AND jp.stat IN ('PUBLISHED', 'DRAFT')";
+                + "WHERE jp.jobPostId = ? AND jp.stat IN ('PUBLISHED')";
 
         JobDetailView detail = null;
         try (Connection connection = DBContext.getConnection(); PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -159,15 +146,32 @@ public class JobPostingDAO {
     }
 
     public List<LookupItemView> findAllCategories() throws SQLException {
-        return findLookups("SELECT catId, catName FROM JobCategory ORDER BY catName", "catId", "catName");
+        List<LookupItemView> items = new ArrayList<>();
+        for (Category category : new CategoryDAO().getAll()) {
+            items.add(new LookupItemView(category.getCatId(), category.getCatName()));
+        }
+        items.sort(Comparator.comparing(LookupItemView::getName, String.CASE_INSENSITIVE_ORDER));
+        return items;
     }
 
     public List<LookupItemView> findAllLevels() throws SQLException {
-        return findLookups("SELECT levelId, levelName FROM JobLevel ORDER BY levelName", "levelId", "levelName");
+        List<LookupItemView> items = new ArrayList<>();
+        for (Level level : new LevelDAO().getAll()) {
+            items.add(new LookupItemView(level.getLevelId(), level.getLevelName()));
+        }
+        items.sort(Comparator.comparing(LookupItemView::getName, String.CASE_INSENSITIVE_ORDER));
+        return items;
     }
 
     public List<LookupItemView> findAllSkills() throws SQLException {
-        return findLookups("SELECT skillId, skillName FROM Skill ORDER BY skillName", "skillId", "skillName");
+        List<LookupItemView> items = new ArrayList<>();
+        String sql = "SELECT skillId, skillName FROM Skill ORDER BY skillName";
+        try (Connection connection = DBContext.getConnection(); PreparedStatement statement = connection.prepareStatement(sql); ResultSet rs = statement.executeQuery()) {
+            while (rs.next()) {
+                items.add(new LookupItemView(rs.getLong("skillId"), rs.getString("skillName")));
+            }
+        }
+        return items;
     }
 
     public List<String> findAllWorkLocations() throws SQLException {
@@ -181,7 +185,7 @@ public class JobPostingDAO {
         return locations;
     }
 
-    public int countPublishedJobs(JobSearchCriteria criteria) throws SQLException {
+    public int countPublishedJobs(String keyword, String location, String workMode, Long catId, Long levelId, Long skillId) throws SQLException {
         List<Object> params = new ArrayList<>();
         StringBuilder sql = new StringBuilder();
         sql.append("SELECT COUNT(DISTINCT jp.jobPostId) AS total ")
@@ -191,7 +195,38 @@ public class JobPostingDAO {
                 .append("WHERE jp.stat IN ('PUBLISHED', 'DRAFT') ")
                 .append("AND (jp.expAt IS NULL OR jp.expAt >= CURRENT_TIMESTAMP) ");
 
-        appendFilters(sql, params, criteria);
+        if (hasText(keyword)) {
+            sql.append("AND (LOWER(jp.title) LIKE ? OR LOWER(jp.`desc`) LIKE ? OR LOWER(c.compName) LIKE ?) ");
+            String kw = "%" + keyword.trim().toLowerCase() + "%";
+            params.add(kw);
+            params.add(kw);
+            params.add(kw);
+        }
+
+        if (hasText(location)) {
+            sql.append("AND LOWER(jp.workLoc) LIKE ? ");
+            params.add("%" + location.trim().toLowerCase() + "%");
+        }
+
+        if (catId != null && catId > 0) {
+            sql.append("AND jp.catId = ? ");
+            params.add(catId);
+        }
+
+        if (levelId != null && levelId > 0) {
+            sql.append("AND jp.levelId = ? ");
+            params.add(levelId);
+        }
+
+        if (skillId != null && skillId > 0) {
+            sql.append("AND jr.skillId = ? ");
+            params.add(skillId);
+        }
+
+        if (hasText(workMode)) {
+            sql.append("AND LOWER(jp.workMode) = ? ");
+            params.add(workMode.trim().toLowerCase());
+        }
 
         try (Connection connection = DBContext.getConnection(); PreparedStatement statement = connection.prepareStatement(sql.toString())) {
             setParams(statement, params);
@@ -219,55 +254,6 @@ public class JobPostingDAO {
             }
         }
         return skills;
-    }
-
-    private void appendFilters(StringBuilder sql, List<Object> params, JobSearchCriteria criteria) {
-        if (criteria == null) {
-            return;
-        }
-
-        if (hasText(criteria.getKeyword())) {
-            sql.append("AND (LOWER(jp.title) LIKE ? OR LOWER(jp.`desc`) LIKE ? OR LOWER(c.compName) LIKE ?) ");
-            String kw = "%" + criteria.getKeyword().trim().toLowerCase() + "%";
-            params.add(kw);
-            params.add(kw);
-            params.add(kw);
-        }
-
-        if (hasText(criteria.getLocation())) {
-            sql.append("AND LOWER(jp.workLoc) LIKE ? ");
-            params.add("%" + criteria.getLocation().trim().toLowerCase() + "%");
-        }
-
-        if (criteria.getCatId() != null && criteria.getCatId() > 0) {
-            sql.append("AND jp.catId = ? ");
-            params.add(criteria.getCatId());
-        }
-
-        if (criteria.getLevelId() != null && criteria.getLevelId() > 0) {
-            sql.append("AND jp.levelId = ? ");
-            params.add(criteria.getLevelId());
-        }
-
-        if (criteria.getSkillId() != null && criteria.getSkillId() > 0) {
-            sql.append("AND jr.skillId = ? ");
-            params.add(criteria.getSkillId());
-        }
-
-        if (hasText(criteria.getWorkMode())) {
-            sql.append("AND LOWER(jp.workMode) = ? ");
-            params.add(criteria.getWorkMode().trim().toLowerCase());
-        }
-    }
-
-    private List<LookupItemView> findLookups(String sql, String idColumn, String nameColumn) throws SQLException {
-        List<LookupItemView> list = new ArrayList<>();
-        try (Connection connection = DBContext.getConnection(); PreparedStatement statement = connection.prepareStatement(sql); ResultSet rs = statement.executeQuery()) {
-            while (rs.next()) {
-                list.add(new LookupItemView(rs.getLong(idColumn), rs.getString(nameColumn)));
-            }
-        }
-        return list;
     }
 
     private JobCardView mapJobCard(ResultSet rs) throws SQLException {
@@ -302,30 +288,44 @@ public class JobPostingDAO {
         return value != null && !value.trim().isEmpty();
     }
 
+    @Override
+    public List<JobPosting> getAll() {
+        List<JobPosting> list = new ArrayList<>();
+        String sql = SELECT_JOB_WITH_LOOKUPS + " ORDER BY j.createdAt DESC";
+
+        try (Connection conn = DBContext.getConnection();
+                PreparedStatement ps = conn.prepareStatement(sql);
+                ResultSet rs = ps.executeQuery()) {
+
+            while (rs.next()) {
+                list.add(map(rs));
+            }
+        } catch (SQLException e) {
+            System.out.println("getAll error: " + e.getMessage());
+        }
+
+        return list;
+    }
+
     // ================= GET JOBS BY HR =================
     public List<JobPosting> getByHr(int hrId) {
         List<JobPosting> list = new ArrayList<>();
 
-        String sql = """
-            SELECT j.*, c.compName, cat.catName, l.levelName
-            FROM JobPosting j
-            LEFT JOIN Company c ON j.compId = c.compId
-            LEFT JOIN JobCategory cat ON j.catId = cat.catId
-            LEFT JOIN JobLevel l ON j.levelId = l.levelId
-            WHERE j.hrId=?
-            ORDER BY j.createdAt DESC
-        """;
+        String sql = SELECT_JOB_WITH_LOOKUPS
+                + " WHERE j.hrId=?"
+                + " ORDER BY j.createdAt DESC";
 
         try (Connection conn = DBContext.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setInt(1, hrId);
 
-            ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
-                list.add(map(rs));
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    list.add(map(rs));
+                }
             }
 
-        } catch (Exception e) {
+        } catch (SQLException e) {
             System.out.println("getByHr error: " + e.getMessage());
         }
 
@@ -333,34 +333,27 @@ public class JobPostingDAO {
     }
 
     // ================= GET BY ID =================
-    public JobPosting getById(int jobPostId) {
-        String sql = """
-            SELECT j.*, c.compName, cat.catName, l.levelName
-            FROM JobPosting j
-            LEFT JOIN Company c ON j.compId = c.compId
-            LEFT JOIN JobCategory cat ON j.catId = cat.catId
-            LEFT JOIN JobLevel l ON j.levelId = l.levelId
-            WHERE j.jobPostId=?
-        """;
+    @Override
+    public JobPosting getById(Integer jobPostId) {
+        String sql = SELECT_JOB_WITH_LOOKUPS + " WHERE j.jobPostId=?";
 
         try (Connection conn = DBContext.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
-
             ps.setInt(1, jobPostId);
 
-            ResultSet rs = ps.executeQuery();
-            if (rs.next()) {
-                return map(rs);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return map(rs);
+                }
             }
-
-        } catch (Exception e) {
+        } catch (SQLException e) {
             System.out.println("getById error: " + e.getMessage());
         }
-
         return null;
     }
 
     // ================= INSERT =================
-    public int insert(JobPosting job) {
+    @Override
+    public Integer insert(JobPosting job) {
 
         String sql = """
             INSERT INTO JobPosting
@@ -384,22 +377,25 @@ public class JobPostingDAO {
             ps.setString(11, job.getStat()); // nhớ: DRAFT, PUBLISHED...
             ps.setTimestamp(12, job.getExpAt());
 
-            ps.executeUpdate();
-
-            ResultSet rs = ps.getGeneratedKeys();
-            if (rs.next()) {
-                return rs.getInt(1);
+            if (ps.executeUpdate() <= 0) {
+                return null;
             }
 
-        } catch (Exception e) {
+            try (ResultSet rs = ps.getGeneratedKeys()) {
+                if (rs.next()) {
+                    return rs.getInt(1);
+                }
+            }
+        } catch (SQLException e) {
             System.out.println("insert error: " + e.getMessage());
         }
 
-        return -1;
+        return null;
     }
 
     // ================= UPDATE =================
-    public void update(JobPosting job) {
+    @Override
+    public boolean update(JobPosting job) {
 
         String sql = """
             UPDATE JobPosting
@@ -421,15 +417,30 @@ public class JobPostingDAO {
             ps.setInt(9, job.getLevelId());
             ps.setInt(10, job.getJobPostId());
 
-            ps.executeUpdate();
-
-        } catch (Exception e) {
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
             System.out.println("update error: " + e.getMessage());
         }
+
+        return false;
+    }
+
+    @Override
+    public boolean delete(Integer jobPostId) {
+        String sql = "DELETE FROM JobPosting WHERE jobPostId=?";
+
+        try (Connection conn = DBContext.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, jobPostId);
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            System.out.println("delete error: " + e.getMessage());
+        }
+
+        return false;
     }
 
     // ================= UPDATE STATUS =================
-    public void updateStatus(int jobPostId, String status) {
+    public boolean updateStatus(int jobPostId, String status) {
 
         String sql = "UPDATE JobPosting SET stat=? WHERE jobPostId=?";
 
@@ -438,11 +449,13 @@ public class JobPostingDAO {
             ps.setString(1, status);
             ps.setInt(2, jobPostId);
 
-            ps.executeUpdate();
+            return ps.executeUpdate() > 0;
 
-        } catch (Exception e) {
+        } catch (SQLException e) {
             System.out.println("updateStatus error: " + e.getMessage());
         }
+
+        return false;
     }
 
     // ================= MAP =================

@@ -11,47 +11,47 @@
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/job-list.css">
 </head>
 <body>
-<jsp:include page="/views/common/header.jsp"/>
+<jsp:include page="/common/header.jsp"/>
 
 <main class="container list-page">
     <section class="filter-panel">
         <h2>Bộ lọc nâng cao</h2>
         <form action="${pageContext.request.contextPath}/job-list" method="get" class="filter-form">
-            <input type="text" name="keyword" placeholder="Từ khóa (tiêu đề, công ty...)" value="${criteria.keyword}">
+            <input type="text" name="keyword" placeholder="Từ khóa (tiêu đề, công ty...)" value="${keyword}">
 
             <select name="location">
                 <option value="">Tất cả địa điểm</option>
                 <c:forEach items="${locations}" var="loc">
-                    <option value="${loc}" ${criteria.location == loc ? 'selected' : ''}>${loc}</option>
+                    <option value="${loc}" ${location == loc ? 'selected' : ''}>${loc}</option>
                 </c:forEach>
             </select>
 
             <select name="catId">
                 <option value="">Tất cả lĩnh vực</option>
                 <c:forEach items="${categories}" var="cat">
-                    <option value="${cat.id}" ${criteria.catId == cat.id ? 'selected' : ''}>${cat.name}</option>
+                    <option value="${cat.id}" ${catId == cat.id ? 'selected' : ''}>${cat.name}</option>
                 </c:forEach>
             </select>
 
             <select name="levelId">
                 <option value="">Tất cả cấp độ</option>
                 <c:forEach items="${levels}" var="lv">
-                    <option value="${lv.id}" ${criteria.levelId == lv.id ? 'selected' : ''}>${lv.name}</option>
+                    <option value="${lv.id}" ${levelId == lv.id ? 'selected' : ''}>${lv.name}</option>
                 </c:forEach>
             </select>
 
             <select name="skillId">
                 <option value="">Tất cả kỹ năng</option>
                 <c:forEach items="${skills}" var="sk">
-                    <option value="${sk.id}" ${criteria.skillId == sk.id ? 'selected' : ''}>${sk.name}</option>
+                    <option value="${sk.id}" ${skillId == sk.id ? 'selected' : ''}>${sk.name}</option>
                 </c:forEach>
             </select>
 
             <select name="workMode">
                 <option value="">Tất cả hình thức</option>
-                <option value="ONSITE" ${criteria.workMode == 'ONSITE' ? 'selected' : ''}>Onsite</option>
-                <option value="HYBRID" ${criteria.workMode == 'HYBRID' ? 'selected' : ''}>Hybrid</option>
-                <option value="REMOTE" ${criteria.workMode == 'REMOTE' ? 'selected' : ''}>Remote</option>
+                <option value="ONSITE" ${workMode == 'ONSITE' ? 'selected' : ''}>Onsite</option>
+                <option value="HYBRID" ${workMode == 'HYBRID' ? 'selected' : ''}>Hybrid</option>
+                <option value="REMOTE" ${workMode == 'REMOTE' ? 'selected' : ''}>Remote</option>
             </select>
 
             <div class="action-row">
@@ -95,7 +95,7 @@
 
                 <!-- Prev -->
                 <c:if test="${currentPage > 0}">
-                    <a href="?page=${currentPage - 1}&keyword=${criteria.keyword}&location=${criteria.location}&catId=${criteria.catId}&levelId=${criteria.levelId}&skillId=${criteria.skillId}&workMode=${criteria.workMode}">
+                    <a href="?page=${currentPage - 1}&keyword=${keyword}&location=${location}&catId=${catId}&levelId=${levelId}&skillId=${skillId}&workMode=${workMode}">
                         «
                     </a>
                 </c:if>
@@ -106,7 +106,7 @@
                     end="${currentPage + 2 < totalPages ? currentPage + 2 : totalPages - 1}"
                     var="i">
 
-                    <a href="?page=${i}&keyword=${criteria.keyword}&location=${criteria.location}&catId=${criteria.catId}&levelId=${criteria.levelId}&skillId=${criteria.skillId}&workMode=${criteria.workMode}"
+                    <a href="?page=${i}&keyword=${keyword}&location=${location}&catId=${catId}&levelId=${levelId}&skillId=${skillId}&workMode=${workMode}"
                     class="${i == currentPage ? 'active' : ''}">
                         ${i + 1}
                     </a>
@@ -115,7 +115,7 @@
 
                 <!-- Next -->
                 <c:if test="${currentPage < totalPages - 1}">
-                    <a href="?page=${currentPage + 1}&keyword=${criteria.keyword}&location=${criteria.location}&catId=${criteria.catId}&levelId=${criteria.levelId}&skillId=${criteria.skillId}&workMode=${criteria.workMode}">
+                    <a href="?page=${currentPage + 1}&keyword=${keyword}&location=${location}&catId=${catId}&levelId=${levelId}&skillId=${skillId}&workMode=${workMode}">
                         »
                     </a>
                 </c:if>
@@ -125,6 +125,6 @@
     </section>
 </main>
 
-<jsp:include page="/views/common/footer.jsp"/>
+<jsp:include page="/common/footer.jsp"/>
 </body>
 </html>
