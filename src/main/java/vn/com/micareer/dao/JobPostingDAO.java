@@ -16,6 +16,31 @@ import vn.com.micareer.model.LookupItemView;
 
 public class JobPostingDAO {
 
+    // --- HÀM MỚI ĐƯỢC THÊM VÀO DÀNH CHO MODULE 5 ---
+    public List<JobCardView> findByHrId(long hrId) throws SQLException {
+        List<JobCardView> jobs = new ArrayList<>();
+        String sql = "SELECT DISTINCT jp.jobPostId, jp.title, c.compName, jc.catName, jl.levelName, "
+                   + "jp.workLoc, jp.workMode, jp.minSalary, jp.maxSalary, jp.createdAt, jp.expAt "
+                   + "FROM JobPosting jp "
+                   + "INNER JOIN Company c ON c.compId = jp.compId "
+                   + "LEFT JOIN JobCategory jc ON jc.catId = jp.catId "
+                   + "LEFT JOIN JobLevel jl ON jl.levelId = jp.levelId "
+                   + "WHERE jp.hrId = ? "
+                   + "ORDER BY jp.createdAt DESC";
+
+        try (Connection connection = DBContext.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setLong(1, hrId);
+            try (ResultSet rs = statement.executeQuery()) {
+                while (rs.next()) {
+                    jobs.add(mapJobCard(rs));
+                }
+            }
+        }
+        return jobs;
+    }
+    // -----------------------------------------------
+
     public List<JobCardView> findPublishedJobs(JobSearchCriteria criteria, int page,int pageSize) throws SQLException {
         List<JobCardView> jobs = new ArrayList<>();
         List<Object> params = new ArrayList<>();
@@ -258,7 +283,6 @@ public class JobPostingDAO {
         }
         return list;
     }
-
 
     private JobCardView mapJobCard(ResultSet rs) throws SQLException {
         JobCardView item = new JobCardView();
