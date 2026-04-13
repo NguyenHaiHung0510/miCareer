@@ -40,6 +40,6 @@ public class HrApplicationListServlet extends HttpServlet {
             request.setAttribute("error", "Không thể tải danh sách ứng viên.");
         }
 
-        request.getRequestDispatcher("/views/hr/application-list.jsp").forward(request, response);
+        request.getRequestDispatcher("/hr/application-list.jsp").forward(request, response);
     }
 }

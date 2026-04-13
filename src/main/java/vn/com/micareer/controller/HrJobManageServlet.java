@@ -33,6 +33,6 @@ public class HrJobManageServlet extends HttpServlet {
             request.setAttribute("error", "Lỗi tải danh sách công việc: " + e.getMessage());
         }
 
-        request.getRequestDispatcher("/views/hr/my-jobs.jsp").forward(request, response);
+        request.getRequestDispatcher("/hr/my-jobs.jsp").forward(request, response);
     }
 }

@@ -42,7 +42,7 @@ public class HrApplicationDetailServlet extends HttpServlet {
             return;
         }
 
-        request.getRequestDispatcher("/views/hr/application-detail.jsp").forward(request, response);
+        request.getRequestDispatcher("/hr/application-detail.jsp").forward(request, response);
     }
 
     @Override
