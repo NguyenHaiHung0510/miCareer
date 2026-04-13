@@ -11,7 +11,7 @@
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/apply-job.css">
 </head>
 <body>
-<jsp:include page="/views/common/header.jsp"/>
+<jsp:include page="/common/header.jsp"/>
 
 <main class="container apply-page">
     <section class="apply-info">
@@ -79,6 +79,6 @@
     </section>
 </main>
 
-<jsp:include page="/views/common/footer.jsp"/>
+<jsp:include page="/common/footer.jsp"/>
 </body>
 </html>
