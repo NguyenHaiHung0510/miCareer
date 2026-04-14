@@ -29,6 +29,31 @@ public class JobPostingDAO implements CrudDAO<JobPosting, Integer> {
         LEFT JOIN JobLevel l ON j.levelId = l.levelId
         """;
 
+    // MODULE 5
+    public List<JobCardView> findByHrId(long hrId) throws SQLException {
+        List<JobCardView> jobs = new ArrayList<>();
+        String sql = "SELECT DISTINCT jp.jobPostId, jp.title, c.compName, jc.catName, jl.levelName, "
+                   + "jp.workLoc, jp.workMode, jp.minSalary, jp.maxSalary, jp.createdAt, jp.expAt "
+                   + "FROM JobPosting jp "
+                   + "INNER JOIN Company c ON c.compId = jp.compId "
+                   + "LEFT JOIN JobCategory jc ON jc.catId = jp.catId "
+                   + "LEFT JOIN JobLevel jl ON jl.levelId = jp.levelId "
+                   + "WHERE jp.hrId = ? "
+                   + "ORDER BY jp.createdAt DESC";
+
+        try (Connection connection = DBContext.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setLong(1, hrId);
+            try (ResultSet rs = statement.executeQuery()) {
+                while (rs.next()) {
+                    jobs.add(mapJobCard(rs));
+                }
+            }
+        }
+        return jobs;
+    }
+    // ============================================================
+
     public List<JobCardView> findPublishedJobs(String keyword, String location, String workMode, Long catId, Long levelId, Long skillId, int page, int pageSize) throws SQLException {
         List<JobCardView> jobs = new ArrayList<>();
         List<Object> params = new ArrayList<>();
@@ -95,7 +120,6 @@ public class JobPostingDAO implements CrudDAO<JobPosting, Integer> {
         return jobs;
     }
 
-
     public JobDetailView findJobDetailById(long jobPostId) throws SQLException {
         String sql = "SELECT jp.jobPostId, jp.compId, jp.title, jp.`desc`, jp.minSalary, jp.maxSalary, "
                 + "jp.workLoc, jp.workMode, jp.stat, jp.createdAt, jp.expAt, jp.catId, jc.catName, "
@@ -104,7 +128,8 @@ public class JobPostingDAO implements CrudDAO<JobPosting, Integer> {
                 + "INNER JOIN Company c ON c.compId = jp.compId "
                 + "LEFT JOIN JobCategory jc ON jc.catId = jp.catId "
                 + "LEFT JOIN JobLevel jl ON jl.levelId = jp.levelId "
-                + "WHERE jp.jobPostId = ? AND jp.stat IN ('PUBLISHED')";
+                // HOÀNG LƯU Ý: Thêm 'DRAFT' vào đây để HR có thể xem chi tiết Job đang nháp
+                + "WHERE jp.jobPostId = ? AND jp.stat IN ('PUBLISHED', 'DRAFT')";
 
         JobDetailView detail = null;
         try (Connection connection = DBContext.getConnection(); PreparedStatement statement = connection.prepareStatement(sql)) {
