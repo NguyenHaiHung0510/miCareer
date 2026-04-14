@@ -8,7 +8,7 @@ public class Offer {
     private BigDecimal salary;
     private String desc;
     private String stat;
-    private Integer version;
+    private Integer ver;
     private long hrId;
 
     // Getters and Setters
@@ -22,8 +22,8 @@ public class Offer {
     public void setDesc(String desc) { this.desc = desc; }
     public String getStat() { return stat; }
     public void setStat(String stat) { this.stat = stat; }
-    public Integer getVersion() { return version; }
-    public void setVersion(Integer version) { this.version = version; }
+    public Integer getVer() { return ver; }
+    public void setVer(Integer ver) { this.ver = ver; }
     public long getHrId() { return hrId; }
     public void setHrId(long hrId) { this.hrId = hrId; }
 }
