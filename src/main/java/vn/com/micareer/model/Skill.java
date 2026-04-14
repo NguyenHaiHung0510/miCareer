@@ -1,16 +1,27 @@
 package vn.com.micareer.model;
 
-public class Skill {
+import java.io.Serializable;
 
-    private long skillId;
+public class Skill implements Serializable {
+
+    private Integer skillId;
     private String skillName;
     private String desc;
 
-    public long getSkillId() {
+    public Skill() {
+    }
+
+    public Skill(Integer skillId, String skillName, String desc) {
+        this.skillId = skillId;
+        this.skillName = skillName;
+        this.desc = desc;
+    }
+
+    public Integer getSkillId() {
         return skillId;
     }
 
-    public void setSkillId(long skillId) {
+    public void setSkillId(Integer skillId) {
         this.skillId = skillId;
     }
 

@@ -12,7 +12,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import vn.com.micareer.dao.JobPostingDAO;
 import vn.com.micareer.model.JobCardView;
-import vn.com.micareer.model.JobSearchCriteria;
 
 @WebServlet("/home")
 public class HomeServlet extends HttpServlet {
@@ -22,8 +21,7 @@ public class HomeServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         try {
-            JobSearchCriteria criteria = new JobSearchCriteria();
-            List<JobCardView> jobs = jobPostingDAO.findPublishedJobs(criteria, 8);
+            List<JobCardView> jobs = jobPostingDAO.findPublishedJobs(null, null, null, null, null, null, 0, 6);
             request.setAttribute("jobs", jobs);
         } catch (SQLException e) {
             request.setAttribute("jobs", Collections.emptyList());

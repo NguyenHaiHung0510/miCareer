@@ -1,7 +1,9 @@
 package vn.com.micareer.controller;
 
 import java.io.IOException;
+import java.net.URLEncoder;
 import java.sql.SQLException;
+import java.nio.charset.StandardCharsets;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.MultipartConfig;
@@ -10,9 +12,11 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.Part;
+import jakarta.servlet.http.HttpSession;
 import vn.com.micareer.dao.CandidateDAO;
 import vn.com.micareer.dao.JobApplicationDAO;
 import vn.com.micareer.dao.JobPostingDAO;
+import vn.com.micareer.model.Candidate;
 import vn.com.micareer.model.JobApplication;
 import vn.com.micareer.model.JobDetailView;
 import vn.com.micareer.util.FileUploadUtil;
@@ -36,6 +40,13 @@ public class ApplyJobServlet extends HttpServlet {
             return;
         }
 
+        Candidate candidate = getLoggedInCandidate(request);
+        if (candidate == null) {
+            redirectToLogin(request, response, jobPostId);
+            return;
+        }
+        request.setAttribute("candidateId", resolveCandidateId(candidate));
+
         try {
             JobDetailView detail = jobPostingDAO.findJobDetailById(jobPostId);
             if (detail == null) {
@@ -55,12 +66,18 @@ public class ApplyJobServlet extends HttpServlet {
         request.setCharacterEncoding("UTF-8");
 
         Long jobPostId = parseLong(request.getParameter("jobPostId"));
-        Long candidateId = parseLong(request.getParameter("candidateId"));
+        Candidate candidate = getLoggedInCandidate(request);
+        if (candidate == null) {
+            redirectToLogin(request, response, jobPostId);
+            return;
+        }
+
+        Long candidateId = resolveCandidateId(candidate);
         String coverLetter = request.getParameter("coverLetter");
         Part cvFile = request.getPart("cvFile");
 
         if (jobPostId == null || candidateId == null) {
-            request.setAttribute("error", "Thiếu thông tin jobPostId hoặc candidateId.");
+            request.setAttribute("error", "Không thể xác định tài khoản candidate để ứng tuyển.");
             forwardWithJob(request, response, jobPostId);
             return;
         }
@@ -122,7 +139,44 @@ public class ApplyJobServlet extends HttpServlet {
                 request.setAttribute("job", null);
             }
         }
+        request.setAttribute("candidateId", resolveCandidateId(getLoggedInCandidate(request)));
         request.getRequestDispatcher("/views/jobs/apply-job.jsp").forward(request, response);
+    }
+
+    private Candidate getLoggedInCandidate(HttpServletRequest request) {
+        HttpSession session = request.getSession(false);
+        if (session == null) {
+            return null;
+        }
+
+        Object user = session.getAttribute("user");
+        if (user instanceof Candidate) {
+            return (Candidate) user;
+        }
+        return null;
+    }
+
+    private Long resolveCandidateId(Candidate candidate) {
+        if (candidate == null) {
+            return null;
+        }
+        if (candidate.getCandidateId() != null) {
+            return candidate.getCandidateId().longValue();
+        }
+        if (candidate.getUserId() != null) {
+            return candidate.getUserId().longValue();
+        }
+        return null;
+    }
+
+    private void redirectToLogin(HttpServletRequest request, HttpServletResponse response, Long jobPostId) throws IOException {
+        String target = request.getContextPath() + "/apply-job";
+        if (jobPostId != null && jobPostId > 0) {
+            target += "?jobPostId=" + jobPostId;
+        }
+        String loginUrl = request.getContextPath() + "/login.jsp?redirect="
+                + URLEncoder.encode(target, StandardCharsets.UTF_8);
+        response.sendRedirect(loginUrl);
     }
 
     private Long parseLong(String value) {

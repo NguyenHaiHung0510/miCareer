@@ -1,16 +1,27 @@
 package vn.com.micareer.model;
 
-public class JobLevel {
+import java.io.Serializable;
 
-    private long levelId;
+public class JobLevel implements Serializable {
+
+    private Integer levelId;
     private String levelName;
     private String desc;
 
-    public long getLevelId() {
+    public JobLevel() {
+    }
+
+    public JobLevel(Integer levelId, String levelName, String desc) {
+        this.levelId = levelId;
+        this.levelName = levelName;
+        this.desc = desc;
+    }
+
+    public Integer getLevelId() {
         return levelId;
     }
 
-    public void setLevelId(long levelId) {
+    public void setLevelId(Integer levelId) {
         this.levelId = levelId;
     }
 

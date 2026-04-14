@@ -1,4 +1,5 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <header class="header">
     <div class="container nav">
         <a class="card-link" href = "${pageContext.request.contextPath}/home"><div class="logo">Mi<span>Career</span></div></a>
@@ -14,8 +15,18 @@
 
         <div class="header-right">
             <div class="auth">
-                <a class="login-link" href="#">Đăng nhập</a>
-                <a class="btn-primary register-link" href="#">Đăng ký</a>
+                <c:choose>
+                    <c:when test="${empty sessionScope.user}">
+                        <a class="login-link" href="${pageContext.request.contextPath}/login.jsp">Đăng nhập</a>
+                        <a class="btn-primary register-link" href="${pageContext.request.contextPath}/register.jsp">Đăng ký</a>
+                    </c:when>
+                    <c:otherwise>
+                        <span class="user-chip">Xin chào, ${sessionScope.user.fName}</span>
+                        <form action="${pageContext.request.contextPath}/logout" method="post">
+                            <button type="submit" class="logout-btn">Đăng xuất</button>
+                        </form>
+                    </c:otherwise>
+                </c:choose>
             </div>
 
             <div class="recruiter-box">

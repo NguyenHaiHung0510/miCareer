@@ -3,14 +3,12 @@ package vn.com.micareer.controller;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Collections;
-
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import vn.com.micareer.dao.JobPostingDAO;
-import vn.com.micareer.model.JobSearchCriteria;
 
 @WebServlet("/job-list")
 public class JobListServlet extends HttpServlet {
@@ -19,8 +17,20 @@ public class JobListServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        JobSearchCriteria criteria = buildCriteria(request);
-        request.setAttribute("criteria", criteria);
+        String keyword = request.getParameter("keyword");
+        String location = request.getParameter("location");
+        String workMode = request.getParameter("workMode");
+        Long catId = parseLong(request.getParameter("catId"));
+        Long levelId = parseLong(request.getParameter("levelId"));
+        Long skillId = parseLong(request.getParameter("skillId"));
+
+        request.setAttribute("keyword", keyword);
+        request.setAttribute("location", location);
+        request.setAttribute("workMode", workMode);
+        request.setAttribute("catId", catId);
+        request.setAttribute("levelId", levelId);
+        request.setAttribute("skillId", skillId);
+
         int page = request.getParameter("page") != null ? Integer.parseInt(request.getParameter("page").trim()) : 0;
 
         int pageSize = 9;
@@ -28,7 +38,7 @@ public class JobListServlet extends HttpServlet {
         int totalJobs;
         
         try {
-            totalJobs = jobPostingDAO.countPublishedJobs(criteria);
+            totalJobs = jobPostingDAO.countPublishedJobs(keyword, location, workMode, catId, levelId, skillId);
         } catch (Exception e) {
             e.printStackTrace();
             totalJobs = 0;
@@ -39,7 +49,7 @@ public class JobListServlet extends HttpServlet {
         request.setAttribute("totalPages", totalPages);
 
         try {
-            request.setAttribute("jobs", jobPostingDAO.findPublishedJobs(criteria, page, pageSize));
+            request.setAttribute("jobs", jobPostingDAO.findPublishedJobs(keyword, location, workMode, catId, levelId, skillId, page, pageSize));
             request.setAttribute("categories", jobPostingDAO.findAllCategories());
             request.setAttribute("levels", jobPostingDAO.findAllLevels());
             request.setAttribute("skills", jobPostingDAO.findAllSkills());
@@ -54,17 +64,6 @@ public class JobListServlet extends HttpServlet {
         }
 
         request.getRequestDispatcher("/views/jobs/job-list.jsp").forward(request, response);
-    }
-
-    private JobSearchCriteria buildCriteria(HttpServletRequest request) {
-        JobSearchCriteria criteria = new JobSearchCriteria();
-        criteria.setKeyword(request.getParameter("keyword"));
-        criteria.setLocation(request.getParameter("location"));
-        criteria.setWorkMode(request.getParameter("workMode"));
-        criteria.setCatId(parseLong(request.getParameter("catId")));
-        criteria.setLevelId(parseLong(request.getParameter("levelId")));
-        criteria.setSkillId(parseLong(request.getParameter("skillId")));
-        return criteria;
     }
 
     private Long parseLong(String value) {

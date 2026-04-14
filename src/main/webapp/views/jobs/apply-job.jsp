@@ -11,7 +11,7 @@
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/apply-job.css">
 </head>
 <body>
-<jsp:include page="/views/common/header.jsp"/>
+<jsp:include page="/common/header.jsp"/>
 
 <main class="container apply-page">
     <section class="apply-info">
@@ -26,7 +26,7 @@
                     <span class="work-loc">${job.workLoc}</span>
                     <span class="work-mode">${job.workMode}</span>
                 </div>
-                <p class="salary">Mức lương: ${job.minSalary} - ${job.maxSalary} VND</p>
+                <p class="salary">Mức lương: ${job.salaryRangeText}</p>
 
                 <h3>Mô tả công việc</h3>
                 <p class="apply-description">${job.desc}</p>
@@ -64,9 +64,9 @@
 
         <form action="${pageContext.request.contextPath}/apply-job" method="post" enctype="multipart/form-data" class="apply-form">
             <input type="hidden" name="jobPostId" value="${param.jobPostId != null ? param.jobPostId : job.jobPostId}">
+            <input type="hidden" name="candidateId" value="${candidateId}">
 
-            <label for="candidateId">Candidate ID</label>
-            <input id="candidateId" name="candidateId" type="number" min="1" required placeholder="Nhập candidateId của bạn">
+            <p class="form-msg">Ứng tuyển bằng tài khoản candidate #${candidateId}</p>
 
             <label for="coverLetter">Cover Letter</label>
             <textarea id="coverLetter" name="coverLetter" rows="8" placeholder="Giới thiệu ngắn gọn về bản thân và lý do ứng tuyển"></textarea>
@@ -79,6 +79,6 @@
     </section>
 </main>
 
-<jsp:include page="/views/common/footer.jsp"/>
+<jsp:include page="/common/footer.jsp"/>
 </body>
 </html>

@@ -8,6 +8,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import vn.com.micareer.dao.JobApplicationDAO;
 import vn.com.micareer.dao.JobPostingDAO;
 import vn.com.micareer.model.JobDetailView;
 
@@ -15,6 +16,7 @@ import vn.com.micareer.model.JobDetailView;
 public class JobDetailServlet extends HttpServlet {
 
     private final JobPostingDAO jobPostingDAO = new JobPostingDAO();
+    private final JobApplicationDAO jobApplicationDAO = new JobApplicationDAO();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -31,6 +33,7 @@ public class JobDetailServlet extends HttpServlet {
                 return;
             }
             request.setAttribute("job", detail);
+            request.setAttribute("applicationCount", jobApplicationDAO.countByJobPostId(jobPostId));
         } catch (SQLException e) {
             request.setAttribute("error", "Không thể tải chi tiết việc làm. Vui lòng thử lại sau.");
         }

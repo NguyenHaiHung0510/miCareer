@@ -15,7 +15,20 @@ import vn.com.micareer.model.ApplicationDetailView;
 
 public class JobApplicationDAO {
 
-    // 1. Kiểm tra xem ứng viên đã nộp đơn vào công việc này chưa (module trước)
+    public int countByJobPostId(long jobPostId) throws SQLException {
+        String sql = "SELECT COUNT(*) AS total FROM JobApplication WHERE jobPostId = ?";
+        try (Connection connection = DBContext.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setLong(1, jobPostId);
+            try (ResultSet rs = statement.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt("total");
+                }
+            }
+        }
+        return 0;
+    }
+
     public boolean existsByJobAndCandidate(long jobPostId, long candidateId) throws SQLException {
         String sql = "SELECT 1 FROM JobApplication WHERE jobPostId = ? AND candidateId = ?";
         try (Connection connection = DBContext.getConnection();
@@ -28,7 +41,6 @@ public class JobApplicationDAO {
         }
     }
 
-    // 2. Tạo đơn ứng tuyển mới (module trước)
     public long create(JobApplication application) throws SQLException {
         String sql = "INSERT INTO JobApplication (jobPostId, candidateId, stat, cvSnapUrl, coverLetter) "
                 + "VALUES (?, ?, ?, ?, ?)";
@@ -51,7 +63,7 @@ public class JobApplicationDAO {
         return -1;
     }
 
-    // 3. Lấy danh sách hồ sơ ứng tuyển theo mã bài đăng tuyển dụng (module5)
+    // MODULE 5
     public List<JobApplication> findByJobPostId(long jobPostId) throws SQLException {
         List<JobApplication> list = new ArrayList<>();
         String sql = "SELECT jobAppId, jobPostId, candidateId, appliedAt, stat, cvSnapUrl, coverLetter "
@@ -77,7 +89,6 @@ public class JobApplicationDAO {
         return list;
     }
 
-    // 4. Cập nhật trạng thái của đơn ứng tuyển (module5)
     public boolean updateStatus(long jobAppId, String newStatus) throws SQLException {
         String sql = "UPDATE JobApplication SET stat = ? WHERE jobAppId = ?";
         try (Connection conn = DBContext.getConnection();
@@ -88,7 +99,6 @@ public class JobApplicationDAO {
         }
     }
 
-    // 5. Lấy chi tiết đơn ứng tuyển bao gồm thông tin ứng viên (module5)
     public ApplicationDetailView findDetailById(long jobAppId) throws SQLException {
         String sql = "SELECT ja.jobAppId, ja.candidateId, u.fName, u.lName, u.email, u.phone, "
                    + "ja.cvSnapUrl, ja.coverLetter, ja.stat, ja.appliedAt, jp.title "

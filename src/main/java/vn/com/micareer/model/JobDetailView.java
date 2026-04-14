@@ -2,8 +2,11 @@ package vn.com.micareer.model;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+
+import vn.com.micareer.util.SalaryFormatUtil;
 
 public class JobDetailView {
 
@@ -75,6 +78,10 @@ public class JobDetailView {
         this.maxSalary = maxSalary;
     }
 
+    public String getSalaryRangeText() {
+        return SalaryFormatUtil.formatRange(minSalary, maxSalary);
+    }
+
     public String getWorkLoc() {
         return workLoc;
     }
@@ -103,12 +110,20 @@ public class JobDetailView {
         return createdAt;
     }
 
+    public String getCreatedAtText() {
+        return formatDateTime(createdAt);
+    }
+
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
     }
 
     public LocalDateTime getExpAt() {
         return expAt;
+    }
+
+    public String getExpAtText() {
+        return formatDateTime(expAt);
     }
 
     public void setExpAt(LocalDateTime expAt) {
@@ -173,5 +188,12 @@ public class JobDetailView {
 
     public List<String> getSkills() {
         return skills;
+    }
+
+    private String formatDateTime(LocalDateTime value) {
+        if (value == null) {
+            return null;
+        }
+        return value.format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"));
     }
 }

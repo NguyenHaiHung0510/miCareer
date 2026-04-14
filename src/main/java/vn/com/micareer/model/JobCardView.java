@@ -3,6 +3,8 @@ package vn.com.micareer.model;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
+import vn.com.micareer.util.SalaryFormatUtil;
+
 public class JobCardView {
 
     private long jobPostId;
@@ -87,6 +89,10 @@ public class JobCardView {
 
     public void setMaxSalary(BigDecimal maxSalary) {
         this.maxSalary = maxSalary;
+    }
+
+    public String getSalaryRangeText() {
+        return SalaryFormatUtil.formatRange(minSalary, maxSalary);
     }
 
     public LocalDateTime getCreatedAt() {

@@ -1,8 +1,10 @@
 package vn.com.micareer.model;
 
-public class Company {
+import java.io.Serializable;
 
-    private long compId;
+public class Company implements Serializable {
+
+    private Integer compId;
     private String compName;
     private String taxCode;
     private String webUrl;
@@ -12,11 +14,27 @@ public class Company {
     private String ward;
     private String street;
 
-    public long getCompId() {
+    public Company() {
+    }
+
+    public Company(Integer compId, String compName, String taxCode, String webUrl, String logoUrl,
+                   String contactEmail, String provId, String ward, String street) {
+        this.compId = compId;
+        this.compName = compName;
+        this.taxCode = taxCode;
+        this.webUrl = webUrl;
+        this.logoUrl = logoUrl;
+        this.contactEmail = contactEmail;
+        this.provId = provId;
+        this.ward = ward;
+        this.street = street;
+    }
+
+    public Integer getCompId() {
         return compId;
     }
 
-    public void setCompId(long compId) {
+    public void setCompId(Integer compId) {
         this.compId = compId;
     }
 

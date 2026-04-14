@@ -11,7 +11,7 @@
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/job-detail.css">
 </head>
 <body>
-<jsp:include page="/views/common/header.jsp"/>
+<jsp:include page="/common/header.jsp"/>
 
 <main class="container detail-page">
     <c:if test="${not empty error}">
@@ -27,8 +27,23 @@
                 <span class="level">${job.levelName}</span>
                 <span class="work-loc">${job.workLoc}</span>
                 <span class="work-mode">${job.workMode}</span>
+                <span class="posted-at">
+                    Bắt đầu:
+                    <c:choose>
+                        <c:when test="${not empty job.createdAtText}">${job.createdAtText}</c:when>
+                        <c:otherwise>N/A</c:otherwise>
+                    </c:choose>
+                </span>
+                <span class="closed-at">
+                    Kết thúc:
+                    <c:choose>
+                        <c:when test="${not empty job.expAtText}">${job.expAtText}</c:when>
+                        <c:otherwise>N/A</c:otherwise>
+                    </c:choose>
+                </span>
+                <span class="application-count">Đã nộp CV: ${applicationCount} người</span>
             </div>
-            <p class="salary">Mức lương: ${job.minSalary} - ${job.maxSalary} VND</p>
+            <p class="salary">Mức lương: ${job.salaryRangeText}</p>
             <a class="apply-btn" href="${pageContext.request.contextPath}/apply-job?jobPostId=${job.jobPostId}">Ứng tuyển công việc này</a>
         </section>
 
@@ -57,6 +72,6 @@
     </c:if>
 </main>
 
-<jsp:include page="/views/common/footer.jsp"/>
+<jsp:include page="/common/footer.jsp"/>
 </body>
 </html>

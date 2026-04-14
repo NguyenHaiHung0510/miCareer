@@ -1,53 +1,39 @@
 package vn.com.micareer.model;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 
-public class Candidate {
-
-    private long candidateId;
+public class Candidate extends User{
+    private Integer candidateId;
     private String bio;
     private String cvUrl;
     private LocalDate dob;
-    private BigDecimal expYears;
+    private Double expYears;
 
-    public long getCandidateId() {
-        return candidateId;
-    }
+    public Candidate() {}
 
-    public void setCandidateId(long candidateId) {
-        this.candidateId = candidateId;
-    }
+    public Integer getCandidateId() { return candidateId; }
+    public void setCandidateId(Integer candidateId) { this.candidateId = candidateId; }
 
-    public String getBio() {
-        return bio;
-    }
+    public String getBio() { return bio; }
+    public void setBio(String bio) { this.bio = bio; }
 
-    public void setBio(String bio) {
-        this.bio = bio;
-    }
+    public String getCvUrl() { return cvUrl; }
+    public void setCvUrl(String cvUrl) { this.cvUrl = cvUrl; }
 
-    public String getCvUrl() {
-        return cvUrl;
-    }
+    public LocalDate getDob() { return dob; }
+    public void setDob(LocalDate dob) { this.dob = dob; }
 
-    public void setCvUrl(String cvUrl) {
-        this.cvUrl = cvUrl;
-    }
+    public Double getExpYears() { return expYears; }
+    public void setExpYears(Double expYears) { this.expYears = expYears; }
 
-    public LocalDate getDob() {
-        return dob;
-    }
-
-    public void setDob(LocalDate dob) {
-        this.dob = dob;
-    }
-
-    public BigDecimal getExpYears() {
-        return expYears;
-    }
-
-    public void setExpYears(BigDecimal expYears) {
-        this.expYears = expYears;
+    @Override
+    public String toString() {
+        return "Candidate{" +
+                "candidateId='" + candidateId + '\'' +
+                ", bio='" + bio + '\'' +
+                ", cvUrl='" + cvUrl + '\'' +
+                ", dob=" + dob +
+                ", expYears=" + expYears +
+                '}';
     }
 }

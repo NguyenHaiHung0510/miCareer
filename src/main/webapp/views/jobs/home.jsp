@@ -11,7 +11,7 @@
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/home.css">
 </head>
 <body>
-<jsp:include page="/views/common/header.jsp"/>
+<jsp:include page="/common/header.jsp"/>
 
 <main class="home-page container">
     <section class="hero-box">
@@ -41,7 +41,7 @@
                         <span class="work-loc">${job.workLoc}</span>
                         <span class="work-mode">${job.workMode}</span>
                     </div>
-                    <p class="salary">${job.minSalary} - ${job.maxSalary} VND</p>
+                    <p class="salary">${job.salaryRangeText}</p>
                     <div class="job-actions">
                         <a href="${pageContext.request.contextPath}/job-detail?id=${job.jobPostId}">Xem chi tiết</a>
                         <a class="primary" href="${pageContext.request.contextPath}/apply-job?jobPostId=${job.jobPostId}">Ứng tuyển</a>
@@ -56,6 +56,6 @@
     </section>
 </main>
 
-<jsp:include page="/views/common/footer.jsp"/>
+<jsp:include page="/common/footer.jsp"/>
 </body>
 </html>

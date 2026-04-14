@@ -4,9 +4,10 @@
  */
 package vn.com.micareer.model;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
-public class User {
+public class User implements Serializable {
     private Integer userId;
     private String userName;
     private String pwd;

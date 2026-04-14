@@ -1,0 +1,68 @@
+TÀI LIỆU: UPLOAD VÀ QUẢN LÝ CV (Cloudinary)
+
+1. Cấu hình Cloudinary
+
+Ae nhớ them dependency này vào pom.xml
+
+        <dependency>
+            <groupId>com.cloudinary</groupId>
+            <artifactId>cloudinary-http44</artifactId>
+            <version>1.39.0</version>
+        </dependency>
+
+Thông tin kết nối (cloud_name, api_key, api_secret) nằm trong file cấu hình:
+src/main/resources/cloudinary.properties
+
+
+Lưu ý: Ae tạo file src/main/resources/cloudinary.properties trong đó có các key mà ae tạo trên Cloudinary 
+
+cloud_name=xxxxxxx(Thay bang key của ae)
+api_key=xxxxxxxxxxxx
+api_secret=xxxxxxxxxxxxxx
+
+
+2. Xử lý Upload CV – UploadCVUtil
+
+Vị trí:
+src/main/java/vn/com/micareer/util/UploadCVUtil.java
+
+
+Chức năng:
+Upload file CV (PDF) lên Cloudinary
+Validate file (không null, ≤ 2MB, đúng định dạng PDF)
+Trả về URL và public_id để lưu DB
+
+
+Cách sử dụng:
+Part filePart = request.getPart("file");
+
+UploadCVUtil.UploadResult result =
+        UploadCVUtil.uploadCV(filePart, String.valueOf(user.getUserId()));
+
+String url = result.getUrl();
+String publicId = result.getPublicId(); 
+
+
+Ví dụ url: https://res.cloudinary.com/dx1ctrhm7/raw/upload/v1775646574/cv/2_f0842f74-4ab7-4547-8f4d-afef614b4822.pdf
+public id sẽ là v1775646574
+
+
+3. Xoá CV – deleteCV
+Chức năng:
+Xoá file CV trên Cloudinary theo public_id
+Cách sử dụng:
+UploadCVUtil.deleteCV(publicId);
+
+- Trả về:
+true → xoá thành công
+false → không tìm thấy file
+
+
+4. Quy trình thay CV (Replace CV)
+Cơ chế:
+Upload CV mới → Xoá CV cũ → Lưu thông tin mới vào DB
+Ví dụ:
+UploadCVUtil.deleteCV(oldPublicId);
+
+UploadCVUtil.UploadResult result =
+UploadCVUtil.uploadCV(filePart, userId);

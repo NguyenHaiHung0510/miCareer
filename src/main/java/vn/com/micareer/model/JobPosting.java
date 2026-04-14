@@ -1,39 +1,99 @@
 package vn.com.micareer.model;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.sql.Timestamp;
 
 public class JobPosting {
 
-    private long jobPostId;
-    private long compId;
+    private int jobPostId;
+    private int compId;
+    private int hrId;
+    private int catId;
+    private int levelId;
+
     private String title;
     private String desc;
+
     private BigDecimal minSalary;
     private BigDecimal maxSalary;
+
     private String workLoc;
     private String workMode;
     private String stat;
-    private LocalDateTime createdAt;
-    private LocalDateTime expAt;
-    private long catId;
-    private long levelId;
-    private long hrId;
 
-    public long getJobPostId() {
+    private Timestamp createdAt;
+    private Timestamp expAt;
+
+
+    // Phần của minh
+    // JOIN fields
+    private String compName;
+    private String catName;
+    private String levelName;
+
+    public JobPosting() {
+    }
+
+    public JobPosting(int jobPostId, int compId, int hrId, int catId, int levelId,
+            String title, String desc,
+            BigDecimal minSalary, BigDecimal maxSalary,
+            String workLoc, String workMode, String stat,
+            Timestamp createdAt, Timestamp expAt) {
+        this.jobPostId = jobPostId;
+        this.compId = compId;
+        this.hrId = hrId;
+        this.catId = catId;
+        this.levelId = levelId;
+        this.title = title;
+        this.desc = desc;
+        this.minSalary = minSalary;
+        this.maxSalary = maxSalary;
+        this.workLoc = workLoc;
+        this.workMode = workMode;
+        this.stat = stat;
+        this.createdAt = createdAt;
+        this.expAt = expAt;
+    }
+
+    // Getter & Setter
+    public int getJobPostId() {
         return jobPostId;
     }
 
-    public void setJobPostId(long jobPostId) {
+    public void setJobPostId(int jobPostId) {
         this.jobPostId = jobPostId;
     }
 
-    public long getCompId() {
+    public int getCompId() {
         return compId;
     }
 
-    public void setCompId(long compId) {
+    public void setCompId(int compId) {
         this.compId = compId;
+    }
+
+    public int getHrId() {
+        return hrId;
+    }
+
+    public void setHrId(int hrId) {
+        this.hrId = hrId;
+    }
+
+    public int getCatId() {
+        return catId;
+    }
+
+    public void setCatId(int catId) {
+        this.catId = catId;
+    }
+
+    public int getLevelId() {
+        return levelId;
+    }
+
+    public void setLevelId(int levelId) {
+        this.levelId = levelId;
     }
 
     public String getTitle() {
@@ -92,43 +152,43 @@ public class JobPosting {
         this.stat = stat;
     }
 
-    public LocalDateTime getCreatedAt() {
+    public Timestamp getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(LocalDateTime createdAt) {
+    public void setCreatedAt(Timestamp createdAt) {
         this.createdAt = createdAt;
     }
 
-    public LocalDateTime getExpAt() {
+    public Timestamp getExpAt() {
         return expAt;
     }
 
-    public void setExpAt(LocalDateTime expAt) {
+    public void setExpAt(Timestamp expAt) {
         this.expAt = expAt;
     }
 
-    public long getCatId() {
-        return catId;
+    public String getCompName() {
+        return compName;
     }
 
-    public void setCatId(long catId) {
-        this.catId = catId;
+    public void setCompName(String compName) {
+        this.compName = compName;
     }
 
-    public long getLevelId() {
-        return levelId;
+    public String getCatName() {
+        return catName;
     }
 
-    public void setLevelId(long levelId) {
-        this.levelId = levelId;
+    public void setCatName(String catName) {
+        this.catName = catName;
     }
 
-    public long getHrId() {
-        return hrId;
+    public String getLevelName() {
+        return levelName;
     }
 
-    public void setHrId(long hrId) {
-        this.hrId = hrId;
+    public void setLevelName(String levelName) {
+        this.levelName = levelName;
     }
 }

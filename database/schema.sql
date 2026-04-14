@@ -34,15 +34,17 @@ CREATE TABLE Permission (
     `desc` VARCHAR(500)
 );
 
-CREATE TABLE Skill (
-    skillId INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    skillName VARCHAR(50) NOT NULL UNIQUE,
-    `desc` VARCHAR(500)
+CREATE TABLE RolePermission (
+    roleId INT UNSIGNED,
+    permId INT UNSIGNED,
+    PRIMARY KEY (roleId, permId),
+    FOREIGN KEY (roleId) REFERENCES AdminRole(roleId) ON DELETE CASCADE,
+    FOREIGN KEY (permId) REFERENCES Permission(permId) ON DELETE CASCADE
 );
 
-CREATE TABLE EmailType (
-    typeId INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    typeName VARCHAR(50) NOT NULL UNIQUE,
+CREATE TABLE Skill (
+    skillId INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    skillName VARCHAR(100) NOT NULL UNIQUE,
     `desc` VARCHAR(500)
 );
 
@@ -58,50 +60,33 @@ CREATE TABLE JobLevel (
     `desc` VARCHAR(500)
 );
 
-CREATE TABLE RolePermission (
-    roleId INT UNSIGNED,
-    permId INT UNSIGNED,
-    PRIMARY KEY (roleId, permId),
-    FOREIGN KEY (roleId) REFERENCES AdminRole(roleId) ON DELETE CASCADE,
-    FOREIGN KEY (permId) REFERENCES Permission(permId) ON DELETE CASCADE
-);
-
-CREATE TABLE EmailTemplate (
-    tmplId INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    typeId INT UNSIGNED,
-    subj VARCHAR(200),
-    body TEXT,
-    `desc` VARCHAR(500),
-    FOREIGN KEY (typeId) REFERENCES EmailType(typeId) ON DELETE CASCADE
-);
-
 CREATE TABLE `User` (
     userId INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     userName VARCHAR(50) NOT NULL UNIQUE,
-    pwd VARCHAR(300) NOT NULL,
-    fName VARCHAR(50),
-    lName VARCHAR(50),
-    email VARCHAR(400) NOT NULL UNIQUE,
+    pwd VARCHAR(255) NOT NULL,
+    fName VARCHAR(100),
+    lName VARCHAR(100),
+    email VARCHAR(255) NOT NULL UNIQUE,
     phone VARCHAR(20),
     stat ENUM('ACTIVE', 'INACTIVE', 'BANNED', 'PENDING') NOT NULL DEFAULT 'ACTIVE',
     `role` VARCHAR(30) NOT NULL,
     provId VARCHAR(10),
-    ward VARCHAR(80),
-    street VARCHAR(150),
+    ward VARCHAR(100),
+    street VARCHAR(255),
     createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (provId) REFERENCES Province(provId) ON DELETE CASCADE
 );
 
 CREATE TABLE Company (
     compId INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    compName VARCHAR(200) NOT NULL,
+    compName VARCHAR(255) NOT NULL,
     taxCode VARCHAR(20) UNIQUE,
     webUrl VARCHAR(500),
     logoUrl VARCHAR(500),
-    contactEmail VARCHAR(400),
+    contactEmail VARCHAR(255),
     provId VARCHAR(10),
-    ward VARCHAR(80),
-    street VARCHAR(150),
+    ward VARCHAR(100),
+    street VARCHAR(255),
     FOREIGN KEY (provId) REFERENCES Province(provId) ON DELETE CASCADE
 );
 
@@ -114,10 +99,19 @@ CREATE TABLE Candidate (
     FOREIGN KEY (candidateId) REFERENCES `User`(userId) ON DELETE CASCADE
 );
 
+CREATE TABLE CandidateSkill (
+    candidateId INT UNSIGNED,
+    skillId INT UNSIGNED,
+    PRIMARY KEY (candidateId, skillId),
+    FOREIGN KEY (candidateId) REFERENCES Candidate(candidateId) ON DELETE CASCADE,
+    FOREIGN KEY (skillId) REFERENCES Skill(skillId) ON DELETE CASCADE
+);
+
 CREATE TABLE HR (
     hrId INT UNSIGNED PRIMARY KEY,
     posId INT UNSIGNED,
     compId INT UNSIGNED,
+    emailSign TEXT,
     FOREIGN KEY (hrId) REFERENCES `User`(userId) ON DELETE CASCADE,
     FOREIGN KEY (posId) REFERENCES HRPosition(posId) ON DELETE CASCADE,
     FOREIGN KEY (compId) REFERENCES Company(compId) ON DELETE CASCADE
@@ -130,30 +124,23 @@ CREATE TABLE Admin (
     FOREIGN KEY (roleId) REFERENCES AdminRole(roleId) ON DELETE CASCADE
 );
 
-CREATE TABLE CandidateSkill (
-    candidateId INT UNSIGNED,
-    skillId INT UNSIGNED,
-    PRIMARY KEY (candidateId, skillId),
-    FOREIGN KEY (candidateId) REFERENCES Candidate(candidateId) ON DELETE CASCADE,
-    FOREIGN KEY (skillId) REFERENCES Skill(skillId) ON DELETE CASCADE
-);
-
 CREATE TABLE JobPosting (
     jobPostId INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     compId INT UNSIGNED,
-    title VARCHAR(150) NOT NULL,
+    hrId INT UNSIGNED,
+    catId INT UNSIGNED,
+    levelId INT UNSIGNED,
+    title VARCHAR(255) NOT NULL,
     `desc` LONGTEXT NOT NULL,
     minSalary DECIMAL(15,2),
     maxSalary DECIMAL(15,2),
-    workLoc VARCHAR(150),
-    workMode VARCHAR(30),
+    workLoc VARCHAR(255),
+    workMode VARCHAR(50),
     stat ENUM('DRAFT', 'PUBLISHED', 'CLOSED', 'EXPIRED') DEFAULT 'DRAFT',
     createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
     expAt DATETIME,
-    catId INT UNSIGNED,
-    levelId INT UNSIGNED,
-    hrId INT UNSIGNED,
     FOREIGN KEY (compId) REFERENCES Company(compId) ON DELETE CASCADE,
+    FOREIGN KEY (hrId) REFERENCES HR(hrId) ON DELETE CASCADE,
     FOREIGN KEY (catId) REFERENCES JobCategory(catId) ON DELETE CASCADE,
     FOREIGN KEY (levelId) REFERENCES JobLevel(levelId) ON DELETE CASCADE
 );
@@ -175,8 +162,7 @@ CREATE TABLE JobApplication (
     cvSnapUrl VARCHAR(500),
     coverLetter TEXT,
     FOREIGN KEY (jobPostId) REFERENCES JobPosting(jobPostId) ON DELETE CASCADE,
-    FOREIGN KEY (candidateId) REFERENCES Candidate(candidateId) ON DELETE CASCADE,
-    UNIQUE (jobPostId, candidateId)
+    FOREIGN KEY (candidateId) REFERENCES Candidate(candidateId) ON DELETE CASCADE
 );
 
 CREATE TABLE AppStatusHistory (
@@ -193,13 +179,13 @@ CREATE TABLE AppStatusHistory (
 CREATE TABLE Interview (
     intervId INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     jobAppId INT UNSIGNED,
-    title VARCHAR(100),
+    title VARCHAR(255),
     startAt DATETIME,
     endAt DATETIME,
     stat ENUM('SCHEDULED', 'COMPLETED', 'CANCELED') DEFAULT 'SCHEDULED',
-    mode VARCHAR(30),
+    mode VARCHAR(50),
     linkMeet VARCHAR(500),
-    loc VARCHAR(150),
+    loc VARCHAR(255),
     FOREIGN KEY (jobAppId) REFERENCES JobApplication(jobAppId) ON DELETE CASCADE
 );
 
@@ -217,13 +203,28 @@ CREATE TABLE InterviewFeedback (
 CREATE TABLE Offer (
     offerId INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     jobAppId INT UNSIGNED,
+    hrId INT UNSIGNED,
     salary DECIMAL(15,2),
     `desc` TEXT,
     stat ENUM('PENDING', 'ACCEPTED', 'REJECTED') DEFAULT 'PENDING',
-    version INT,
-    hrId INT UNSIGNED,
+    ver INT, 
     FOREIGN KEY (jobAppId) REFERENCES JobApplication(jobAppId) ON DELETE CASCADE,
     FOREIGN KEY (hrId) REFERENCES HR(hrId) ON DELETE CASCADE
+);
+
+CREATE TABLE EmailType (
+    typeId INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    typeName VARCHAR(100) NOT NULL UNIQUE,
+    `desc` VARCHAR(500)
+);
+
+CREATE TABLE EmailTemplate (
+    tmplId INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    typeId INT UNSIGNED,
+    subj VARCHAR(255),
+    body TEXT,
+    `desc` VARCHAR(500),
+    FOREIGN KEY (typeId) REFERENCES EmailType(typeId) ON DELETE CASCADE
 );
 
 CREATE TABLE EmailLog (
@@ -233,7 +234,7 @@ CREATE TABLE EmailLog (
     userId INT UNSIGNED,
     content TEXT,
     sentAt DATETIME DEFAULT CURRENT_TIMESTAMP,
-    rcvEmail VARCHAR(400),
+    rcvEmail VARCHAR(255),
     FOREIGN KEY (tmplId) REFERENCES EmailTemplate(tmplId) ON DELETE CASCADE,
     FOREIGN KEY (jobAppId) REFERENCES JobApplication(jobAppId) ON DELETE CASCADE,
     FOREIGN KEY (userId) REFERENCES `User`(userId) ON DELETE CASCADE

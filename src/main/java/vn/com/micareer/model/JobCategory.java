@@ -1,16 +1,27 @@
 package vn.com.micareer.model;
 
-public class JobCategory {
+import java.io.Serializable;
 
-    private long catId;
+public class JobCategory implements Serializable {
+
+    private Integer catId;
     private String catName;
     private String desc;
 
-    public long getCatId() {
+    public JobCategory() {
+    }
+
+    public JobCategory(Integer catId, String catName, String desc) {
+        this.catId = catId;
+        this.catName = catName;
+        this.desc = desc;
+    }
+
+    public Integer getCatId() {
         return catId;
     }
 
-    public void setCatId(long catId) {
+    public void setCatId(Integer catId) {
         this.catId = catId;
     }
 

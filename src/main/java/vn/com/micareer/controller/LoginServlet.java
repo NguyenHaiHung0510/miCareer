@@ -22,6 +22,7 @@ public class LoginServlet extends HttpServlet {
 
         String userName = request.getParameter("username");
         String pwd = request.getParameter("password");
+        String redirect = request.getParameter("redirect");
 
         try {
             UserDAO dao = new UserDAO();
@@ -37,7 +38,7 @@ public class LoginServlet extends HttpServlet {
 
             System.out.println(user);
 
-            // ?session
+            // session
             HttpSession session = request.getSession();
             session.setAttribute("account", user); // lưu user chung
 
@@ -51,7 +52,12 @@ public class LoginServlet extends HttpServlet {
                     Candidate c = cdao.getById(userId); 
 
                     session.setAttribute("user", c);
-                    response.sendRedirect("candidate/home.jsp");
+                    
+                    if (redirect != null && !redirect.isBlank()) {
+                        response.sendRedirect(redirect);
+                    } else {
+                        response.sendRedirect("candidate/home.jsp");
+                    }
                     break;
                 }
 
@@ -60,10 +66,16 @@ public class LoginServlet extends HttpServlet {
                     session.setAttribute("loggedUserId", Long.valueOf(user.getUserId()));
                     session.setAttribute("user", user);
                     
-                    // Sửa hướng redirect sang Module 5
-                    response.sendRedirect(request.getContextPath() + "/hr/my-jobs");
+                    // Bổ sung thêm tính năng redirect
+                    if (redirect != null && !redirect.isBlank()) {
+                        response.sendRedirect(redirect);
+                    } else {
+                        // Sửa hướng redirect sang Module 5
+                        response.sendRedirect(request.getContextPath() + "/hr/my-jobs");
+                    }
                     break;
                 }
+
                 case "ADMIN": {
                     AdminDAO adao = new AdminDAO();
                     Admin a = adao.getById(userId);
