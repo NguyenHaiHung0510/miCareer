@@ -6,6 +6,7 @@ import jakarta.servlet.annotation.WebListener;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import vn.com.micareer.util.JobExpiryScheduler;
 
 @WebListener
 public class AppLifecycleListener implements ServletContextListener {
@@ -21,14 +22,19 @@ public class AppLifecycleListener implements ServletContextListener {
         } catch (SQLException e) {
             System.err.println("[AppLifecycleListener] LỖI: Không thể kết nối tới CSDL!");
         }
+        
+        JobExpiryScheduler.start();
+        System.out.println("[AppLifecycleListener] JobExpiryScheduler started");
     }
 
     @Override
     public void contextDestroyed(ServletContextEvent sce) {
         System.out.println("[AppLifecycleListener] shutdown miCareer...");
-        
+        JobExpiryScheduler.stop();
+        System.out.println("[AppLifecycleListener] JobExpiryScheduler stopped");
         DBContext.closePool();
         
         System.out.println("[AppLifecycleListener] Đã đóng HikariCP Connection Pool!");
     }
+ 
 }

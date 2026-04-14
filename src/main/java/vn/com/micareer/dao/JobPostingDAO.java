@@ -95,7 +95,6 @@ public class JobPostingDAO implements CrudDAO<JobPosting, Integer> {
         return jobs;
     }
 
-
     public JobDetailView findJobDetailById(long jobPostId) throws SQLException {
         String sql = "SELECT jp.jobPostId, jp.compId, jp.title, jp.`desc`, jp.minSalary, jp.maxSalary, "
                 + "jp.workLoc, jp.workMode, jp.stat, jp.createdAt, jp.expAt, jp.catId, jc.catName, "
@@ -292,9 +291,7 @@ public class JobPostingDAO implements CrudDAO<JobPosting, Integer> {
         List<JobPosting> list = new ArrayList<>();
         String sql = SELECT_JOB_WITH_LOOKUPS + " ORDER BY j.createdAt DESC";
 
-        try (Connection conn = DBContext.getConnection();
-                PreparedStatement ps = conn.prepareStatement(sql);
-                ResultSet rs = ps.executeQuery()) {
+        try (Connection conn = DBContext.getConnection(); PreparedStatement ps = conn.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
 
             while (rs.next()) {
                 list.add(map(rs));
@@ -395,13 +392,17 @@ public class JobPostingDAO implements CrudDAO<JobPosting, Integer> {
     // ================= UPDATE =================
     @Override
     public boolean update(JobPosting job) {
+        throw new UnsupportedOperationException("Use updateByHr instead");
+    }
+
+    public boolean updateByHR(JobPosting job, int hrId) {
 
         String sql = """
-            UPDATE JobPosting
-            SET title=?, `desc`=?, minSalary=?, maxSalary=?,
-                workLoc=?, workMode=?, expAt=?, catId=?, levelId=?
-            WHERE jobPostId=?
-        """;
+        UPDATE JobPosting
+        SET title=?, `desc`=?, minSalary=?, maxSalary=?,
+            workLoc=?, workMode=?, expAt=?, catId=?, levelId=?
+        WHERE jobPostId=? AND hrId=?
+    """;
 
         try (Connection conn = DBContext.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
 
@@ -415,10 +416,12 @@ public class JobPostingDAO implements CrudDAO<JobPosting, Integer> {
             ps.setInt(8, job.getCatId());
             ps.setInt(9, job.getLevelId());
             ps.setInt(10, job.getJobPostId());
+            ps.setInt(11, hrId);
 
             return ps.executeUpdate() > 0;
-        } catch (SQLException e) {
-            System.out.println("update error: " + e.getMessage());
+
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
         return false;
@@ -439,22 +442,42 @@ public class JobPostingDAO implements CrudDAO<JobPosting, Integer> {
     }
 
     // ================= UPDATE STATUS =================
-    public boolean updateStatus(int jobPostId, String status) {
-
-        String sql = "UPDATE JobPosting SET stat=? WHERE jobPostId=?";
+    public boolean updateStatus(int jobPostId, String status, int hrId) {
+        String sql = "UPDATE JobPosting SET stat=? WHERE jobPostId=? AND hrId=?";
 
         try (Connection conn = DBContext.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setString(1, status);
             ps.setInt(2, jobPostId);
+            ps.setInt(3, hrId);
 
             return ps.executeUpdate() > 0;
 
         } catch (SQLException e) {
-            System.out.println("updateStatus error: " + e.getMessage());
+            e.printStackTrace();
         }
 
         return false;
+    }
+    
+     // ================= AUTO UPDATE STATUS =================
+    public int closeExpiredJobs() {
+        String sql = """
+        UPDATE JobPosting
+        SET stat = 'CLOSED'
+        WHERE stat = 'PUBLISHED'
+          AND expAt IS NOT NULL
+          AND expAt < CURRENT_TIMESTAMP
+    """;
+
+        try (Connection conn = DBContext.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            return ps.executeUpdate();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return 0;
     }
 
     // ================= MAP =================
