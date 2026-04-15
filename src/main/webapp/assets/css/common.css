@@ -233,6 +233,23 @@ main {
     color: #1d4ed8;
 }
 
+.profile-link {
+    padding: 10px 14px;
+    border-radius: 10px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 14px;
+    color: #1e3a8a;
+    background: #e0e7ff;
+    transition: 0.2s;
+}
+
+
+.profile-link:hover {
+    background: #1e3a8a;
+    color: #fff;
+}
+
 @media (max-width: 992px) {
     .nav {
         flex-wrap: wrap;
@@ -255,6 +272,7 @@ main {
     .recruiter-box {
         padding-left: 12px;
     }
+
 }
 
 @media (max-width: 768px) {

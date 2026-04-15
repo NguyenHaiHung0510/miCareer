@@ -12,13 +12,20 @@ import jakarta.servlet.http.*;
 import java.io.IOException;
 import java.time.LocalDate;
 
-@WebServlet(name = "EditProfileServlet", urlPatterns = {"/editProfile"})
+@WebServlet(name = "EditProfileServlet", urlPatterns = {"/candidate/editProfile"})
 @MultipartConfig(
         maxFileSize = 2 * 1024 * 1024,
         maxRequestSize = 3 * 1024 * 1024
 )
 public class EditProfileServlet extends HttpServlet {
-
+    
+    @Override  
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        request.getRequestDispatcher("edit.jsp").forward(request, response);
+    }
+    
+    
     public static String extractPublicId(String url) {
         if (url == null || url.isEmpty()) return null;
 
@@ -114,7 +121,7 @@ public class EditProfileServlet extends HttpServlet {
                 session.setAttribute("error", "Cập nhật thất bại!");
             }
 
-            response.sendRedirect("candidate/profile.jsp");
+            response.sendRedirect("./profile");
 
         } catch (Exception e) {
             e.printStackTrace();
