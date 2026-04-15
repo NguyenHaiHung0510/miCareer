@@ -12,9 +12,17 @@ import vn.com.micareer.dao.AdminDAO;
 import vn.com.micareer.dao.CandidateDAO;
 import vn.com.micareer.model.Admin;
 import vn.com.micareer.model.Candidate;
+import vn.com.micareer.util.PasswordUtil;
 
 @WebServlet(name = "LoginServlet", urlPatterns = {"/login"})
 public class LoginServlet extends HttpServlet {
+
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+
+        request.getRequestDispatcher("/login.jsp").forward(request, response);
+    }
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -27,10 +35,11 @@ public class LoginServlet extends HttpServlet {
         try {
             UserDAO dao = new UserDAO();
 
-            // check login
-            User user = dao.login(userName, pwd);
-
-            if (user == null) {
+            // 🔥 LẤY USER THEO USERNAME (KHÔNG CHECK PASSWORD TRONG SQL)
+            User user = dao.getByUsername(userName);
+            System.out.println(user);
+            // 🔥 VERIFY PASSWORD BẰNG BCRYPT
+            if (user == null || !PasswordUtil.verifyPassword(pwd, user.getPwd())) {
                 request.setAttribute("error", "Sai username hoặc password!");
                 request.getRequestDispatcher("login.jsp").forward(request, response);
                 return;
@@ -38,39 +47,35 @@ public class LoginServlet extends HttpServlet {
 
             System.out.println(user);
 
-            // session
+            // ===== LOGIN SUCCESS =====
             HttpSession session = request.getSession();
-            session.setAttribute("account", user); // lưu user chung
+            session.setAttribute("account", user);
 
-            Integer userId = user.getUserId(); // dùng Integer
+            Integer userId = user.getUserId();
 
-            // phân quyền
             switch (user.getRole()) {
 
                 case "CANDIDATE": {
                     CandidateDAO cdao = new CandidateDAO();
-                    Candidate c = cdao.getById(userId); 
+                    Candidate c = cdao.getById(userId);
 
                     session.setAttribute("user", c);
-                    
+
                     if (redirect != null && !redirect.isBlank()) {
                         response.sendRedirect(redirect);
                     } else {
-                        response.sendRedirect("candidate/home.jsp");
+                        response.sendRedirect(request.getContextPath() + "/home");
                     }
                     break;
                 }
 
                 case "HR": {
-                    // Truyền thêm biến loggedUserId kiểu Long cho Module 5 dùng
                     session.setAttribute("loggedUserId", Long.valueOf(user.getUserId()));
                     session.setAttribute("user", user);
-                    
-                    // Bổ sung thêm tính năng redirect
+
                     if (redirect != null && !redirect.isBlank()) {
                         response.sendRedirect(redirect);
                     } else {
-                        // Sửa hướng redirect sang Module 5
                         response.sendRedirect(request.getContextPath() + "/hr/my-jobs");
                     }
                     break;
@@ -81,7 +86,7 @@ public class LoginServlet extends HttpServlet {
                     Admin a = adao.getById(userId);
 
                     session.setAttribute("user", a);
-                    response.sendRedirect("admin/dashboard.jsp");
+                    response.sendRedirect("admin/dashboard");
                     break;
                 }
 
