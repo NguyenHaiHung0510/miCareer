@@ -1,59 +1,60 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
-<%@ page import="vn.com.micareer.model.Admin" %>
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
 
-<%
-    Admin user = (Admin) session.getAttribute("user");
+<c:if test="${empty sessionScope.user || sessionScope.user.role != 'ADMIN'}">
+    <c:redirect url="/login"/>
+</c:if>
 
-    if (user == null || !"ADMIN".equals(user.getRole())) {
-        response.sendRedirect("../login.jsp");
-        return;
-    }
-%>
-
+<!DOCTYPE html>
 <html>
 <head>
     <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/common.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/admin.css">
 </head>
 <body>
 
-<h2>Admin Dashboard 🛠️</h2>
+<!-- HEADER -->
+<jsp:include page="/views/common/header.jsp"/>
 
-<p>
-    Xin chào Admin: 
-    <b><%= user.getfName() + " " + user.getlName() %></b>
-</p>
+<div class="admin-container">
 
-<p>Username: <%= user.getUserName() %></p>
-<p>Email: <%= user.getEmail() %></p>
+    <h2>Admin Dashboard 🛠️</h2>
 
-<hr>
+    <div class="admin-info">
+        <p>Xin chào Admin: 
+            <b>${sessionScope.user.fName} ${sessionScope.user.lName}</b>
+        </p>
+        <p>Username: ${sessionScope.user.userName}</p>
+        <p>Email: ${sessionScope.user.email}</p>
+    </div>
 
-<h3>Quản lý hệ thống</h3>
+    <!-- QUẢN LÝ -->
+    <div class="admin-section">
+        <h3>Quản lý hệ thống</h3>
+        <div class="card-grid">
+            <a href="#" class="card">Users</a>
+            <a href="#" class="card">Candidates</a>
+            <a href="#" class="card">HR</a>
+            <a href="#" class="card">Jobs</a>
+            <a href="#" class="card">Thống kê</a>
+        </div>
+    </div>
 
-<ul>
-    <li><a href="#">Quản lý Users</a></li>
-    <li><a href="#">Quản lý Candidates</a></li>
-    <li><a href="#">Quản lý HR</a></li>
-    <li><a href="#">Quản lý Job</a></li>
-    <li><a href="#">Thống kê</a></li>
-</ul>
+    <!-- ACTION -->
+    <div class="admin-section">
+        <h3>Hành động nhanh</h3>
+        <div class="card-grid">
+            <a href="#" class="card">Tạo Admin</a>
+            <a href="#" class="card">Khóa tài khoản</a>
+            <a href="#" class="card">Logs</a>
+        </div>
+    </div>
 
-<hr>
+</div>
 
-<h3>Hành động nhanh</h3>
-
-<ul>
-    <li><a href="#">Tạo Admin mới</a></li>
-    <li><a href="#">Khóa tài khoản</a></li>
-    <li><a href="#">Xem log hệ thống</a></li>
-</ul>
-
-<hr>
-
-<!-- Logout -->
-<form action="../logout" method="post">
-    <button type="submit">Logout</button>
-</form>
+<!-- FOOTER -->
+<jsp:include page="/views/common/footer.jsp"/>
 
 </body>
 </html>

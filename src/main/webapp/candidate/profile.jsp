@@ -10,67 +10,75 @@
     }
 %>
 
+
+
 <html>
 <head>
     <title>Candidate Profile</title>
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/style.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/common.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/profile.css">
 </head>
 <body>
 
-<h2>Hồ sơ cá nhân 👤</h2>
+    
+<jsp:include page="/common/header.jsp"/>
+<div class="profile-container">
 
-<hr>
+    <h2>Hồ sơ cá nhân 👤</h2>
 
-<h3>Thông tin cơ bản</h3>
+    <div class="profile-card">
+        <h3>Thông tin cơ bản</h3>
 
-<p><b>Họ tên:</b> <%= user.getfName() + " " + user.getlName() %></p>
-<p><b>Username:</b> <%= user.getUserName() %></p>
-<p><b>Email:</b> <%= user.getEmail() %></p>
-<p><b>Phone:</b> <%= user.getPhone() %></p>
-<p><b>Địa chỉ:</b> <%= user.getStreet() %>, <%= user.getWard() %>, <%= user.getProvId() %></p>
+        <p><b>Họ tên:</b> <%= user.getfName() + " " + user.getlName() %></p>
+        <p><b>Username:</b> <%= user.getUserName() %></p>
+        <p><b>Email:</b> <%= user.getEmail() %></p>
+        <p><b>Phone:</b> <%= user.getPhone() %></p>
+        <p><b>Địa chỉ:</b> <%= user.getStreet() %>, <%= user.getWard() %>, <%= user.getProvId() %></p>
+    </div>
 
-<hr>
+    <div class="profile-card">
+        <h3>Thông tin nghề nghiệp</h3>
 
-<h3>Thông tin nghề nghiệp</h3>
+        <p><b>Bio:</b> <%= user.getBio() != null ? user.getBio() : "Chưa có" %></p>
 
-<p><b>Bio:</b> <%= user.getBio() != null ? user.getBio() : "Chưa có" %></p>
+        <p><b>CV:</b> 
+            <% if (user.getCvUrl() != null && !user.getCvUrl().isEmpty()) { %>
+                <a href="<%= user.getCvUrl() %>" target="_blank">Xem CV</a>
+            <% } else { %>
+                Chưa có
+            <% } %>
+        </p>
 
-<p><b>CV:</b> 
-    <% if (user.getCvUrl() != null && !user.getCvUrl().isEmpty()) { %>
-        <a href="<%= user.getCvUrl() %>" target="_blank">Xem CV</a>
-    <% } else { %>
-        Chưa có
-    <% } %>
-</p>
+        <p><b>Ngày sinh:</b> <%= user.getDob() != null ? user.getDob() : "Chưa có" %></p>
 
-<p><b>Ngày sinh:</b> 
-    <%= user.getDob() != null ? user.getDob() : "Chưa có" %>
-</p>
+        <p><b>Kinh nghiệm:</b> 
+            <%= user.getExpYears() != null ? user.getExpYears() + " năm" : "Chưa có" %>
+        </p>
+    </div>
 
-<p><b>Kinh nghiệm:</b> 
-    <%= user.getExpYears() != null ? user.getExpYears() + " năm" : "Chưa có" %>
-</p>
+    <!-- Message -->
+    <c:if test="${not empty message}">
+        <p class="msg-success">${message}</p>
+    </c:if>
 
-<hr>
+    <c:if test="${not empty error}">
+        <p class="msg-error">${error}</p>
+    </c:if>
 
-<c:if test="${not empty message}">
-    <p style="color:green">${message}</p>
-</c:if>
+    <!-- Actions -->
+    <div class="profile-actions">
+        <a href="${pageContext.request.contextPath}/home" class="btn btn-back">⬅ Quay lại</a>
+        <a href="./editProfile" class="btn btn-edit">Chỉnh sửa</a>
+    </div>
 
-<c:if test="${not empty error}">
-    <p style="color:red">${error}</p>
-</c:if>
-<!-- Nút hành động -->
-<ul>
-    <li><a href="home.jsp">⬅ Quay lại Home</a></li>
-    <li><a href="edit.jsp"> Chính sửa hồ sơ</a></li>
-</ul>
+    <br>
 
+    <form action="../logout" method="post">
+        <button class="btn btn-logout">Đăng xuất</button>
+    </form>
 
-<br><br>
-
-<form action="../logout" method="post">
-    <button type="submit">Logout</button>
-</form>
-
+</div>
+<jsp:include page="/common/footer.jsp"/>
 </body>
 </html>

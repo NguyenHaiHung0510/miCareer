@@ -1,6 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
 <%@ page import="vn.com.micareer.model.Candidate" %>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
+
 <%
     Candidate user = (Candidate) session.getAttribute("user");
 %>
@@ -8,71 +9,102 @@
 <html>
 <head>
     <title>Edit Profile</title>
+
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/style.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/edit-profile.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/common.css">
 </head>
 <body>
 
-<h2>✏️ Cập nhật hồ sơ</h2>
+<jsp:include page="/common/header.jsp"/>
 
-<form action="../editProfile" method="post" enctype="multipart/form-data">
+<div class="edit-container">
+    <div class="edit-card">
 
-    <h3>Thông tin cơ bản</h3>
+        <h2>✏️ Cập nhật hồ sơ</h2>
 
-    First Name:
-    <input type="text" name="fName" value="<%= user.getfName() %>" required><br><br>
+        <form action="${pageContext.request.contextPath}/candidate/editProfile" method="post" enctype="multipart/form-data">
 
-    Last Name:
-    <input type="text" name="lName" value="<%= user.getlName() %>" required><br><br>
+            <!-- BASIC -->
+            <div class="edit-section">
+                <h3>Thông tin cơ bản</h3>
 
-    Email:
-    <input type="email" name="email" value="<%= user.getEmail() %>" required><br><br>
+                <div class="form-group">
+                    <label>First Name</label>
+                    <input type="text" name="fName" value="<%= user.getfName() %>" required>
+                </div>
 
-    Phone:
-    <input type="text" name="phone" value="<%= user.getPhone() %>"><br><br>
+                <div class="form-group">
+                    <label>Last Name</label>
+                    <input type="text" name="lName" value="<%= user.getlName() %>" required>
+                </div>
 
-    <hr>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" name="email" value="<%= user.getEmail() %>" required>
+                </div>
 
-    <h3>Thông tin nghề nghiệp</h3>
+                <div class="form-group">
+                    <label>Phone</label>
+                    <input type="text" name="phone" value="<%= user.getPhone() %>">
+                </div>
+            </div>
 
-    Bio:
-    <textarea name="bio"><%= user.getBio() != null ? user.getBio() : "" %></textarea><br><br>
+            <!-- JOB -->
+            <div class="edit-section">
+                <h3>Thông tin nghề nghiệp</h3>
 
-<c:choose>
+                <div class="form-group">
+                    <label>Bio</label>
+                    <textarea name="bio"><%= user.getBio() != null ? user.getBio() : "" %></textarea>
+                </div>
 
-    <c:when test="${not empty user.cvUrl}">
-        <p>
-            CV hiện tại: 
-            <a href="${user.cvUrl}" target="_blank">Xem CV</a>
-        </p>
+                <c:choose>
+                    <c:when test="${not empty user.cvUrl}">
+                        <p>CV hiện tại: <a href="${user.cvUrl}" target="_blank">Xem CV</a></p>
 
-        <label>Thay CV mới:</label>
-        <input type="file" name="file"><br><br>
-    </c:when>
+                        <div class="form-group">
+                            <label>Thay CV mới</label>
+                            <input type="file" name="file">
+                        </div>
+                    </c:when>
 
-    <c:otherwise>
-        <label>Tải lên CV:</label>
-        <input type="file" name="file" required><br><br>
-    </c:otherwise>
+                    <c:otherwise>
+                        <div class="form-group">
+                            <label>Tải lên CV</label>
+                            <input type="file" name="file" required>
+                        </div>
+                    </c:otherwise>
+                </c:choose>
 
-</c:choose>
-    Date of Birth:
-    <input type="date" name="dob"
-           value="<%= user.getDob() != null ? user.getDob() : "" %>"><br><br>
+                <div class="form-group">
+                    <label>Date of Birth</label>
+                    <input type="date" name="dob"
+                    value="<%= user.getDob() != null ? user.getDob() : "" %>"><br><br>
+                </div>
 
-    Experience Years:
-    <input type="number" step="0.1" name="expYears"
-           value="<%= user.getExpYears() != null ? user.getExpYears() : "" %>"><br><br>
+                <div class="form-group">
+                    <label>Experience Years</label>
+                    <input type="number" step="0.1" name="expYears"
+                        value="<%= user.getExpYears() != null ? user.getExpYears() : "" %>">
+                </div>
+            </div>
 
-    <hr>
+            <!-- ACTION -->
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Update</button>
+                <a href="./profile" class="btn btn-secondary">⬅ Quay lại</a>
+            </div>
 
-    <button type="submit">Update</button>
-</form>
+        </form>
 
-<br>
+        <p class="msg-error">${error}</p>
+        <p class="msg-success">${message}</p>
 
-<a href="profile.jsp">⬅ Quay lại Profile</a>
+    </div>
+</div>
 
-<p style="color:red">${error}</p>
-<p style="color:green">${message}</p>
+<jsp:include page="/common/footer.jsp"/>
 
 </body>
 </html>
