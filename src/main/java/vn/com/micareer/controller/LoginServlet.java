@@ -38,7 +38,7 @@ public class LoginServlet extends HttpServlet {
 
             System.out.println(user);
 
-            // ?session
+            // session
             HttpSession session = request.getSession();
             session.setAttribute("account", user); // lưu user chung
 
@@ -52,6 +52,7 @@ public class LoginServlet extends HttpServlet {
                     Candidate c = cdao.getById(userId); 
 
                     session.setAttribute("user", c);
+                    
                     if (redirect != null && !redirect.isBlank()) {
                         response.sendRedirect(redirect);
                     } else {
@@ -61,9 +62,17 @@ public class LoginServlet extends HttpServlet {
                 }
 
                 case "HR": {
-                    // TODO: nếu có HRDAO thì nên load thêm
+                    // Truyền thêm biến loggedUserId kiểu Long cho Module 5 dùng
+                    session.setAttribute("loggedUserId", Long.valueOf(user.getUserId()));
                     session.setAttribute("user", user);
-                    response.sendRedirect("hr/dashboard.jsp");
+                    
+                    // Bổ sung thêm tính năng redirect
+                    if (redirect != null && !redirect.isBlank()) {
+                        response.sendRedirect(redirect);
+                    } else {
+                        // Sửa hướng redirect sang Module 5
+                        response.sendRedirect(request.getContextPath() + "/hr/my-jobs");
+                    }
                     break;
                 }
 
