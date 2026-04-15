@@ -15,7 +15,12 @@ import vn.com.micareer.model.Candidate;
 
 @WebServlet(name = "LoginServlet", urlPatterns = {"/login"})
 public class LoginServlet extends HttpServlet {
-
+     @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        
+        request.getRequestDispatcher("/login.jsp").forward(request, response);
+    }
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -56,7 +61,7 @@ public class LoginServlet extends HttpServlet {
                     if (redirect != null && !redirect.isBlank()) {
                         response.sendRedirect(redirect);
                     } else {
-                        response.sendRedirect("candidate/home.jsp");
+                        response.sendRedirect(request.getContextPath() + "/home");
                     }
                     break;
                 }
@@ -81,7 +86,7 @@ public class LoginServlet extends HttpServlet {
                     Admin a = adao.getById(userId);
 
                     session.setAttribute("user", a);
-                    response.sendRedirect("admin/dashboard.jsp");
+                    response.sendRedirect("admin/dashboard");
                     break;
                 }
 
