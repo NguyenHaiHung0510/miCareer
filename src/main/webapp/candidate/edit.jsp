@@ -72,7 +72,7 @@
                     <c:otherwise>
                         <div class="form-group">
                             <label>Tải lên CV</label>
-                            <input type="file" name="file" required>
+                            <input type="file" name="file">
                         </div>
                     </c:otherwise>
                 </c:choose>
