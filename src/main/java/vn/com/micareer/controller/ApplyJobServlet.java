@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.URLEncoder;
 import java.sql.SQLException;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.MultipartConfig;
@@ -20,6 +21,7 @@ import vn.com.micareer.model.Candidate;
 import vn.com.micareer.model.JobApplication;
 import vn.com.micareer.model.JobDetailView;
 import vn.com.micareer.util.FileUploadUtil;
+import vn.com.micareer.util.UploadCVUtil;
 
 @MultipartConfig(
         maxFileSize = 5 * 1024 * 1024,
@@ -53,6 +55,14 @@ public class ApplyJobServlet extends HttpServlet {
                 response.sendRedirect(request.getContextPath() + "/job-list");
                 return;
             }
+
+            if (!isJobOpenForApply(detail)) {
+                request.setAttribute("error", "Công việc này đã hết hạn ứng tuyển.");
+                request.setAttribute("job", detail);
+                request.getRequestDispatcher("/views/jobs/apply-job.jsp").forward(request, response);
+                return;
+            }
+
             request.setAttribute("job", detail);
         } catch (SQLException e) {
             request.setAttribute("error", "Không thể tải thông tin việc làm.");
@@ -72,7 +82,7 @@ public class ApplyJobServlet extends HttpServlet {
             return;
         }
 
-        Long candidateId = resolveCandidateId(candidate);
+        Integer candidateId = resolveCandidateId(candidate);
         String coverLetter = request.getParameter("coverLetter");
         Part cvFile = request.getPart("cvFile");
 
@@ -83,6 +93,19 @@ public class ApplyJobServlet extends HttpServlet {
         }
 
         try {
+            JobDetailView detail = jobPostingDAO.findJobDetailById(jobPostId);
+            if (detail == null) {
+                request.setAttribute("error", "Không tìm thấy công việc để ứng tuyển.");
+                forwardWithJob(request, response, jobPostId);
+                return;
+            }
+
+            if (!isJobOpenForApply(detail)) {
+                request.setAttribute("error", "Công việc này đã hết hạn ứng tuyển.");
+                forwardWithJob(request, response, jobPostId);
+                return;
+            }
+
             if (!candidateDAO.existsById(candidateId)) {
                 request.setAttribute("error", "Candidate không tồn tại. Vui lòng kiểm tra candidateId.");
                 forwardWithJob(request, response, jobPostId);
@@ -97,13 +120,14 @@ public class ApplyJobServlet extends HttpServlet {
 
             String cvPath;
             if (cvFile != null && cvFile.getSize() > 0) {
-                if (!FileUploadUtil.isValidCvFile(cvFile)) {
-                    request.setAttribute("error", "Định dạng CV không hợp lệ. Chỉ chấp nhận PDF/DOC/DOCX.");
+                String uploadPath = getServletContext().getRealPath("");
+                try{
+                    cvPath = FileUploadUtil.saveFile(cvFile, uploadPath);
+                }catch (Exception e){
+                    request.setAttribute("error", "Lỗi khi lưu file CV: " + e.getMessage());
                     forwardWithJob(request, response, jobPostId);
                     return;
                 }
-                String uploadPath = getServletContext().getRealPath("");
-                cvPath = FileUploadUtil.saveFile(cvFile, uploadPath);
             } else {
                 request.setAttribute("error", "Vui lòng upload CV trước khi ứng tuyển.");
                 forwardWithJob(request, response, jobPostId);
@@ -156,15 +180,15 @@ public class ApplyJobServlet extends HttpServlet {
         return null;
     }
 
-    private Long resolveCandidateId(Candidate candidate) {
+    private Integer resolveCandidateId(Candidate candidate) {
         if (candidate == null) {
             return null;
         }
         if (candidate.getCandidateId() != null) {
-            return candidate.getCandidateId().longValue();
+            return candidate.getCandidateId();
         }
         if (candidate.getUserId() != null) {
-            return candidate.getUserId().longValue();
+            return candidate.getUserId();
         }
         return null;
     }
@@ -177,6 +201,15 @@ public class ApplyJobServlet extends HttpServlet {
         String loginUrl = request.getContextPath() + "/login.jsp?redirect="
                 + URLEncoder.encode(target, StandardCharsets.UTF_8);
         response.sendRedirect(loginUrl);
+    }
+
+    private boolean isJobOpenForApply(JobDetailView detail) {
+        if (detail == null) {
+            return false;
+        }
+
+        LocalDateTime expAt = detail.getExpAt();
+        return expAt == null || !LocalDateTime.now().isAfter(expAt);
     }
 
     private Long parseLong(String value) {
