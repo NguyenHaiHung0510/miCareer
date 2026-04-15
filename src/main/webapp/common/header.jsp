@@ -53,7 +53,7 @@
 
                     <c:when test="${empty sessionScope.user}">
                         <a class="login-link" href="${pageContext.request.contextPath}/login">Đăng nhập</a>
-                        <a class="btn-primary register-link" href="${pageContext.request.contextPath}/register.jsp">Đăng ký</a>
+                        <a class="btn-primary register-link" href="${pageContext.request.contextPath}/register">Đăng ký</a>
                     </c:when>
 
                     <c:otherwise>
