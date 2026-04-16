@@ -63,6 +63,9 @@
                         <input type="number" step="0.01" name="minSalary"
                                class="${fieldErrors.minSalary != null ? 'error' : ''}"
                                value="${param.minSalary != null ? param.minSalary : (job != null ? job.minSalary : '')}">
+                        <c:if test="${fieldErrors.minSalary != null}">
+                            <div class="error-text">${fieldErrors.minSalary}</div>
+                        </c:if>
                     </div>
 
                     <div class="form-group">
@@ -70,6 +73,9 @@
                         <input type="number" step="0.01" name="maxSalary"
                                class="${fieldErrors.maxSalary != null ? 'error' : ''}"
                                value="${param.maxSalary != null ? param.maxSalary : (job != null ? job.maxSalary : '')}">
+                        <c:if test="${fieldErrors.maxSalary != null}">
+                            <div class="error-text">${fieldErrors.maxSalary}</div>
+                        </c:if>
                     </div>
                 </div>
 
@@ -81,6 +87,9 @@
                         <input type="text" name="workLoc"
                                class="${fieldErrors.workLoc != null ? 'error' : ''}"
                                value="${param.workLoc != null ? param.workLoc : (job != null ? job.workLoc : '')}">
+                        <c:if test="${fieldErrors.workLoc != null}">
+                            <div class="error-text">${fieldErrors.workLoc}</div>
+                        </c:if>
                     </div>
 
                     <div class="form-group">
