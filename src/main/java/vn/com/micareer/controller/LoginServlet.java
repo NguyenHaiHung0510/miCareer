@@ -76,7 +76,7 @@ public class LoginServlet extends HttpServlet {
                     if (redirect != null && !redirect.isBlank()) {
                         response.sendRedirect(redirect);
                     } else {
-                        response.sendRedirect(request.getContextPath() + "/hr/my-jobs");
+                        response.sendRedirect(request.getContextPath() + "/hr/dashboard");
                     }
                     break;
                 }

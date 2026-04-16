@@ -140,9 +140,10 @@
 
                 <select name="status">
                     <option value="">-- Trạng thái job --</option>
-                    <option value="PUBLISHED" ${status == 'PUBLISHED' ? 'selected' : ''}>Published</option>
-                    <option value="DRAFT" ${status == 'DRAFT' ? 'selected' : ''}>Draft</option>
-                    <option value="CLOSED" ${status == 'CLOSED' ? 'selected' : ''}>Closed</option>
+                    <option value="PUBLISHED" ${status == 'PUBLISHED' ? 'selected' : ''}>Đang tuyển</option>
+                    <option value="DRAFT" ${status == 'DRAFT' ? 'selected' : ''}>Nháp</option>
+                    <option value="CLOSED" ${status == 'CLOSED' ? 'selected' : ''}>Đã đóng</option>
+                    <option value="EXPIRED" ${job.stat == 'EXPIRED' ? 'selected' : ''}>Hết hạn</option>
                 </select>
 
                 <button type="submit">Lọc</button>
@@ -151,27 +152,27 @@
             <!-- CARDS -->
             <div class="card-grid">
                 <div class="card">
-                    <h3>Tổng số Job</h3>
+                    <h3>Tổng số tin tuyển dụng</h3>
                     <div class="value">${totalJobs}</div>
                 </div>
 
                 <div class="card">
-                    <h3>Tổng Applications</h3>
+                    <h3>Tổng lượt ứng tuyển</h3>
                     <div class="value">${totalApplications}</div>
                 </div>
 
                 <div class="card">
-                    <h3>Applications hôm nay</h3>
+                    <h3>Ứng tuyển hôm nay</h3>
                     <div class="value">${applicationsToday}</div>
                 </div>
             </div>
 
             <!-- TOP JOBS -->
             <div class="table-box">
-                <h3>🔥 Top Jobs nhiều ứng tuyển</h3>
+                <h3>🔥 Top công việc nhiều ứng tuyển</h3>
                 <table>
                     <tr>
-                        <th>Job Title</th>
+                        <th>Tiêu đề công việc</th>
                         <th>Số ứng tuyển</th>
                     </tr>
 
