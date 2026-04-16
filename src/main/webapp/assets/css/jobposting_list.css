@@ -1,0 +1,119 @@
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 20px 0;
+}
+
+.page-header h2 {
+    font-size: 22px;
+    font-weight: 700;
+    color: #1f2937;
+}
+
+/* WRAPPER */
+.table-wrapper {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.04);
+}
+
+/* TABLE */
+.table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.table thead {
+    background: #f8fafc;
+}
+
+.table th {
+    text-align: left;
+    padding: 12px;
+    font-size: 13px;
+    color: #475569;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.table td {
+    padding: 12px;
+    font-size: 14px;
+    color: #111827;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.table tr:hover {
+    background: #f9fafb;
+}
+
+/* TITLE */
+td.title {
+    font-weight: 600;
+}
+
+/* FORM INLINE */
+.inline-form {
+    margin: 0;
+}
+
+.select {
+    padding: 6px 8px;
+    border-radius: 8px;
+    border: 1px solid #d1d5db;
+    font-size: 13px;
+    outline: none;
+}
+
+/* SALARY */
+.salary {
+    font-weight: 700;
+    color: #111827;
+}
+
+/* ACTION */
+td.action a {
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 600;
+    color: #1d4ed8;
+    margin-right: 10px;
+}
+
+td.action a:hover {
+    text-decoration: underline;
+}
+
+/* EMPTY */
+.empty {
+    text-align: center;
+    padding: 20px;
+    color: #6b7280;
+}
+
+/* BUTTON (from common usage if needed) */
+.btn-primary {
+    background: #1d4ed8;
+    color: #fff;
+    padding: 10px 14px;
+    border-radius: 10px;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.btn-primary:hover {
+    background: #1e40af;
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+    .table-wrapper {
+        overflow-x: auto;
+    }
+
+    .table {
+        min-width: 700px;
+    }
+}

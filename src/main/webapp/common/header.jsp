@@ -30,8 +30,8 @@
             <!-- 🧑‍💼 HR -->
             <c:if test="${sessionScope.user != null && sessionScope.user.role == 'HR'}">
                 <a href="${pageContext.request.contextPath}/hr/dashboard">Dashboard</a>
-                <a href="${pageContext.request.contextPath}/hr/jobs">Tin tuyển dụng</a>
-                <a href="${pageContext.request.contextPath}/hr/applications">Ứng viên</a>
+                <a href="${pageContext.request.contextPath}/hr/jobposting">Danh sách Tin tuyển dụng</a>
+                <a href="${pageContext.request.contextPath}/hr/my-jobs"> Danh sách Ứng viên</a>
             </c:if>
 
             <!-- 👑 Admin -->

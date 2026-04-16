@@ -18,8 +18,8 @@ public class JobRequirementDAO {
         try (Connection conn = DBContext.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
 
             for (int skillId : skillIds) {
-                ps.setInt(1, jobPostId);   
-                ps.setInt(2, skillId);   
+                ps.setInt(1, jobPostId);
+                ps.setInt(2, skillId);
                 ps.addBatch();
             }
 
@@ -29,7 +29,7 @@ public class JobRequirementDAO {
             System.out.println("insert requirement error: " + e.getMessage());
         }
     }
-
+    
     // ================= GET SKILLS BY JOB =================
     public List<String> getSkillsByJob(int jobPostId) {
 
