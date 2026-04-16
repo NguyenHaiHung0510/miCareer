@@ -120,9 +120,8 @@ public class ApplyJobServlet extends HttpServlet {
 
             String cvPath;
             if (cvFile != null && cvFile.getSize() > 0) {
-                String uploadPath = getServletContext().getRealPath("");
                 try{
-                    cvPath = FileUploadUtil.saveFile(cvFile, uploadPath);
+                    cvPath = UploadCVUtil.uploadCV(cvFile, candidateId.toString()).getUrl();
                 }catch (Exception e){
                     request.setAttribute("error", "Lỗi khi lưu file CV: " + e.getMessage());
                     forwardWithJob(request, response, jobPostId);
