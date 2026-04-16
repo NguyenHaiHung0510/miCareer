@@ -9,6 +9,7 @@ import java.sql.Timestamp;
 import java.util.*;
 import vn.com.micareer.dao.*;
 import vn.com.micareer.model.JobPosting;
+import vn.com.micareer.model.User;
 
 @WebServlet("/hr/jobposting")
 public class JobPostingServlet extends HttpServlet {
@@ -27,12 +28,20 @@ public class JobPostingServlet extends HttpServlet {
         String action = request.getParameter("action");
         HttpSession session = request.getSession();
 
-        Integer hrIdObj = (Integer) session.getAttribute("hrId");
-        int hrId = (hrIdObj == null) ? 22 : hrIdObj;
+        User user = (User) session.getAttribute("user");
+
+        if (user == null || !"HR".equalsIgnoreCase(user.getRole())) {
+            response.sendRedirect(request.getContextPath() + "/login");
+            return;
+        }
+
+        int hrId = user.getUserId();
 
         session.setAttribute("hrId", hrId);
 
-        if (action == null) action = "list";
+        if (action == null) {
+            action = "list";
+        }
 
         switch (action) {
             case "list":
@@ -57,8 +66,14 @@ public class JobPostingServlet extends HttpServlet {
         String action = request.getParameter("action");
         HttpSession session = request.getSession();
 
-        Integer hrIdObj = (Integer) session.getAttribute("hrId");
-        int hrId = (hrIdObj == null) ? 22 : hrIdObj;
+        User user = (User) session.getAttribute("user");
+
+        if (user == null || !"HR".equalsIgnoreCase(user.getRole())) {
+            response.sendRedirect(request.getContextPath() + "/login");
+            return;
+        }
+
+        int hrId = user.getUserId();
 
         session.setAttribute("hrId", hrId);
 
@@ -155,7 +170,7 @@ public class JobPostingServlet extends HttpServlet {
             if (desc == null || desc.trim().isEmpty()) {
                 fieldErrors.put("desc", "Không được để trống");
             }
-            
+
             if (workLoc == null || workLoc.trim().isEmpty()) {
                 fieldErrors.put("workLoc", "Không được để trống");
             }
@@ -249,7 +264,7 @@ public class JobPostingServlet extends HttpServlet {
             String minSalaryRaw = request.getParameter("minSalary");
             String maxSalaryRaw = request.getParameter("maxSalary");
             String workLoc = request.getParameter("workLoc");
-            
+
             if (title == null || title.trim().isEmpty()) {
                 fieldErrors.put("title", "Không được để trống");
             }
@@ -257,7 +272,7 @@ public class JobPostingServlet extends HttpServlet {
             if (desc == null || desc.trim().isEmpty()) {
                 fieldErrors.put("desc", "Không được để trống");
             }
-            
+
             if (workLoc == null || workLoc.trim().isEmpty()) {
                 fieldErrors.put("workLoc", "Không được để trống");
             }
@@ -267,7 +282,7 @@ public class JobPostingServlet extends HttpServlet {
             try {
                 minSalary = new BigDecimal(minSalaryRaw);
                 maxSalary = new BigDecimal(maxSalaryRaw);
-                
+
                 if (minSalary.compareTo(BigDecimal.ZERO) < 0) {
                     fieldErrors.put("minSalary", "Mức lương phải >= 0");
                 }
@@ -275,7 +290,7 @@ public class JobPostingServlet extends HttpServlet {
                 if (maxSalary.compareTo(BigDecimal.ZERO) < 0) {
                     fieldErrors.put("maxSalary", "Mức lương phải >= 0");
                 }
-                
+
                 if (minSalary.compareTo(maxSalary) > 0) {
                     fieldErrors.put("maxSalary", "Lương tối đa phải >= Lương tối thiểu");
                 }
@@ -313,10 +328,9 @@ public class JobPostingServlet extends HttpServlet {
 
             jobDAO.updateByHR(job, hrId);
 
-            reqDAO.deleteByJob(jobId);
-
             String[] skillIds = request.getParameterValues("skills");
             if (skillIds != null) {
+                reqDAO.deleteByJob(jobId);
                 reqDAO.insert(jobId,
                         Arrays.stream(skillIds).map(Integer::parseInt).toList());
             }
