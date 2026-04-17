@@ -115,14 +115,19 @@
             <div id="hrFields" style="display:none;">
                 <div class="form-group">
                     <label>Company</label>
-                    <input type="text" name="company">
+                    <select name="companyId" required>
+                        <option value="">-- Chọn công ty --</option>
+                        <c:forEach var="c" items="${company}">
+                            <option value="${c.compId}">${c.compName}</option>
+                        </c:forEach>
+                    </select>
                 </div>
 
                 <div class="form-group">
                     <label>HR Position</label>
-                    <select name="hrPosition">
-                        <option value="HR_MANAGER">Quản lí HR</option>
-                        <option value="HR_STAFF">Nhân viên HR</option>
+                    <select name="positionId">
+                        <option value="1">Quản lí HR</option>
+                        <option value="2">Nhân viên HR</option>
                     </select>
                 </div>
             </div>

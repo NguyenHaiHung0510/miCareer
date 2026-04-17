@@ -31,11 +31,18 @@ public class RegisterServlet extends HttpServlet {
         request.setAttribute("central", grouped.get("CENTRAL"));
         request.setAttribute("south", grouped.get("SOUTH"));
     }
+    
+    private void loadCompany(HttpServletRequest request) throws Exception{
+        CompanyDAO dao = new CompanyDAO();
+        List<Company> all = dao.getAll();
+        request.setAttribute("company", all);
+    }
 
     // helper tránh try-catch lặp
-    private void loadProvinceSafe(HttpServletRequest request) {
+    private void loadSafe(HttpServletRequest request) {
         try {
             loadProvince(request);
+            loadCompany(request);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -45,7 +52,7 @@ public class RegisterServlet extends HttpServlet {
     private void forwardRegister(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        loadProvinceSafe(request);
+        loadSafe(request);
         request.getRequestDispatcher("register.jsp").forward(request, response);
     }
 
@@ -74,12 +81,7 @@ public class RegisterServlet extends HttpServlet {
         String street = request.getParameter("street");
         String role = request.getParameter("role");
                 
-        // ❗ chỉ cho candidate
-        if (!"candidate".equals(role)) {
-            request.setAttribute("error", "Chỉ hỗ trợ đăng ký Candidate!");
-            forwardRegister(request, response);
-            return;
-        }
+
 
         // ❗ check password
         if (!pwd.equals(confirmPwd)) {
@@ -103,47 +105,78 @@ public class RegisterServlet extends HttpServlet {
                 forwardRegister(request, response);
                 return;
             }
-            // ===== Candidate fields =====
-            String bio = request.getParameter("bio");
-            String cvUrl = request.getParameter("cvUrl");
-            String dobStr = request.getParameter("dob");
-            String expStr = request.getParameter("expYears");
-
-            LocalDate dob = null;
-            if (dobStr != null && !dobStr.isEmpty()) {
-                dob = LocalDate.parse(dobStr);
-            }
-
-            Double expYears = null;
-            if (expStr != null && !expStr.isEmpty()) {
-                expYears = Double.valueOf(expStr);
-            }
-
-            Candidate c = new Candidate();
-            String hashedPwd = PasswordUtil.hashPassword(pwd);
             
-            c.setUserName(userName);
-            c.setPwd(hashedPwd);
-            c.setfName(fName);
-            c.setlName(lName);
-            c.setEmail(email);
-            c.setPhone(phone);
-            c.setProvId(provId);
-            c.setWard(ward);
-            c.setStreet(street);
+            String hashedPwd = PasswordUtil.hashPassword(pwd);
+            if(role.equals("CANDIDATE")){
+                // ===== Candidate fields =====
+                String bio = request.getParameter("bio");
+                String cvUrl = request.getParameter("cvUrl");
+                String dobStr = request.getParameter("dob");
+                String expStr = request.getParameter("expYears");
 
-            c.setRole("CANDIDATE");
-            c.setStat("ACTIVE");
-            c.setCreatedAt(LocalDateTime.now());
+                LocalDate dob = null;
+                if (dobStr != null && !dobStr.isEmpty()) {
+                    dob = LocalDate.parse(dobStr);
+                }
 
-            c.setBio(bio);
-            c.setCvUrl(cvUrl);
-            c.setDob(dob);
-            c.setExpYears(expYears);
+                Double expYears = null;
+                if (expStr != null && !expStr.isEmpty()) {
+                    expYears = Double.valueOf(expStr);
+                }
 
-            // ===== Insert =====
+                Candidate c = new Candidate();
+                c.setUserName(userName);
+                c.setPwd(hashedPwd);
+                c.setfName(fName);
+                c.setlName(lName);
+                c.setEmail(email);
+                c.setPhone(phone);
+                c.setProvId(provId);
+                c.setWard(ward);
+                c.setStreet(street);
 
-            cdao.insert(c);
+                c.setRole("CANDIDATE");
+                c.setStat("ACTIVE");
+                c.setCreatedAt(LocalDateTime.now());
+
+                c.setBio(bio);
+                c.setCvUrl(cvUrl);
+                c.setDob(dob);
+                c.setExpYears(expYears);
+
+                // ===== Insert =====
+                cdao.insert(c);
+            }
+            else{
+                // ===== Candidate fields =====
+                HRDAO hd = new HRDAO();
+                Integer companyId = Integer.valueOf(request.getParameter("companyId"));
+                Integer positionId = Integer.valueOf(request.getParameter("positionId"));
+                String emailSign="None";
+                
+                HR hr = new HR();
+                hr.setUserName(userName);
+                hr.setPwd(hashedPwd);
+                hr.setfName(fName);
+                hr.setlName(lName);
+                hr.setEmail(email);
+                hr.setPhone(phone);
+                hr.setProvId(provId);
+                hr.setWard(ward);
+                hr.setStreet(street);
+                
+                hr.setRole("HR");
+                hr.setStat("ACTIVE");
+                hr.setCreatedAt(LocalDateTime.now());
+                
+                hr.setEmailSign(emailSign);
+                hr.setCompId(companyId);
+                hr.setPosId(positionId);
+                // chưa có emailsign
+                // ===== Insert =====
+                hd.insert(hr);
+            }
+
 
             // 👉 redirect sang login (PRG)
             response.sendRedirect(request.getContextPath() + "/login?success=1");
