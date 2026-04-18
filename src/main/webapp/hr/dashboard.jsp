@@ -121,6 +121,15 @@
                 background: #fee2e2;
                 color: #991b1b;
             }
+            .status-REVIEWING {
+                background: #e0f2fe;
+                color: #075985;
+            }
+
+            .status-INTERVIEWING {
+                background: #ede9fe;
+                color: #5b21b6;
+            }
         </style>
     </head>
 

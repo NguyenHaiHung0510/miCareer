@@ -44,6 +44,19 @@ public class HRDashboardServlet extends HttpServlet {
             String toDate = request.getParameter("toDate");
             String status = request.getParameter("status");
 
+            if (fromDate == null) {
+                fromDate = (String) session.getAttribute("fromDate");
+            }
+            if (toDate == null) {
+                toDate = (String) session.getAttribute("toDate");
+            }
+            if (status == null) {
+                status = (String) session.getAttribute("status");
+            }
+
+            session.setAttribute("fromDate", fromDate);
+            session.setAttribute("toDate", toDate);
+            session.setAttribute("status", status);
             // ===== 4. Gọi DAO =====
             int totalJobs = dashboardDAO.countJobs(compId, status);
             int totalApplications = dashboardDAO.countApplications(compId, fromDate, toDate);
