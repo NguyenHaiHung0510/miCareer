@@ -33,7 +33,7 @@ public class HrApplicationListServlet extends HttpServlet {
             // Lấy thông tin công việc để hiển thị tiêu đề
             request.setAttribute("jobDetail", jobPostingDAO.findJobDetailById(jobPostId));
             // Lấy danh sách hồ sơ nộp vào công việc này
-            request.setAttribute("applications", jobApplicationDAO.findByJobPostId(jobPostId));
+            request.setAttribute("applications", jobApplicationDAO.findViewsByJobPostId(jobPostId));
             
         } catch (NumberFormatException | SQLException e) {
             request.setAttribute("applications", Collections.emptyList());

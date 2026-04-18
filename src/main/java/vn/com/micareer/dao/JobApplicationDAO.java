@@ -88,7 +88,44 @@ public class JobApplicationDAO {
         }
         return list;
     }
+    // MODULE 5: Lấy danh sách Ứng viên kèm Thông tin cá nhân
+    public List<ApplicationDetailView> findViewsByJobPostId(long jobPostId) throws SQLException {
+        List<ApplicationDetailView> list = new ArrayList<>();
+        String sql = "SELECT ja.jobAppId, ja.candidateId, u.fName, u.lName, u.email, u.phone, "
+                   + "ja.cvSnapUrl, ja.coverLetter, ja.stat, ja.appliedAt "
+                   + "FROM JobApplication ja "
+                   + "INNER JOIN `User` u ON ja.candidateId = u.userId "
+                   + "WHERE ja.jobPostId = ? ORDER BY ja.appliedAt DESC";
 
+        try (Connection conn = DBContext.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setLong(1, jobPostId);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    ApplicationDetailView detail = new ApplicationDetailView();
+                    detail.setJobAppId(rs.getLong("jobAppId"));
+                    detail.setCandidateId(rs.getLong("candidateId"));
+                    
+                    // Ghép fName và lName thành candidateName
+                    String fName = rs.getString("fName") != null ? rs.getString("fName") : "";
+                    String lName = rs.getString("lName") != null ? rs.getString("lName") : "";
+                    detail.setCandidateName((fName + " " + lName).trim());
+                    
+                    detail.setEmail(rs.getString("email"));
+                    detail.setPhone(rs.getString("phone"));
+                    detail.setCvSnapUrl(rs.getString("cvSnapUrl"));
+                    detail.setCoverLetter(rs.getString("coverLetter"));
+                    detail.setStat(rs.getString("stat"));
+                    
+                    Timestamp appliedAt = rs.getTimestamp("appliedAt");
+                    if (appliedAt != null) detail.setAppliedAt(appliedAt.toLocalDateTime());
+                    
+                    list.add(detail);
+                }
+            }
+        }
+        return list;
+    }
     public boolean updateStatus(long jobAppId, String newStatus) throws SQLException {
         String sql = "UPDATE JobApplication SET stat = ? WHERE jobAppId = ?";
         try (Connection conn = DBContext.getConnection();
