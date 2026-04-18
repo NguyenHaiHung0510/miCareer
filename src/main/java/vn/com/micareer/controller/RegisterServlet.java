@@ -107,7 +107,7 @@ public class RegisterServlet extends HttpServlet {
             }
             
             String hashedPwd = PasswordUtil.hashPassword(pwd);
-            if(role.equals("CANDIDATE")){
+            if(role.equals("candidate")){
                 // ===== Candidate fields =====
                 String bio = request.getParameter("bio");
                 String cvUrl = request.getParameter("cvUrl");
