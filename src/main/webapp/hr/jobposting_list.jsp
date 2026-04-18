@@ -1,97 +1,103 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="jakarta.tags.core" prefix="c" %>
+<%@ page import="vn.com.micareer.util.SalaryFormatUtil" %>
 
+<!DOCTYPE html>
 <html>
     <head>
         <title>Danh sách Job</title>
 
-        <style>
-            table {
-                border-collapse: collapse;
-                width: 100%;
-            }
-
-            th, td {
-                padding: 8px 12px;
-                border: 1px solid #ccc;
-                text-align: left;
-            }
-
-            th {
-                background-color: #f2f2f2;
-            }
-
-            a {
-                text-decoration: none;
-                color: blue;
-            }
-
-            a:hover {
-                text-decoration: underline;
-            }
-        </style>
+        <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/common.css">
+        <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/jobposting_list.css">
     </head>
+
     <body>
 
-        <h2>Danh sách Job</h2>
+        <jsp:include page="/common/header.jsp"/>
 
-        <a href="jobposting?action=edit">+ Tạo Job mới</a>
-        <br/><br/>
+        <main class="container">
 
-        <table>
-            <tr>
-                <th>Job ID</th>
-                <th>Title</th>
-                <th>Status</th>
-                <th>Salary</th>
-                <th>Work Location</th>
-                <th>Work Mode</th>
-                <th>Expire At</th>
-                <th>Actions</th>
-            </tr>
+            <div class="page-header">
+                <h2>Danh sách công việc</h2>
 
-            <c:forEach var="job" items="${jobs}">
-                <tr>
-                    <!-- INT OK -->
-                    <td>${job.jobPostId}</td>
+                <a class="btn-primary" href="jobposting?action=edit">
+                    + Tạo công việc mới
+                </a>
+            </div>
 
-                    <td>${job.title}</td>
+            <div class="table-wrapper">
 
-                    <!-- STATUS FIX -->
-                    <td>
-                        <form action="jobposting" method="post" style="display:inline;">
-                            <input type="hidden" name="action" value="updateStatus">
-                            <input type="hidden" name="jobPostId" value="${job.jobPostId}">
+                <table class="table">
 
-                            <select name="stat" onchange="this.form.submit()">
-                                <option value="DRAFT" ${job.stat == 'DRAFT' ? 'selected' : ''}>DRAFT</option>
-                                <option value="PUBLISHED" ${job.stat == 'PUBLISHED' ? 'selected' : ''}>PUBLISHED</option>
-                                <option value="CLOSED" ${job.stat == 'CLOSED' ? 'selected' : ''}>CLOSED</option>
-                                <option value="EXPIRED" ${job.stat == 'EXPIRED' ? 'selected' : ''}>EXPIRED</option>
-                            </select>
-                        </form>
-                    </td>
+                    <thead>
+                        <tr>
+                            <th>Tiêu đề</th>
+                            <th>Trạng thái</th>
+                            <th>Mức lương</th>
+                            <th>Địa điểm</th>
+                            <th>Hình thức</th>
+                            <th>Hạn tuyển</th>
+                            <th>Thao tác</th>
+                        </tr>
+                    </thead>
 
-                    <td>${job.minSalary} - ${job.maxSalary}</td>
-                    <td>${job.workLoc}</td>
-                    <td>${job.workMode}</td>
-                    <td>${job.expAt}</td>
+                    <tbody>
 
-                    <td>
-                        <a href="jobposting?action=view&id=${job.jobPostId}">View</a> |
-                        <a href="jobposting?action=edit&id=${job.jobPostId}">Edit</a>
-                    </td>
-                </tr>
-            </c:forEach>
+                        <c:forEach var="job" items="${jobs}">
+                            <tr>
 
-            <c:if test="${empty jobs}">
-                <tr>
-                    <td colspan="8" style="text-align:center;">
-                        Chưa có job nào
-                    </td>
-                </tr>
-            </c:if>
-        </table>
+                                <td class="title">
+                                    ${job.title}
+                                </td>
+
+                                <td>
+                                    <form action="jobposting" method="post" class="inline-form">
+                                        <input type="hidden" name="action" value="updateStatus">
+                                        <input type="hidden" name="jobPostId" value="${job.jobPostId}">
+
+                                        <select name="stat" class="select" onchange="this.form.submit()">
+                                            <option value="DRAFT" ${job.stat == 'DRAFT' ? 'selected' : ''}>Nháp</option>
+                                            <option value="PUBLISHED" ${job.stat == 'PUBLISHED' ? 'selected' : ''}>Đang tuyển</option>
+                                            <option value="CLOSED" ${job.stat == 'CLOSED' ? 'selected' : ''}>Đã đóng</option>
+                                            <option value="EXPIRED" ${job.stat == 'EXPIRED' ? 'selected' : ''}>Hết hạn</option>
+                                        </select>
+                                    </form>
+                                </td>
+
+                                <td class="salary">
+                                    <%= SalaryFormatUtil.formatRange(
+                                            ((vn.com.micareer.model.JobPosting) pageContext.getAttribute("job")).getMinSalary(),
+                                            ((vn.com.micareer.model.JobPosting) pageContext.getAttribute("job")).getMaxSalary()
+                                    )%>
+                                </td>
+
+                                <td>${job.workLoc}</td>
+                                <td>${job.workMode}</td>
+                                <td>${job.expAt}</td>
+
+                                <td class="action">
+                                    <a href="jobposting?action=view&id=${job.jobPostId}">Xem</a>
+                                    <a href="jobposting?action=edit&id=${job.jobPostId}">Sửa</a>
+                                </td>
+
+                            </tr>
+                        </c:forEach>
+
+                        <c:if test="${empty jobs}">
+                            <tr>
+                                <td colspan="7" class="empty">
+                                    Chưa có công việc nào
+                                </td>
+                            </tr>
+                        </c:if>
+
+                    </tbody>
+                </table>
+            </div>
+
+        </main>
+
+        <jsp:include page="/common/footer.jsp"/>
 
     </body>
 </html>

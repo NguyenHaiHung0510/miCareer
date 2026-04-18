@@ -1,130 +1,169 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+
+<!DOCTYPE html>
 <html>
 <head>
+    <meta charset="UTF-8">
     <title>Register</title>
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/common.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/auth.css">
 </head>
+
 <body>
-<h2>Register Account</h2>
 
-<form action="register" method="post">
+<!-- HEADER -->
+<jsp:include page="/common/header.jsp"/>
 
-    Username: 
-    <input type="text" name="userName" required><br><br>
+<main class="container" style="display:flex; justify-content:center; padding:40px 0;">
 
-    Password: 
-    <input type="password" name="pwd" required><br><br>
+    <div class="form-container" style="max-width:600px;">
+        <h2>Register Account</h2>
 
-    Confirm Password: 
-    <input type="password" name="confirmPwd" required><br><br>
+        <form action="register" method="post">
 
-    First Name: 
-    <input type="text" name="fName" required><br><br>
+            <!-- Username -->
+            <div class="form-group">
+                <label>Username</label>
+                <input type="text" name="userName" required>
+            </div>
 
-    Last Name: 
-    <input type="text" name="lName" required><br><br>
+            <!-- Password -->
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" name="pwd" required>
+            </div>
 
-    Email: 
-    <input type="email" name="email" required><br><br>
+            <!-- Confirm -->
+            <div class="form-group">
+                <label>Confirm Password</label>
+                <input type="password" name="confirmPwd" required>
+            </div>
 
-    Phone: 
-    <input type="text" name="phone"><br><br>
+            <!-- Name -->
+            <div class="form-group">
+                <label>First Name</label>
+                <input type="text" name="fName" required>
+            </div>
 
+            <div class="form-group">
+                <label>Last Name</label>
+                <input type="text" name="lName" required>
+            </div>
 
-    <select name="provId" required>
+            <!-- Email -->
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" name="email" required>
+            </div>
 
-        <option value="">-- Chọn tỉnh/thành --</option>
+            <!-- Phone -->
+            <div class="form-group">
+                <label>Phone</label>
+                <input type="text" name="phone">
+            </div>
 
-        <optgroup label="Miền Bắc">
-            <c:forEach var="p" items="${north}">
-                <option value="${p.provId}">${p.provName}</option>
-            </c:forEach>
-        </optgroup>
+            <!-- Province -->
+            <div class="form-group">
+                <label>Tỉnh / Thành</label>
+                <select name="provId" required>
+                    <option value="">-- Chọn tỉnh/thành --</option>
 
-        <optgroup label="Miền Trung">
-            <c:forEach var="p" items="${central}">
-                <option value="${p.provId}">${p.provName}</option>
-            </c:forEach>
-        </optgroup>
+                    <optgroup label="Miền Bắc">
+                        <c:forEach var="p" items="${north}">
+                            <option value="${p.provId}">${p.provName}</option>
+                        </c:forEach>
+                    </optgroup>
 
-        <optgroup label="Miền Nam">
-            <c:forEach var="p" items="${south}">
-                <option value="${p.provId}">${p.provName}</option>
-            </c:forEach>
-        </optgroup> 
+                    <optgroup label="Miền Trung">
+                        <c:forEach var="p" items="${central}">
+                            <option value="${p.provId}">${p.provName}</option>
+                        </c:forEach>
+                    </optgroup>
 
-    </select><br><br> 
-    Ward: 
-    <input type="text" name="ward"><br><br>
+                    <optgroup label="Miền Nam">
+                        <c:forEach var="p" items="${south}">
+                            <option value="${p.provId}">${p.provName}</option>
+                        </c:forEach>
+                    </optgroup>
+                </select>
+            </div>
 
-    Street: 
-    <input type="text" name="street"><br><br>
+            <!-- Address -->
+            <div class="form-group">
+                <label>Ward</label>
+                <input type="text" name="ward">
+            </div>
 
-    Role:
-    <select name="role" id="role" onchange="toggleFields()" required>
-        <option value="candidate">Candidate</option>
-        <option value="hr">HR</option>
-    </select>
-    <br><br>
+            <div class="form-group">
+                <label>Street</label>
+                <input type="text" name="street">
+            </div>
 
+            <!-- Role -->
+            <div class="form-group">
+                <label>Role</label>
+                <select name="role" id="role" onchange="toggleFields()" required>
+                    <option value="candidate">Candidate</option>
+                    <option value="hr">HR</option>
+                </select>
+            </div>
 
-    <div id="hrFields" style="display:none;">
+            <!-- HR Fields -->
+            <div id="hrFields" style="display:none;">
+                <div class="form-group">
+                    <label>Company</label>
+                    <select name="companyId" required>
+                        <option value="">-- Chọn công ty --</option>
+                        <c:forEach var="c" items="${company}">
+                            <option value="${c.compId}">${c.compName}</option>
+                        </c:forEach>
+                    </select>
+                </div>
 
-        Company:
-        <input type="text" name="company"><br><br>
+                <div class="form-group">
+                    <label>HR Position</label>
+                    <select name="positionId">
+                        <option value="1">Quản lí HR</option>
+                        <option value="2">Nhân viên HR</option>
+                    </select>
+                </div>
+            </div>
 
-        HR Position:
-        <select name="hrPosition">
-            <option value="HR_MANAGER">Quản lí HR</option>
-            <option value="HR_STAFF">Nhân viên HR</option>
-        </select>
-        <br><br>
+            <!-- Candidate Fields -->
+            <div id="candidateFields" style="display:none;">
+                <div class="form-group">
+                    <label>Date of Birth</label>
+                    <input type="date" name="dob">
+                </div>
+            </div>
 
+            <button class="btn" type="submit">Register</button>
+        </form>
+
+        <p class="msg-error">${error}</p>
+        <p class="msg-success">${message}</p>
+
+        <a class="form-link" href="login">Back to Login</a>
     </div>
-    
-    <div id="candidateFields" style="display:none;">
-<!--
-        Bio:
-        <textarea name="bio"></textarea><br><br>
 
-        CV URL:
-        <input type="text" name="cvUrl"><br><br>-->
+</main>
 
-        Date of Birth:
-        <input type="date" name="dob"><br><br>
-<!--
-        Experience Years:
-        <input type="number" step="0.1" name="expYears"><br><br>-->
-
-    </div>
-    <button type="submit">Register</button>
-</form>
-
-<p style="color:red">${error}</p>
-<p style="color:green">${message}</p>
-
-<a href="login.jsp">Back to Login</a>
+<!-- FOOTER -->
+<jsp:include page="/common/footer.jsp"/>
 
 <script>
 function toggleFields() {
     var role = document.getElementById("role").value;
 
-    var hrFields = document.getElementById("hrFields");
-    var candidateFields = document.getElementById("candidateFields");
-
-    if (role === "hr") {
-        hrFields.style.display = "block";
-        candidateFields.style.display = "none";
-    } else if (role === "candidate") {
-        hrFields.style.display = "none";
-        candidateFields.style.display = "block";
-    } else {
-        hrFields.style.display = "none";
-        candidateFields.style.display = "none";
-    }
+    document.getElementById("hrFields").style.display = (role === "hr") ? "block" : "none";
+    document.getElementById("candidateFields").style.display = (role === "candidate") ? "block" : "none";
 }
 
 window.onload = toggleFields;
 </script>
+
 </body>
 </html>

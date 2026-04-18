@@ -1,57 +1,92 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ page import="vn.com.micareer.util.SalaryFormatUtil" %>
 
+<!DOCTYPE html>
 <html>
     <head>
-        <title>View Job</title>
-        <style>
-            .skills {
-                display: flex;
-                flex-wrap: wrap;
-                gap: 8px; /* khoảng cách giữa các tag */
-                margin-top: 8px;
-            }
+        <title>Chi tiết công việc</title>
 
-            .tag {
-                background-color: #e0e0e0;
-                padding: 4px 10px;
-                border-radius: 12px;
-                font-size: 0.9em;
-            }
-
-            a {
-                text-decoration: none;
-                color: blue;
-            }
-
-            a:hover {
-                text-decoration: underline;
-            }
-        </style>
+        <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/common.css">
+        <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/jobposting-view.css">
     </head>
+
     <body>
 
-        <h2>Job Details</h2>
+        <jsp:include page="/common/header.jsp"/>
 
-        <p><b>Title:</b> ${job.title}</p>
-        <p><b>Description:</b> ${job.desc}</p>
-        <p><b>Salary:</b> ${job.minSalary} - ${job.maxSalary}</p>
-        <p><b>Work Location:</b> ${job.workLoc}</p>
-        <p><b>Work Mode:</b> ${job.workMode}</p>
-        <p><b>Status:</b> ${job.stat}</p>
-        <p><b>Exp At:</b> ${job.expAt}</p>
-        <p><b>Category:</b> ${job.catName}</p>
-        <p><b>Level:</b> ${job.levelName}</p>
+        <main class="container">
 
-        <h3>Skills:</h3>
-        <div class="skills">
-            <c:forEach var="skill" items="${skills}">
-                <span class="tag">${skill}</span>
-            </c:forEach>
-        </div>
+            <!-- HEADER -->
+            <div class="page-header">
+                <h2>Chi tiết công việc</h2>
 
-        <br/>
-        <a href="jobposting?action=list">Back to list</a>
+                <a class="btn-secondary" href="jobposting?action=list">
+                    ← Quay lại
+                </a>
+            </div>
+
+            <!-- CARD -->
+            <div class="detail-card">
+
+                <div class="detail-title">
+                    ${job.title}
+                </div>
+
+                <div class="detail-desc">
+                    ${job.desc}
+                </div>
+
+                <div class="detail-grid">
+
+                    <div class="info">
+
+                        <p><span>💰 Mức lương:</span>
+                            <%= SalaryFormatUtil.formatRange(
+                                    ((vn.com.micareer.model.JobPosting) request.getAttribute("job")).getMinSalary(),
+                                    ((vn.com.micareer.model.JobPosting) request.getAttribute("job")).getMaxSalary()
+                            )%>
+                        </p>
+
+                        <p><span>📍 Địa điểm:</span> ${job.workLoc}</p>
+                        <p><span>🧭 Hình thức:</span> ${job.workMode}</p>
+                        <p><span>📌 Trạng thái:</span> ${job.stat}</p>
+                        <p><span>⏰ Hạn tuyển:</span> ${job.expAt}</p>
+
+                    </div>
+
+                    <div class="info">
+
+                        <p><span>🏢 Danh mục:</span> ${job.catName}</p>
+                        <p><span>🎓 Cấp bậc:</span> ${job.levelName}</p>
+
+                    </div>
+
+                </div>
+
+                <!-- SKILLS -->
+                <div class="skill-section">
+                    <h3>Kỹ năng yêu cầu</h3>
+
+                    <div class="skills">
+                        <c:forEach var="skill" items="${skills}">
+                            <span class="tag">${skill}</span>
+                        </c:forEach>
+                    </div>
+                </div>
+
+                <!-- ACTION -->
+                <div class="action-row">
+                    <a href="jobposting?action=edit&id=${job.jobPostId}" class="btn-primary">
+                        Chỉnh sửa
+                    </a>
+                </div>
+
+            </div>
+
+        </main>
+
+        <jsp:include page="/common/footer.jsp"/>
 
     </body>
 </html>

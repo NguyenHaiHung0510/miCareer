@@ -103,6 +103,20 @@ public class UserDAO implements CrudDAO<User, Integer> {
         return null;
     }
 
+
+    public User getByUsername(String username) throws SQLException {
+        String sql = "SELECT * FROM User WHERE username=?";
+
+        try (Connection con = DBContext.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setString(1, username);
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) return map(rs);
+        }
+        return null;
+    }
     public User login(String userName, String pwd) {
         String sql = "SELECT * FROM User WHERE userName = ? AND pwd = ?";
 
@@ -150,6 +164,24 @@ public class UserDAO implements CrudDAO<User, Integer> {
             ResultSet rs = ps.executeQuery();
 
             return rs.next(); // có record → username đã tồn tại
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return false;
+    }
+    
+    public boolean isEmailExist(String email) {
+        String sql = "SELECT 1 FROM User WHERE email = ?";
+
+        try (Connection con = DBContext.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setString(1, email);
+            ResultSet rs = ps.executeQuery();
+
+            return rs.next(); // có record → email đã tồn tại
 
         } catch (SQLException e) {
             e.printStackTrace();
