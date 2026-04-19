@@ -13,15 +13,18 @@ import jakarta.servlet.http.HttpSession;
 
 import vn.com.micareer.dao.InterviewDAO;
 import vn.com.micareer.dao.JobApplicationDAO;
+import vn.com.micareer.dao.OfferDAO;
 import vn.com.micareer.model.ApplicationDetailView;
 import vn.com.micareer.model.Candidate;
 import vn.com.micareer.model.Interview;
+import vn.com.micareer.model.Offer;
 
 @WebServlet("/candidate/application-detail")
 public class CandidateApplicationDetailServlet extends HttpServlet {
 
     private final JobApplicationDAO jobApplicationDAO = new JobApplicationDAO();
     private final InterviewDAO interviewDAO = new InterviewDAO();
+    private final OfferDAO offerDAO = new OfferDAO();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -67,8 +70,10 @@ public class CandidateApplicationDetailServlet extends HttpServlet {
             }
 
             List<Interview> interviews = interviewDAO.findByJobAppId(jobAppId);
+            List<Offer> offers = offerDAO.findByJobAppId(jobAppId);
             request.setAttribute("appDetail", detail);
             request.setAttribute("interviews", interviews);
+            request.setAttribute("offers", offers);
             request.setAttribute("jobAppId", jobAppId);
 
         } catch (NumberFormatException e) {

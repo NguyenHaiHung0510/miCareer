@@ -44,6 +44,23 @@
                    color: #fff; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 14px; }
         .cv-link:hover { background: #059669; }
 
+        /* Offer */
+        .offer-list { display: flex; flex-direction: column; gap: 12px; }
+        .offer-card { border: 1px solid #e5e7eb; border-radius: 10px; padding: 16px; background: #fffbeb; }
+        .offer-card.latest { border-color: #f59e0b; box-shadow: 0 0 0 2px rgba(245,158,11,0.2); }
+        .offer-ver { font-size: 11px; font-weight: 700; color: #92400e;
+                     text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px; }
+        .offer-salary { font-size: 20px; font-weight: 800; color: #1e293b; margin-bottom: 8px; }
+        .offer-desc-text { font-size: 14px; color: #475569; white-space: pre-wrap;
+                           line-height: 1.5; margin-bottom: 10px; }
+        .offer-stat-badge { display: inline-block; padding: 3px 10px; border-radius: 999px;
+                            font-size: 12px; font-weight: 700; }
+        .stat-PENDING  { background: #fef3c7; color: #92400e; }
+        .stat-ACCEPTED { background: #dcfce7; color: #15803d; }
+        .stat-REJECTED { background: #fee2e2; color: #b91c1c; }
+        .latest-tag { font-size: 11px; background: #f59e0b; color: #fff;
+                      padding: 2px 7px; border-radius: 4px; margin-left: 6px; font-weight: 700; }
+
         /* Interview timeline */
         .interview-list { list-style: none; padding: 0; margin: 0; }
         .interview-item { display: flex; gap: 16px; align-items: flex-start;
@@ -178,6 +195,47 @@
                             </li>
                         </c:forEach>
                     </ul>
+                </c:otherwise>
+            </c:choose>
+        </div>
+
+        <%-- Offer từ nhà tuyển dụng --%>
+        <div class="card">
+            <h3>📨 Offer từ nhà tuyển dụng</h3>
+            <c:choose>
+                <c:when test="${empty offers}">
+                    <p class="empty-text">Chưa có offer nào được gửi đến bạn.</p>
+                </c:when>
+                <c:otherwise>
+                    <div class="offer-list">
+                        <c:forEach items="${offers}" var="off" varStatus="st">
+                            <div class="offer-card ${st.first ? 'latest' : ''}">
+                                <div class="offer-ver">
+                                    Phiên bản ${off.ver}
+                                    <c:if test="${st.first}">
+                                        <span class="latest-tag">MỚI NHẤT</span>
+                                    </c:if>
+                                </div>
+                                <div class="offer-salary">
+                                    <c:choose>
+                                        <c:when test="${not empty off.salary}">
+                                            <fmt:formatNumber value="${off.salary}" type="number" groupingUsed="true"/> VNĐ / tháng
+                                        </c:when>
+                                        <c:otherwise>Mức lương: Thỏa thuận</c:otherwise>
+                                    </c:choose>
+                                </div>
+                                <div class="offer-desc-text">${off.desc}</div>
+                                <span class="offer-stat-badge stat-${off.stat}">
+                                    <c:choose>
+                                        <c:when test="${off.stat == 'PENDING'}">⏳ Đang chờ phản hồi của bạn</c:when>
+                                        <c:when test="${off.stat == 'ACCEPTED'}">✅ Bạn đã chấp nhận</c:when>
+                                        <c:when test="${off.stat == 'REJECTED'}">❌ Bạn đã từ chối</c:when>
+                                        <c:otherwise>${off.stat}</c:otherwise>
+                                    </c:choose>
+                                </span>
+                            </div>
+                        </c:forEach>
+                    </div>
                 </c:otherwise>
             </c:choose>
         </div>
