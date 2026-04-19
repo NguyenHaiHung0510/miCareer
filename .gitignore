@@ -23,3 +23,4 @@ audit-reports/maven-audit.log
 audit-reports/pmd.xml
 audit-reports/spotbugs.xml
 src/main/resources/database.properties
+src/main/resources/cloudinary.properties
