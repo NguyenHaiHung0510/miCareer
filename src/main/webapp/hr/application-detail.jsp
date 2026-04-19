@@ -135,6 +135,7 @@
         }
         .st-PENDING { color: #b45309; background: #fef3c7; }
         .st-REVIEWING { color: #1d4ed8; background: #dbeafe; }
+        .st-INTERVIEWING { color: #6d28d9; background: #ede9fe; }
         .st-ACCEPTED { color: #15803d; background: #dcfce7; }
         .st-REJECTED { color: #b91c1c; background: #fee2e2; }
 
@@ -210,6 +211,7 @@
                     <c:choose>
                         <c:when test="${appDetail.stat == 'PENDING'}">Đang chờ</c:when>
                         <c:when test="${appDetail.stat == 'REVIEWING'}">Đang xem xét</c:when>
+                        <c:when test="${appDetail.stat == 'INTERVIEWING'}">Đang phỏng vấn</c:when>
                         <c:when test="${appDetail.stat == 'ACCEPTED'}">Trúng tuyển</c:when>
                         <c:when test="${appDetail.stat == 'REJECTED'}">Từ chối</c:when>
                         <c:otherwise>${appDetail.stat}</c:otherwise>
@@ -224,6 +226,7 @@
                     <select name="newStatus" id="newStatus" class="status-select">
                         <option value="PENDING" ${appDetail.stat == 'PENDING' ? 'selected' : ''}>Đang chờ (Pending)</option>
                         <option value="REVIEWING" ${appDetail.stat == 'REVIEWING' ? 'selected' : ''}>Đang xem xét (Reviewing)</option>
+                        <option value="INTERVIEWING" ${appDetail.stat == 'INTERVIEWING' ? 'selected' : ''}>Đang phỏng vấn (Interviewing)</option>
                         <option value="ACCEPTED" ${appDetail.stat == 'ACCEPTED' ? 'selected' : ''}>Trúng tuyển (Accepted)</option>
                         <option value="REJECTED" ${appDetail.stat == 'REJECTED' ? 'selected' : ''}>Từ chối (Rejected)</option>
                     </select>
