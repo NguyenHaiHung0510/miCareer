@@ -44,7 +44,7 @@ public class HRDashboardDAO {
             JOIN JobPosting jp ON ja.jobPostId = jp.jobPostId
             WHERE jp.compId = ?
               AND (? IS NULL OR ja.appliedAt >= ?)
-              AND (? IS NULL OR ja.appliedAt <= ?)
+              AND (? IS NULL OR ja.appliedAt < DATE_ADD(?, INTERVAL 1 DAY))
         """;
 
         try (Connection conn = DBContext.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -101,7 +101,7 @@ public class HRDashboardDAO {
             LEFT JOIN JobApplication ja ON jp.jobPostId = ja.jobPostId
             WHERE jp.compId = ?
               AND (? IS NULL OR ja.appliedAt >= ?)
-              AND (? IS NULL OR ja.appliedAt <= ?)
+              AND (? IS NULL OR ja.appliedAt < DATE_ADD(?, INTERVAL 1 DAY))
             GROUP BY jp.jobPostId, jp.title
             ORDER BY total DESC
             LIMIT ?
@@ -142,7 +142,7 @@ public class HRDashboardDAO {
             JOIN JobPosting jp ON ja.jobPostId = jp.jobPostId
             WHERE jp.compId = ?
               AND (? IS NULL OR ja.appliedAt >= ?)
-              AND (? IS NULL OR ja.appliedAt <= ?)
+              AND (? IS NULL OR ja.appliedAt < DATE_ADD(?, INTERVAL 1 DAY))
             GROUP BY ja.stat
         """;
 
