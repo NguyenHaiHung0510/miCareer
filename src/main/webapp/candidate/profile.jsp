@@ -70,6 +70,8 @@
     <div class="profile-actions">
         <a href="${pageContext.request.contextPath}/home" class="btn btn-back">⬅ Quay lại</a>
         <a href="./editProfile" class="btn btn-edit">Chỉnh sửa</a>
+        <a href="${pageContext.request.contextPath}/candidate/my-applications" class="btn btn-edit"
+           style="background:#6366f1; color:#fff;">📋 Đơn ứng tuyển của tôi</a>
     </div>
 
     <br>

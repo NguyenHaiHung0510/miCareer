@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import vn.com.micareer.context.DBContext;
+import vn.com.micareer.model.CandidateApplicationView;
 import vn.com.micareer.model.JobApplication;
 import vn.com.micareer.model.ApplicationDetailView;
 
@@ -173,4 +174,38 @@ public class JobApplicationDAO {
         }
         return null;
     }
-}
+
+    /**
+     * Lấy danh sách đơn ứng tuyển của một ứng viên, kèm tên job và tên công ty.
+     */
+    public List<CandidateApplicationView> findByCandidateId(long candidateId) throws SQLException {
+        List<CandidateApplicationView> list = new ArrayList<>();
+        String sql = "SELECT ja.jobAppId, ja.jobPostId, jp.title, c.compName, "
+                   + "ja.appliedAt, ja.stat, ja.cvSnapUrl "
+                   + "FROM JobApplication ja "
+                   + "INNER JOIN JobPosting jp ON ja.jobPostId = jp.jobPostId "
+                   + "INNER JOIN Company c ON jp.compId = c.compId "
+                   + "WHERE ja.candidateId = ? "
+                   + "ORDER BY ja.appliedAt DESC";
+
+        try (Connection conn = DBContext.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setLong(1, candidateId);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    CandidateApplicationView v = new CandidateApplicationView();
+                    v.setJobAppId(rs.getLong("jobAppId"));
+                    v.setJobPostId(rs.getLong("jobPostId"));
+                    v.setJobTitle(rs.getString("title"));
+                    v.setCompName(rs.getString("compName"));
+                    v.setStat(rs.getString("stat"));
+                    v.setCvSnapUrl(rs.getString("cvSnapUrl"));
+                    Timestamp appliedAt = rs.getTimestamp("appliedAt");
+                    if (appliedAt != null) v.setAppliedAt(appliedAt.toLocalDateTime());
+                    list.add(v);
+                }
+            }
+        }
+        return list;
+    }
+}

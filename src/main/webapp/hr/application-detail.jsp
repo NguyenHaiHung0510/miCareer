@@ -234,6 +234,23 @@
                     <button type="submit" class="submit-btn">Cập nhật trạng thái</button>
                 </form>
             </div>
+
+            <%-- Hành động nhanh --%>
+            <div class="card">
+                <h3>Hành động khác</h3>
+                <a href="${pageContext.request.contextPath}/hr/interview?jobAppId=${appDetail.jobAppId}"
+                   style="display:block; text-align:center; padding:11px; margin-bottom:10px;
+                          background:#6366f1; color:#fff; border-radius:8px; font-weight:700;
+                          text-decoration:none; font-size:14px;">
+                    📅 Lịch phỏng vấn
+                </a>
+                <a href="${pageContext.request.contextPath}/hr/offer?jobAppId=${appDetail.jobAppId}"
+                   style="display:block; text-align:center; padding:11px;
+                          background:#f59e0b; color:#fff; border-radius:8px; font-weight:700;
+                          text-decoration:none; font-size:14px;">
+                    📨 Gửi Offer
+                </a>
+            </div>
         </div>
     </div>
 </main>

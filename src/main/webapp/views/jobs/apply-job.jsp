@@ -62,7 +62,7 @@
             <p class="form-msg success">${success}</p>
         </c:if>
 
-        <form action="${pageContext.request.contextPath}/apply-job" method="post" enctype="multipart/form-data" class="apply-form">
+        <form action="${pageContext.request.contextPath}/apply-job" method="post" enctype="multipart/form-data" class="apply-form" id="applyForm">
             <input type="hidden" name="jobPostId" value="${param.jobPostId != null ? param.jobPostId : job.jobPostId}">
             <input type="hidden" name="candidateId" value="${candidateId}">
 
@@ -71,11 +71,52 @@
             <label for="coverLetter">Cover Letter</label>
             <textarea id="coverLetter" name="coverLetter" rows="8" placeholder="Giới thiệu ngắn gọn về bản thân và lý do ứng tuyển"></textarea>
 
-            <label for="cvFile">Upload CV (PDF/DOC/DOCX)</label>
-            <input id="cvFile" name="cvFile" type="file" accept=".pdf,.doc,.docx,image/*" required>
+            <%-- Chọn CV: nếu đã có CV thì hiện 2 option --%>
+            <c:choose>
+                <c:when test="${not empty existingCvUrl}">
+                    <label>CV của bạn</label>
+                    <div class="cv-choice-group">
+                        <label class="cv-radio-label">
+                            <input type="radio" name="cvChoice" value="existing" id="choiceExisting" checked
+                                   onchange="toggleCvInput(this.value)">
+                            Dùng CV hiện tại
+                            <a href="${existingCvUrl}" target="_blank" class="cv-preview-link">📄 Xem CV</a>
+                        </label>
+                        <label class="cv-radio-label">
+                            <input type="radio" name="cvChoice" value="new" id="choiceNew"
+                                   onchange="toggleCvInput(this.value)">
+                            Tải lên CV mới
+                        </label>
+                    </div>
+                    <div id="cvFileWrap" style="display:none; margin-top:10px;">
+                        <label for="cvFile">Chọn file CV (PDF/DOC/DOCX)</label>
+                        <input id="cvFile" name="cvFile" type="file" accept=".pdf,.doc,.docx,image/*">
+                    </div>
+                </c:when>
+                <c:otherwise>
+                    <input type="hidden" name="cvChoice" value="new">
+                    <label for="cvFile">Upload CV (PDF/DOC/DOCX) <span style="color:red">*</span></label>
+                    <input id="cvFile" name="cvFile" type="file" accept=".pdf,.doc,.docx,image/*" required>
+                </c:otherwise>
+            </c:choose>
 
             <button type="submit">Gửi hồ sơ</button>
         </form>
+
+        <script>
+        function toggleCvInput(choice) {
+            var wrap = document.getElementById('cvFileWrap');
+            var fileInput = document.getElementById('cvFile');
+            if (choice === 'new') {
+                wrap.style.display = 'block';
+                fileInput.required = true;
+            } else {
+                wrap.style.display = 'none';
+                fileInput.required = false;
+                fileInput.value = '';
+            }
+        }
+        </script>
     </section>
 </main>
 

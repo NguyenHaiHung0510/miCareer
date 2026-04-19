@@ -48,6 +48,8 @@ public class ApplyJobServlet extends HttpServlet {
             return;
         }
         request.setAttribute("candidateId", resolveCandidateId(candidate));
+        // Truyền CV hiện có của candidate để JSP hiển thị option
+        request.setAttribute("existingCvUrl", candidate.getCvUrl());
 
         try {
             JobDetailView detail = jobPostingDAO.findJobDetailById(jobPostId);
@@ -84,11 +86,12 @@ public class ApplyJobServlet extends HttpServlet {
 
         Integer candidateId = resolveCandidateId(candidate);
         String coverLetter = request.getParameter("coverLetter");
+        String cvChoice = request.getParameter("cvChoice"); // "existing" hoặc "new"
         Part cvFile = request.getPart("cvFile");
 
         if (jobPostId == null || candidateId == null) {
             request.setAttribute("error", "Không thể xác định tài khoản candidate để ứng tuyển.");
-            forwardWithJob(request, response, jobPostId);
+            forwardWithJob(request, response, jobPostId, candidate);
             return;
         }
 
@@ -96,40 +99,49 @@ public class ApplyJobServlet extends HttpServlet {
             JobDetailView detail = jobPostingDAO.findJobDetailById(jobPostId);
             if (detail == null) {
                 request.setAttribute("error", "Không tìm thấy công việc để ứng tuyển.");
-                forwardWithJob(request, response, jobPostId);
+                forwardWithJob(request, response, jobPostId, candidate);
                 return;
             }
 
             if (!isJobOpenForApply(detail)) {
                 request.setAttribute("error", "Công việc này đã hết hạn ứng tuyển.");
-                forwardWithJob(request, response, jobPostId);
+                forwardWithJob(request, response, jobPostId, candidate);
                 return;
             }
 
             if (!candidateDAO.existsById(candidateId)) {
                 request.setAttribute("error", "Candidate không tồn tại. Vui lòng kiểm tra candidateId.");
-                forwardWithJob(request, response, jobPostId);
+                forwardWithJob(request, response, jobPostId, candidate);
                 return;
             }
 
             if (jobApplicationDAO.existsByJobAndCandidate(jobPostId, candidateId)) {
                 request.setAttribute("error", "Bạn đã ứng tuyển công việc này trước đó.");
-                forwardWithJob(request, response, jobPostId);
+                forwardWithJob(request, response, jobPostId, candidate);
                 return;
             }
 
             String cvPath;
-            if (cvFile != null && cvFile.getSize() > 0) {
-                try{
+            if ("existing".equals(cvChoice)) {
+                // Dùng CV hiện có trong hồ sơ ứng viên
+                cvPath = candidate.getCvUrl();
+                if (cvPath == null || cvPath.isBlank()) {
+                    request.setAttribute("error", "Hồ sơ của bạn chưa có CV. Vui lòng upload CV mới.");
+                    forwardWithJob(request, response, jobPostId, candidate);
+                    return;
+                }
+            } else if (cvFile != null && cvFile.getSize() > 0) {
+                // Upload CV mới
+                try {
                     cvPath = UploadCVUtil.uploadCV(cvFile, candidateId.toString()).getUrl();
-                }catch (Exception e){
+                } catch (Exception e) {
                     request.setAttribute("error", "Lỗi khi lưu file CV: " + e.getMessage());
-                    forwardWithJob(request, response, jobPostId);
+                    forwardWithJob(request, response, jobPostId, candidate);
                     return;
                 }
             } else {
-                request.setAttribute("error", "Vui lòng upload CV trước khi ứng tuyển.");
-                forwardWithJob(request, response, jobPostId);
+                request.setAttribute("error", "Vui lòng chọn CV để ứng tuyển.");
+                forwardWithJob(request, response, jobPostId, candidate);
                 return;
             }
 
@@ -150,10 +162,10 @@ public class ApplyJobServlet extends HttpServlet {
             request.setAttribute("error", "Lỗi hệ thống khi tạo đơn ứng tuyển: " + e.getMessage());
         }
 
-        forwardWithJob(request, response, jobPostId);
+        forwardWithJob(request, response, jobPostId, candidate);
     }
 
-    private void forwardWithJob(HttpServletRequest request, HttpServletResponse response, Long jobPostId)
+    private void forwardWithJob(HttpServletRequest request, HttpServletResponse response, Long jobPostId, Candidate candidate)
             throws ServletException, IOException {
         if (jobPostId != null && jobPostId > 0) {
             try {
@@ -162,7 +174,8 @@ public class ApplyJobServlet extends HttpServlet {
                 request.setAttribute("job", null);
             }
         }
-        request.setAttribute("candidateId", resolveCandidateId(getLoggedInCandidate(request)));
+        request.setAttribute("candidateId", resolveCandidateId(candidate));
+        request.setAttribute("existingCvUrl", candidate != null ? candidate.getCvUrl() : null);
         request.getRequestDispatcher("/views/jobs/apply-job.jsp").forward(request, response);
     }
 
