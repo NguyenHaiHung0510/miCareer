@@ -16,15 +16,15 @@
             <c:if test="${empty sessionScope.user}">
                 <a href="${pageContext.request.contextPath}/home">Trang chủ</a>
                 <a href="${pageContext.request.contextPath}/job-list">Việc làm</a>
-                <a href="#">Công ty</a>
+                <a href="${pageContext.request.contextPath}/companies">Công ty</a>
             </c:if>
 
             <!-- 👤 Candidate -->
             <c:if test="${sessionScope.user != null && sessionScope.user.role == 'CANDIDATE'}">
                 <a href="${pageContext.request.contextPath}/home">Trang chủ</a>
                 <a href="${pageContext.request.contextPath}/job-list">Việc làm</a>
-                <a href="#">Tạo CV</a>
-                <a href="#">Công ty</a>
+                <a href="${pageContext.request.contextPath}/candidate/my-applications">Đơn ứng tuyển</a>
+                <a href="${pageContext.request.contextPath}/companies">Công ty</a>
             </c:if>
 
             <!-- 🧑‍💼 HR -->
@@ -32,6 +32,7 @@
                 <a href="${pageContext.request.contextPath}/hr/dashboard">Dashboard</a>
                 <a href="${pageContext.request.contextPath}/hr/jobposting">Danh sách Tin tuyển dụng</a>
                 <a href="${pageContext.request.contextPath}/hr/my-jobs"> Danh sách Ứng viên</a>
+                <a href="${pageContext.request.contextPath}/companies">Công ty</a>
             </c:if>
 
             <!-- 👑 Admin -->
@@ -79,7 +80,7 @@
             </div>
 
             <!-- RECRUITER chỉ cho Candidate -->
-            <c:if test="${empty sessionScope.user || sessionScope.user.role == 'CANDIDATE'}">
+            <c:if test="${empty sessionScope.user}">
                 <div class="recruiter-box">
                     <span>Bạn là nhà tuyển dụng?</span>
                     <a href="#">Đăng tuyển ngay »</a>

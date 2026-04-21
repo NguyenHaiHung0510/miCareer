@@ -103,4 +103,33 @@ public class OfferDAO {
         o.setVer(rs.getInt("ver"));
         return o;
     }
+
+    /**
+     * Cập nhật trạng thái offer (ACCEPTED / REJECTED).
+     */
+    public boolean updateStat(long offerId, String stat) throws SQLException {
+        String sql = "UPDATE Offer SET stat = ? WHERE offerId = ?";
+        try (Connection conn = DBContext.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, stat);
+            ps.setLong(2, offerId);
+            return ps.executeUpdate() > 0;
+        }
+    }
+
+    /**
+     * Lấy offer theo offerId (dùng để kiểm tra trạng thái trước khi cập nhật).
+     */
+    public Offer findById(long offerId) throws SQLException {
+        String sql = "SELECT offerId, jobAppId, hrId, salary, `desc`, stat, ver "
+                   + "FROM Offer WHERE offerId = ?";
+        try (Connection conn = DBContext.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setLong(1, offerId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) return mapRow(rs);
+            }
+        }
+        return null;
+    }
 }

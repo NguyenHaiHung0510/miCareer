@@ -1,5 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
 
 <!DOCTYPE html>
 <html lang="vi">
@@ -10,10 +11,24 @@
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/job-list.css">
     
     <style>
-        /* Ghi đè grid 2 cột vì trang HR này không cần thanh filter bên trái */
         .hr-list-page {
             display: block;
             padding: 24px 0;
+        }
+        /* Card dùng flex column để nút luôn nằm đáy */
+        .job-list-grid .job-item {
+            display: flex;
+            flex-direction: column;
+        }
+        .job-list-grid .job-item .job-actions {
+            margin-top: auto;
+            padding-top: 12px;
+        }
+        .salary-text {
+            font-size: 14px;
+            color: #15803d;
+            font-weight: 600;
+            margin: 8px 0;
         }
     </style>
 </head>
@@ -52,11 +67,13 @@
                                     <span class="work-mode">${job.workMode}</span>
                                 </div>
 
-                                <div class="salary">
+                                <div class="salary-text">
                                     Lương:
                                     <c:choose>
                                         <c:when test="${job.minSalary != null and job.maxSalary != null}">
-                                            ${job.minSalary} - ${job.maxSalary} Triệu
+                                            <fmt:formatNumber value="${job.minSalary}" type="number" groupingUsed="true"/> VNĐ
+                                            –
+                                            <fmt:formatNumber value="${job.maxSalary}" type="number" groupingUsed="true"/> VNĐ
                                         </c:when>
                                         <c:otherwise>Thỏa thuận</c:otherwise>
                                     </c:choose>

@@ -86,4 +86,44 @@ public class CandidateApplicationDetailServlet extends HttpServlet {
 
         request.getRequestDispatcher("/candidate/application-detail.jsp").forward(request, response);
     }
+
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+
+        HttpSession session = request.getSession(false);
+        if (session == null || !(session.getAttribute("user") instanceof Candidate)) {
+            response.sendRedirect(request.getContextPath() + "/login.jsp");
+            return;
+        }
+
+        String action     = request.getParameter("action");
+        String offerIdStr = request.getParameter("offerId");
+        String newStat    = request.getParameter("newStat");
+        String jobAppIdStr = request.getParameter("jobAppId");
+
+        if ("respondOffer".equals(action) && offerIdStr != null && newStat != null) {
+            try {
+                long offerId = Long.parseLong(offerIdStr.trim());
+                Offer offer = offerDAO.findById(offerId);
+
+                // Chỉ cho phép phản hồi khi offer đang PENDING
+                if (offer != null && "PENDING".equals(offer.getStat())
+                        && ("ACCEPTED".equals(newStat) || "REJECTED".equals(newStat))) {
+                    offerDAO.updateStat(offerId, newStat);
+                }
+            } catch (NumberFormatException | SQLException e) {
+                e.printStackTrace();
+            }
+        }
+
+        // Redirect về trang chi tiết đơn
+        String redirectUrl = request.getContextPath() + "/candidate/application-detail";
+        if (jobAppIdStr != null && !jobAppIdStr.trim().isEmpty()) {
+            redirectUrl += "?jobAppId=" + jobAppIdStr.trim() + "&offerUpdated=1";
+        } else {
+            redirectUrl = request.getContextPath() + "/candidate/my-applications";
+        }
+        response.sendRedirect(redirectUrl);
+    }
 }

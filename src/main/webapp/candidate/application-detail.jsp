@@ -95,6 +95,9 @@
     <c:if test="${not empty error}">
         <div class="form-msg error">${error}</div>
     </c:if>
+    <c:if test="${not empty param.offerUpdated}">
+        <div class="form-msg success">✅ Đã cập nhật phản hồi Offer thành công!</div>
+    </c:if>
 
     <c:if test="${not empty appDetail}">
         <%-- Thông tin chung --%>
@@ -233,6 +236,34 @@
                                         <c:otherwise>${off.stat}</c:otherwise>
                                     </c:choose>
                                 </span>
+                                <%-- Nút phản hồi: chỉ hiện khi offer đang PENDING --%>
+                                <c:if test="${off.stat == 'PENDING'}">
+                                    <div style="margin-top:12px; display:flex; gap:10px; flex-wrap:wrap;">
+                                        <form action="${pageContext.request.contextPath}/candidate/application-detail" method="post">
+                                            <input type="hidden" name="action" value="respondOffer">
+                                            <input type="hidden" name="offerId" value="${off.offerId}">
+                                            <input type="hidden" name="newStat" value="ACCEPTED">
+                                            <input type="hidden" name="jobAppId" value="${jobAppId}">
+                                            <button type="submit"
+                                                style="background:#10b981;color:#fff;border:none;padding:9px 18px;
+                                                       border-radius:8px;font-weight:700;cursor:pointer;font-size:14px;">
+                                                ✅ Chấp nhận Offer
+                                            </button>
+                                        </form>
+                                        <form action="${pageContext.request.contextPath}/candidate/application-detail" method="post">
+                                            <input type="hidden" name="action" value="respondOffer">
+                                            <input type="hidden" name="offerId" value="${off.offerId}">
+                                            <input type="hidden" name="newStat" value="REJECTED">
+                                            <input type="hidden" name="jobAppId" value="${jobAppId}">
+                                            <button type="submit"
+                                                onclick="return confirm('Bạn chắc chắn muốn từ chối offer này?')"
+                                                style="background:#ef4444;color:#fff;border:none;padding:9px 18px;
+                                                       border-radius:8px;font-weight:700;cursor:pointer;font-size:14px;">
+                                                ❌ Từ chối
+                                            </button>
+                                        </form>
+                                    </div>
+                                </c:if>
                             </div>
                         </c:forEach>
                     </div>
