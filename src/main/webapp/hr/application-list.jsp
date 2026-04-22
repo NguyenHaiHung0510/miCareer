@@ -99,6 +99,7 @@
         }
         .status-pending { background: #fef3c7; color: #b45309; }
         .status-reviewing { background: #dbeafe; color: #1d4ed8; }
+        .status-interviewing { background: #ede9fe; color: #6d28d9; }
         .status-accepted { background: #dcfce7; color: #15803d; }
         .status-rejected { background: #fee2e2; color: #b91c1c; }
 
@@ -188,6 +189,9 @@
                                             <c:when test="${app.stat == 'REVIEWING'}">
                                                 <span class="status-badge status-reviewing">Đang xem xét</span>
                                             </c:when>
+                                            <c:when test="${app.stat == 'INTERVIEWING'}">
+                                                <span class="status-badge status-interviewing">Đang phỏng vấn</span>
+                                            </c:when>                                                
                                             <c:when test="${app.stat == 'ACCEPTED'}">
                                                 <span class="status-badge status-accepted">Đã trúng tuyển</span>
                                             </c:when>

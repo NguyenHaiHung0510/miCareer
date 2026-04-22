@@ -61,7 +61,9 @@
                                         <c:otherwise>Thỏa thuận</c:otherwise>
                                     </c:choose>
                                 </div>
-
+                                <div style="font-size: 13px; color: #64748b; margin-bottom: 12px;">
+                                    Ngày tạo: ${job.createdAt}
+                                </div>
                                 <div class="job-actions">
                                     <a href="${pageContext.request.contextPath}/hr/applications?jobPostId=${job.jobPostId}" class="primary">Xem ứng viên</a>
                                     
